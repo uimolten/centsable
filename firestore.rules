@@ -1,0 +1,25 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // By default, deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Allow users to read, create and update their own user profile.
+    // They cannot delete their profile through the client, or view other profiles.
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+
+    // For this example, we'll assume lesson content is public and can be read by anyone.
+    // If lessons should be protected, this rule will need to be changed.
+    match /lessons/{lessonId} {
+      allow read: if true;
+    }
+  }
+}
