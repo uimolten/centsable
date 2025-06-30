@@ -22,9 +22,9 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { href: '/lessons', label: 'Lessons' },
+    { href: '/learn', label: 'Learn' },
     { href: '/minigames', label: 'Minigames' },
-    { href: '/quizzes', label: 'Quizzes' },
+    { href: '/shop', label: 'Shop' },
   ];
 
   return (

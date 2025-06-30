@@ -17,8 +17,7 @@ function AuthPageContent() {
 
 export default function AuthPage() {
   return (
-    // Suspense is required because AuthForm uses useSearchParams
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense>
       <AuthPageContent />
     </Suspense>
   )

@@ -1,12 +1,21 @@
+"use client";
+
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AnimatedBackground } from '@/components/animated-background';
+import { motion } from 'framer-motion';
 
 export function Cta() {
   return (
     <section className="relative py-20 md:py-32 overflow-hidden">
       <AnimatedBackground />
-      <div className="relative z-10 text-center container mx-auto px-4 sm:px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 text-center container mx-auto px-4 sm:px-6 lg:px-8"
+      >
         <h2 className="text-4xl md:text-5xl font-black font-headline">
           Ready to Start Your First Quest?
         </h2>
@@ -15,10 +24,10 @@ export function Cta() {
         </p>
         <div className="mt-8">
           <Button size="lg" asChild className="text-lg font-semibold shadow-glow transition-all duration-300 hover:shadow-glow-lg">
-            <Link href="/lessons">Go to Lessons</Link>
+            <Link href="/learn">Start Learning</Link>
           </Button>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

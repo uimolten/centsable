@@ -38,7 +38,7 @@ const GoogleIcon = () => (
     </svg>
   );
 
-const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY" && firebaseConfig.projectId !== "YOUR_PROJECT_ID";
+const isFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "YOUR_API_KEY";
 
 export function AuthForm() {
   const searchParams = useSearchParams();
@@ -65,7 +65,7 @@ export function AuthForm() {
         return `Firebase config error. Check your .env.local file and restart the development server.`;
       case 'auth/email-already-in-use':
         return 'This email is already registered. Please try logging in.';
-      case 'auth/invalid-credential': // This covers user-not-found and wrong-password in newer SDKs
+      case 'auth/invalid-credential':
         return 'Invalid email or password. Please try again.';
       case 'auth/popup-closed-by-user':
         return 'Sign-in popup was closed before completing. Please try again.';
@@ -78,7 +78,7 @@ export function AuthForm() {
     toast({
       variant: "destructive",
       title: "Firebase Not Configured",
-      description: "Please add your Firebase credentials to the .env.local file and restart the server.",
+      description: "Please add your Firebase credentials to your .env.local file and restart the server.",
     });
   }
 
@@ -106,7 +106,7 @@ export function AuthForm() {
         });
       }
       
-      router.push("/lessons");
+      router.push("/learn");
     } catch (error: any) {
       toast({ variant: "destructive", title: "Sign in failed", description: getAuthErrorMessage(error) });
     } finally {
@@ -122,7 +122,7 @@ export function AuthForm() {
     setLoading('email');
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/lessons");
+      router.push("/learn");
     } catch (error: any) {
       toast({ variant: "destructive", title: "Login failed", description: getAuthErrorMessage(error) });
     } finally {
@@ -146,7 +146,7 @@ export function AuthForm() {
         createdAt: serverTimestamp(),
       });
 
-      router.push("/lessons");
+      router.push("/learn");
     } catch (error: any) {
       toast({ variant: "destructive", title: "Sign up failed", description: getAuthErrorMessage(error) });
     } finally {

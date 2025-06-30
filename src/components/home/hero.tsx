@@ -1,12 +1,20 @@
+"use client";
+
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { AnimatedBackground } from '@/components/animated-background';
+import { motion } from 'framer-motion';
 
 export function Hero() {
   return (
     <section className="relative w-full h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
       <AnimatedBackground />
-      <div className="relative z-10 text-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        className="relative z-10 text-center px-4"
+      >
         <h1 className="text-5xl md:text-7xl font-black text-foreground font-headline">
           Your Adventure in <span className="text-primary">Financial Mastery</span>
         </h1>
@@ -15,10 +23,10 @@ export function Hero() {
         </p>
         <div className="mt-8">
           <Button size="lg" asChild className="text-lg font-semibold shadow-glow transition-all duration-300 hover:shadow-glow-lg">
-            <Link href="/lessons">Start Your First Quest</Link>
+            <Link href="/learn">Start Your First Quest</Link>
           </Button>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

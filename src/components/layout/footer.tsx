@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 export function Footer() {
   const platformLinks = [
-    { href: '/lessons', label: 'Lessons' },
+    { href: '/learn', label: 'Learn' },
     { href: '/minigames', label: 'Minigames' },
-    { href: '/quizzes', label: 'Quizzes' },
+    { href: '/shop', label: 'Shop' },
   ];
 
   const resourceLinks = [
