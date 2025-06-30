@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { auth, db, firebaseConfig } from "@/lib/firebase";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -38,6 +38,8 @@ const GoogleIcon = () => (
     </svg>
   );
 
+const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY" && firebaseConfig.projectId !== "YOUR_PROJECT_ID";
+
 export function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -56,7 +58,19 @@ export function AuthForm() {
     defaultValues: { email: "", password: "" },
   });
 
+  const showConfigErrorToast = () => {
+    toast({
+      variant: "destructive",
+      title: "Firebase Not Configured",
+      description: "Please provide your Firebase credentials in the environment variables to use authentication.",
+    });
+  }
+
   const handleGoogleSignIn = async () => {
+    if (!isFirebaseConfigured) {
+      showConfigErrorToast();
+      return;
+    }
     setLoading('google');
     const provider = new GoogleAuthProvider();
     try {
@@ -85,6 +99,10 @@ export function AuthForm() {
   };
 
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
+    if (!isFirebaseConfigured) {
+      showConfigErrorToast();
+      return;
+    }
     setLoading('email');
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -97,6 +115,10 @@ export function AuthForm() {
   };
 
   const onSignupSubmit = async (values: z.infer<typeof signupSchema>) => {
+    if (!isFirebaseConfigured) {
+      showConfigErrorToast();
+      return;
+    }
     setLoading('email');
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
