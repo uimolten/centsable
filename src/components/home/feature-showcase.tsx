@@ -35,7 +35,7 @@ export function FeatureShowcase() {
             <h3 className="text-2xl font-bold font-headline">Interactive Learning</h3>
             <p className="mt-2 text-muted-foreground">Go from basics to advanced topics with modules that feel like a story, not a textbook.</p>
             <div className="mt-6 aspect-video rounded-lg overflow-hidden relative bg-black/20">
-              <Image src="https://placehold.co/800x450" alt="Interactive Lessons Mockup" layout="fill" objectFit="cover" data-ai-hint="lesson screen" className="opacity-75" />
+              <Image src="https://placehold.co/800x450" alt="Interactive Learning Mockup" layout="fill" objectFit="cover" data-ai-hint="lesson screen" className="opacity-75" />
             </div>
           </GlassCard>
           <GlassCard>
