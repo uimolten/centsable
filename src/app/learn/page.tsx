@@ -35,7 +35,7 @@ export default function LearnPage() {
     let nextActivityFound = false;
     for (const unit of newUnits) {
       for (const act of unit.activities) {
-        if (nextActivityFound) {
+        if (nextActivityFound && act.state === 'locked') {
           act.state = 'active';
           setSelectedActivity(act); // Select the new active activity
           setUnits(newUnits);
@@ -61,7 +61,7 @@ export default function LearnPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
         
         {/* Left Sidebar */}
         <div className="hidden lg:block lg:col-span-1">
@@ -69,7 +69,7 @@ export default function LearnPage() {
         </div>
 
         {/* Center Content */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <LearningPathway 
             units={units}
             onSelectActivity={handleSelectActivity}

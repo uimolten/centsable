@@ -32,8 +32,10 @@ export function ActivityNode({ activity, position, onSelect, isSelected }: Activ
       position === 'left' ? 'justify-start' : 'justify-end'
     )}>
       <div className={cn(
-        "absolute top-1/2 h-1 w-1/2 -translate-y-1/2",
-        "bg-gradient-to-r from-transparent via-border/20 to-border/50",
+        "absolute top-1/2 h-1 w-1/2 -translate-y-1/2 transition-colors duration-500",
+        activity.state === 'completed'
+            ? "bg-gradient-to-r from-transparent via-primary/50 to-primary" 
+            : "bg-gradient-to-r from-transparent via-border/20 to-border/50",
         position === 'left' ? 'right-1/2' : 'left-1/2 rotate-180'
       )}/>
 
