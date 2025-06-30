@@ -60,8 +60,8 @@ export default function LearnPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-8 items-start">
         
         {/* Left Sidebar */}
         <div className="hidden lg:block lg:col-span-1">
@@ -69,7 +69,7 @@ export default function LearnPage() {
         </div>
 
         {/* Center Content */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-4">
           <LearningPathway 
             units={units}
             onSelectActivity={handleSelectActivity}

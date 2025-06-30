@@ -9,7 +9,7 @@ interface UnitHeaderProps {
 
 export function UnitHeader({ Icon, title, description }: UnitHeaderProps) {
   return (
-    <div className="relative text-center space-y-2 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8">
+    <div className="relative mx-auto max-w-xl text-center space-y-2 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8">
       <div className="inline-block p-1 bg-gradient-to-br from-primary to-green-400 rounded-full">
         <div className="bg-background rounded-full p-4">
             <Icon className="w-16 h-16 text-primary" />
