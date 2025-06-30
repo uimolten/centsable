@@ -58,11 +58,27 @@ export function AuthForm() {
     defaultValues: { email: "", password: "" },
   });
 
+  const getAuthErrorMessage = (error: any) => {
+    switch (error.code) {
+      case 'auth/invalid-api-key':
+      case 'auth/invalid-project-id':
+        return `Firebase config error. Check your .env.local file and restart the development server.`;
+      case 'auth/email-already-in-use':
+        return 'This email is already registered. Please try logging in.';
+      case 'auth/invalid-credential': // This covers user-not-found and wrong-password in newer SDKs
+        return 'Invalid email or password. Please try again.';
+      case 'auth/popup-closed-by-user':
+        return 'Sign-in popup was closed before completing. Please try again.';
+      default:
+        return error.message || 'An unexpected error occurred. Please try again.';
+    }
+  };
+
   const showConfigErrorToast = () => {
     toast({
       variant: "destructive",
       title: "Firebase Not Configured",
-      description: "Please provide your Firebase credentials in the environment variables to use authentication.",
+      description: "Please add your Firebase credentials to the .env.local file and restart the server.",
     });
   }
 
@@ -92,7 +108,7 @@ export function AuthForm() {
       
       router.push("/lessons");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sign in failed", description: error.message });
+      toast({ variant: "destructive", title: "Sign in failed", description: getAuthErrorMessage(error) });
     } finally {
         setLoading(null);
     }
@@ -108,7 +124,7 @@ export function AuthForm() {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push("/lessons");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Login failed", description: "Invalid email or password." });
+      toast({ variant: "destructive", title: "Login failed", description: getAuthErrorMessage(error) });
     } finally {
         setLoading(null);
     }
@@ -132,7 +148,7 @@ export function AuthForm() {
 
       router.push("/lessons");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sign up failed", description: error.code === 'auth/email-already-in-use' ? 'This email is already registered.' : error.message });
+      toast({ variant: "destructive", title: "Sign up failed", description: getAuthErrorMessage(error) });
     } finally {
         setLoading(null);
     }
