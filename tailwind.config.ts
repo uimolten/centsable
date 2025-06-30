@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Sora', 'sans-serif'],
+        headline: ['Sora', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -70,6 +70,10 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        'glow': '0 0 20px hsl(var(--primary) / 0.5)',
+        'glow-lg': '0 0 30px hsl(var(--primary) / 0.6)',
       },
       keyframes: {
         'accordion-down': {
