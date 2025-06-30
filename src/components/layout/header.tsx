@@ -8,10 +8,13 @@ import { Logo } from '@/components/logo';
 import { UserNav } from '@/components/user-nav';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '../ui/skeleton';
+import { Menu } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export function Header() {
   const { user, loading } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +29,8 @@ export function Header() {
     { href: '/minigames', label: 'Minigames' },
     { href: '/shop', label: 'Shop' },
   ];
+  
+  const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <header className={cn(
@@ -37,6 +42,8 @@ export function Header() {
           <div className="flex-shrink-0">
             <Logo />
           </div>
+
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
@@ -44,24 +51,73 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <div className="flex items-center justify-end space-x-4">
-            {loading ? (
-              <div className="flex items-center space-x-2">
-                <Skeleton className="h-9 w-20 rounded-md" />
-                <Skeleton className="h-9 w-24 rounded-md" />
-              </div>
-            ) : user ? (
-              <UserNav />
-            ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link href="/auth">Log In</Link>
-                </Button>
-                <Button asChild className="shadow-glow transition-all duration-300 hover:shadow-glow-lg">
-                  <Link href="/auth?view=signup">Sign Up</Link>
-                </Button>
-              </>
-            )}
+          
+          <div className="flex items-center justify-end space-x-2">
+            {/* Desktop Auth Controls */}
+            <div className="hidden md:flex items-center space-x-4">
+              {loading ? (
+                <div className="flex items-center space-x-2">
+                  <Skeleton className="h-9 w-20 rounded-md" />
+                  <Skeleton className="h-9 w-24 rounded-md" />
+                </div>
+              ) : user ? (
+                <UserNav />
+              ) : (
+                <>
+                  <Button variant="ghost" asChild>
+                    <Link href="/auth">Log In</Link>
+                  </Button>
+                  <Button asChild className="shadow-glow transition-all duration-300 hover:shadow-glow-lg">
+                    <Link href="/auth?view=signup">Sign Up</Link>
+                  </Button>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+              <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full max-w-sm bg-background/95 backdrop-blur-lg flex flex-col">
+                  <div className="flex-shrink-0 border-b border-border/10 pb-4">
+                     <Logo onClick={closeMenu} />
+                  </div>
+                  <nav className="flex-grow flex flex-col gap-6 mt-8">
+                    {navLinks.map((link) => (
+                      <Link key={link.href} href={link.href} onClick={closeMenu} className="text-2xl font-semibold text-foreground hover:text-primary transition-colors">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </nav>
+                  <div className="flex-shrink-0 border-t border-border/10 pt-6">
+                    {loading ? (
+                       <div className="flex items-center space-x-2">
+                          <Skeleton className="h-10 w-full rounded-md" />
+                       </div>
+                    ) : user ? (
+                      <div>
+                        {/* In mobile, UserNav is enough as it contains the dropdown */}
+                        <UserNav />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-4">
+                        <Button variant="outline" asChild size="lg" className="text-lg">
+                          <Link href="/auth" onClick={closeMenu}>Log In</Link>
+                        </Button>
+                        <Button asChild size="lg" className="shadow-glow text-lg">
+                          <Link href="/auth?view=signup" onClick={closeMenu}>Sign Up</Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>

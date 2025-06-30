@@ -21,8 +21,8 @@ export function Hero() {
         <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground">
           Learn budgeting, investing, and more through fun games and interactive challenges. Stop guessing, start growing.
         </p>
-        <div className="mt-8">
-          <Button size="lg" asChild className="text-lg font-semibold shadow-glow transition-all duration-300 hover:shadow-glow-lg">
+        <div className="mt-8 flex justify-center px-4 sm:px-0">
+          <Button size="lg" asChild className="text-lg font-semibold shadow-glow transition-all duration-300 hover:shadow-glow-lg w-full sm:w-auto">
             <Link href="/learn">Start Your First Quest</Link>
           </Button>
         </div>

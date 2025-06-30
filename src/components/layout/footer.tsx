@@ -24,10 +24,10 @@ export function Footer() {
   return (
     <footer className="border-t border-border/10 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4 md:col-span-1">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+          <div className="space-y-4 md:col-span-1 flex flex-col items-center md:items-start">
             <Logo />
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm max-w-xs">
               Making financial literacy intuitive, engaging, and fun for the next generation.
             </p>
           </div>
@@ -57,7 +57,7 @@ export function Footer() {
           </div>
           <div>
             <h3 className="font-semibold text-foreground">Follow Us</h3>
-            <div className="flex mt-4 space-x-4">
+            <div className="flex mt-4 space-x-4 justify-center md:justify-start">
               {socialLinks.map((link) => (
                 <Link key={link.name} href={link.href} className="text-muted-foreground hover:text-primary transition-colors">
                   <link.icon className="h-5 w-5" />

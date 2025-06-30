@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className, onClick }: { className?: string, onClick?: () => void }) {
   return (
-    <Link href="/" className={`flex items-center font-headline ${className}`}>
+    <Link href="/" onClick={onClick} className={`flex items-center font-headline ${className}`}>
       <svg
         width="36"
         height="36"
