@@ -34,13 +34,13 @@ export function LessonContainer({
     const stepType = currentStep.type;
     const isStepWithoutCheck = stepType === 'intro' || stepType === 'concept' || stepType === 'scenario' || stepType === 'complete';
     const isInteractiveComplete = (stepType === 'tap-the-pairs' || stepType === 'interactive-sort') && hasAnswered;
-
-    if (isStepWithoutCheck || isInteractiveComplete || (hasAnswered && isCorrect)) {
-      return "Continue";
-    }
     
     if (hasAnswered && isCorrect === false) {
       return "Try Again";
+    }
+
+    if (isStepWithoutCheck || isInteractiveComplete || (hasAnswered && isCorrect)) {
+      return "Continue";
     }
 
     return "Check";
@@ -83,7 +83,7 @@ export function LessonContainer({
         <AnimatePresence>
             {hasAnswered && isCorrect !== null && <AnswerFeedback isCorrect={isCorrect} />}
         </AnimatePresence>
-        <div className="container mx-auto p-4 flex justify-end h-24 items-center">
+        <div className="container mx-auto p-4 flex justify-end h-24 items-center relative z-10">
             <Button
                 size="lg"
                 className={cn(
