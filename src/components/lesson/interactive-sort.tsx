@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,6 +7,7 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { cn } from '@/lib/utils';
 import type { InteractiveSortStep, SortItem as BaseSortItem } from '@/types/lesson';
+import { shuffle } from 'lodash';
 
 const ItemType = 'SORT_ITEM';
 
@@ -15,9 +17,10 @@ interface SortItem extends BaseSortItem {
 
 interface DraggableItemProps {
   item: SortItem;
+  onDrop: (item: { id: string }, zoneId: 'pool' | 'box1' | 'box2') => void;
 }
 
-const DraggableItem = ({ item }: DraggableItemProps) => {
+const DraggableItem = ({ item, onDrop }: DraggableItemProps) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemType,
     item: { id: item.id },
@@ -30,6 +33,9 @@ const DraggableItem = ({ item }: DraggableItemProps) => {
     <motion.div
       ref={drag}
       layout
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.5 }}
       className={cn(
         'p-4 bg-card border border-border/20 rounded-lg cursor-grab text-center font-semibold transition-all',
         isDragging ? 'opacity-50 scale-105 z-10' : 'opacity-100'
@@ -77,18 +83,21 @@ const DropZone = ({ zoneId, onDrop, children, className, label }: DropZoneProps)
   );
 };
 
-
 interface InteractiveSortProps {
   step: InteractiveSortStep;
   onComplete: (isCorrect: boolean) => void;
+  incorrectAttempts: number;
 }
 
-export function InteractiveSort({ step, onComplete }: InteractiveSortProps) {
+export function InteractiveSort({ step, onComplete, incorrectAttempts }: InteractiveSortProps) {
   const [items, setItems] = useState<SortItem[]>([]);
   const [wasCompleted, setWasCompleted] = useState(false);
+  const [hintShown, setHintShown] = useState(false);
 
   useEffect(() => {
-    setItems(step.items.map(item => ({...item, location: 'pool'})));
+    setItems(shuffle(step.items).map(item => ({...item, location: 'pool'})));
+    setWasCompleted(false);
+    setHintShown(false);
   }, [step]);
   
   const handleDrop = (droppedItem: { id: string }, targetZoneId: 'pool' | 'box1' | 'box2') => {
@@ -102,14 +111,31 @@ export function InteractiveSort({ step, onComplete }: InteractiveSortProps) {
   
   useEffect(() => {
     if (wasCompleted) return;
-
     const unplacedItems = items.filter(i => i.location === 'pool');
     if (items.length > 0 && unplacedItems.length === 0) {
       const isCorrect = items.every(item => item.location === item.correctBox);
       onComplete(isCorrect);
-      setWasCompleted(true);
+      if (isCorrect) {
+        setWasCompleted(true);
+      }
     }
   }, [items, onComplete, wasCompleted]);
+  
+  useEffect(() => {
+    if (incorrectAttempts >= 3 && !hintShown) {
+      const itemToPlace = items.find(i => i.location === 'pool');
+      if (itemToPlace) {
+        setItems(prevItems =>
+          prevItems.map(item =>
+            item.id === itemToPlace.id
+              ? { ...item, location: item.correctBox }
+              : item
+          )
+        );
+        setHintShown(true);
+      }
+    }
+  }, [incorrectAttempts, hintShown, items]);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -119,25 +145,35 @@ export function InteractiveSort({ step, onComplete }: InteractiveSortProps) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="space-y-6"
+        className="space-y-4"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-center">{step.instructions}</h2>
         
+        {hintShown && (
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-primary text-lg text-center"
+            >
+                Hint: Let's place one item for you.
+            </motion.div>
+        )}
+
         <DropZone zoneId="pool" onDrop={handleDrop} className="bg-background min-h-[100px] justify-center">
             {items.filter(i => i.location === 'pool').map(item => (
-                <DraggableItem key={item.id} item={item} />
+                <DraggableItem key={item.id} item={item} onDrop={handleDrop} />
             ))}
         </DropZone>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <DropZone zoneId="box1" label={step.box1Label} onDrop={handleDrop} className="min-h-[200px]">
              {items.filter(i => i.location === 'box1').map(item => (
-                <DraggableItem key={item.id} item={item} />
+                <DraggableItem key={item.id} item={item} onDrop={handleDrop} />
             ))}
           </DropZone>
           <DropZone zoneId="box2" label={step.box2Label} onDrop={handleDrop} className="min-h-[200px]">
             {items.filter(i => i.location === 'box2').map(item => (
-                <DraggableItem key={item.id} item={item} />
+                <DraggableItem key={item.id} item={item} onDrop={handleDrop} />
             ))}
           </DropZone>
         </div>

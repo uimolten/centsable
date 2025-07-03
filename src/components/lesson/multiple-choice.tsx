@@ -1,7 +1,9 @@
+
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { MultipleChoiceStep } from '@/types/lesson';
+import { useState, useEffect } from 'react';
 
 interface MultipleChoiceProps {
   step: MultipleChoiceStep;
@@ -9,9 +11,26 @@ interface MultipleChoiceProps {
   onSelectAnswer: (answer: string) => void;
   hasAnswered: boolean;
   isCorrect: boolean | null;
+  incorrectAttempts: number;
 }
 
-export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered, isCorrect }: MultipleChoiceProps) {
+export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered, isCorrect, incorrectAttempts }: MultipleChoiceProps) {
+  const [hint, setHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (incorrectAttempts >= 3 && !hint) {
+      const correctAnswers = Array.isArray(step.correctAnswer) ? step.correctAnswer : [step.correctAnswer];
+      const incorrectOption = step.options.find(opt => !correctAnswers.includes(opt));
+      if (incorrectOption) {
+        setHint(`Hint: It's not "${incorrectOption}".`);
+      }
+    }
+    // Reset hint if the step changes (due to key change on parent)
+    return () => {
+      setHint(null);
+    }
+  }, [incorrectAttempts, step, hint]);
+
   return (
     <motion.div
       key={step.question}
@@ -48,6 +67,15 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
           );
         })}
       </div>
+      {hint && (
+       <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-4 text-primary text-lg text-center"
+      >
+        {hint}
+      </motion.div>
+    )}
     </motion.div>
   );
 }
