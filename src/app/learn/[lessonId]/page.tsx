@@ -14,7 +14,7 @@ import { ConceptCard } from '@/components/lesson/concept-card';
 import { FillInTheBlank } from '@/components/lesson/fill-in-the-blank';
 import { TapThePairs } from '@/components/lesson/tap-the-pairs';
 import { InteractiveSort } from '@/components/lesson/interactive-sort';
-import type { Step, MultipleChoiceStep } from '@/types/lesson';
+import type { Step, MultipleChoiceStep, FillInTheBlankStep } from '@/types/lesson';
 
 const getLessonData = (lessonId: string) => {
   if (lessonId === 's1') return lessonSaving1;
@@ -51,7 +51,10 @@ export default function LessonPage() {
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   const handleSelectAnswer = (answer: string) => {
-    if (hasAnswered) return;
+    // Prevent changing answer after submission ONLY for multiple choice
+    if (currentStep.type === 'multiple-choice' && hasAnswered) {
+      return;
+    }
 
     if (currentStep.type === 'multiple-choice') {
       const step = currentStep as MultipleChoiceStep;
@@ -67,6 +70,7 @@ export default function LessonPage() {
         setUserAnswers([answer]);
       }
     } else {
+      // This handles fill-in-the-blank, allowing it to be updated anytime.
       setUserAnswers([answer]);
     }
   };
@@ -100,33 +104,35 @@ export default function LessonPage() {
       setHasAnswered(false);
       setIsCorrect(null);
       setUserAnswers([]);
-    
-    // Case 2: "Try Again" button for incorrect answers
-    } else if (hasAnswered && isCorrect === false) {
+      return;
+    }
+
+    // Special case for "Try Again" on interactive types, which should reset the question
+    if (hasAnswered && isCorrect === false && (currentStep.type === 'multiple-choice' || currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort')) {
       setHasAnswered(false);
       setIsCorrect(null);
       setUserAnswers([]);
-
-    // Case 3: "Check" button for questions that haven't been answered yet
-    } else {
-      setHasAnswered(true);
-      let correct = false;
-      
-      switch (currentStep.type) {
-        case 'multiple-choice':
-          const mcStep = currentStep as MultipleChoiceStep;
-          if (Array.isArray(mcStep.correctAnswer)) {
-            correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
-          } else {
-            correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
-          }
-          break;
-        case 'fill-in-the-blank':
-          correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
-          break;
-      }
-      setIsCorrect(correct);
+      return;
     }
+    
+    // All other cases are a "Check" or a "Re-check" (for fill-in-the-blank)
+    setHasAnswered(true);
+    let correct = false;
+    
+    switch (currentStep.type) {
+      case 'multiple-choice':
+        const mcStep = currentStep as MultipleChoiceStep;
+        if (Array.isArray(mcStep.correctAnswer)) {
+          correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
+        } else {
+          correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+        }
+        break;
+      case 'fill-in-the-blank':
+        correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
+        break;
+    }
+    setIsCorrect(correct);
   };
 
   const renderStep = (step: Step) => {
