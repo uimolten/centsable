@@ -3,10 +3,9 @@
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+import { Check, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { AnswerFeedback } from './answer-feedback';
 import type { Step } from '@/types/lesson';
 
 interface LessonContainerProps {
@@ -79,23 +78,48 @@ export function LessonContainer({
         </div>
       </main>
 
-      <footer className="flex-shrink-0 border-t border-border/10 relative overflow-hidden">
-        <AnimatePresence>
-            {hasAnswered && isCorrect !== null && <AnswerFeedback isCorrect={isCorrect} />}
-        </AnimatePresence>
-        <div className="container mx-auto p-4 flex justify-end h-24 items-center relative z-10">
-            <Button
-                size="lg"
-                className={cn(
-                  "text-lg font-bold min-w-[150px]",
-                  (hasAnswered && isCorrect) ? "shadow-glow bg-green-500/80 hover:bg-green-500 text-foreground" : "",
-                  (hasAnswered && isCorrect === false) ? "bg-red-500/80 hover:bg-red-500 text-foreground" : ""
-                )}
-                onClick={onAction}
-                disabled={isButtonDisabled()}
-            >
-                {getButtonText()}
-            </Button>
+      <footer className={cn(
+        "flex-shrink-0 border-t border-border/10 relative transition-colors duration-300",
+        hasAnswered && isCorrect !== null 
+          ? (isCorrect ? 'bg-green-500/20' : 'bg-red-500/20')
+          : ''
+      )}>
+        <div className="container mx-auto p-4 flex justify-between h-24 items-center">
+            <div>
+                <AnimatePresence>
+                    {hasAnswered && isCorrect !== null && (
+                    <motion.div
+                        key="feedback-text"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ ease: 'easeInOut', duration: 0.3 }}
+                        className={cn(
+                        "flex items-center gap-4 text-xl font-bold",
+                        isCorrect ? 'text-green-300' : 'text-red-300'
+                        )}
+                    >
+                        {isCorrect ? <Check className="h-8 w-8" /> : <X className="h-8 w-8" />}
+                        <span>{isCorrect ? 'Great job! ✨' : 'Let\'s try that again.'}</span>
+                    </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+          
+            <div>
+                <Button
+                    size="lg"
+                    className={cn(
+                        "text-lg font-bold min-w-[150px]",
+                        (hasAnswered && isCorrect) ? "shadow-glow bg-green-500/80 hover:bg-green-500 text-foreground" : "",
+                        (hasAnswered && isCorrect === false) ? "bg-red-500/80 hover:bg-red-500 text-foreground" : ""
+                    )}
+                    onClick={onAction}
+                    disabled={isButtonDisabled()}
+                >
+                    {getButtonText()}
+                </Button>
+            </div>
         </div>
       </footer>
     </div>
