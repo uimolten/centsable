@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { X, Check as CheckIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { AnswerFeedback } from './answer-feedback';
 
