@@ -34,6 +34,7 @@ export default function LessonPage() {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [totalSteps, setTotalSteps] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(0);
+  const [tryAgainCounter, setTryAgainCounter] = useState(0);
 
   useEffect(() => {
     if (lesson) {
@@ -79,14 +80,17 @@ export default function LessonPage() {
     router.push(`/learn?completed=${lessonId}`);
   };
 
+  const handleInteractiveComplete = (correct: boolean) => {
+    setHasAnswered(true);
+    setIsCorrect(correct);
+  };
+
   const handleFooterAction = () => {
-    const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario';
-    const isInteractiveComplete = (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') && hasAnswered;
-    const isLessonComplete = currentStep.type === 'complete';
+    const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario' || currentStep.type === 'complete';
     
     // Case 1: "Continue" button for correct answers or non-checkable steps
-    if (isStepWithoutCheck || isInteractiveComplete || (hasAnswered && isCorrect)) {
-      if (isLessonComplete) {
+    if (isStepWithoutCheck || (hasAnswered && isCorrect)) {
+      if (currentStep.type === 'complete') {
         handleLessonComplete();
         return;
       }
@@ -104,54 +108,61 @@ export default function LessonPage() {
       setHasAnswered(false);
       setIsCorrect(null);
       setUserAnswers([]);
+      setTryAgainCounter(0);
       return;
     }
 
-    // Special case for "Try Again" on interactive types, which should reset the question
-    if (hasAnswered && isCorrect === false && (currentStep.type === 'multiple-choice' || currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort')) {
+    // "Try Again" button for incorrect answers
+    if (hasAnswered && isCorrect === false) {
       setHasAnswered(false);
       setIsCorrect(null);
       setUserAnswers([]);
+       if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
+          setTryAgainCounter(count => count + 1);
+      }
       return;
     }
     
-    // All other cases are a "Check" or a "Re-check" (for fill-in-the-blank)
-    setHasAnswered(true);
-    let correct = false;
-    
-    switch (currentStep.type) {
-      case 'multiple-choice':
-        const mcStep = currentStep as MultipleChoiceStep;
-        if (Array.isArray(mcStep.correctAnswer)) {
-          correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
-        } else {
-          correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
-        }
-        break;
-      case 'fill-in-the-blank':
-        correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
-        break;
+    // "Check" button for questions that need validation
+    if (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank') {
+      setHasAnswered(true);
+      let correct = false;
+      
+      switch (currentStep.type) {
+        case 'multiple-choice':
+          const mcStep = currentStep as MultipleChoiceStep;
+          if (Array.isArray(mcStep.correctAnswer)) {
+            correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
+          } else {
+            correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+          }
+          break;
+        case 'fill-in-the-blank':
+          correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
+          break;
+      }
+      setIsCorrect(correct);
     }
-    setIsCorrect(correct);
   };
 
   const renderStep = (step: Step) => {
+    const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
     switch (step.type) {
       case 'intro':
-        return <IntroCard step={step} />;
+        return <IntroCard key={uniqueKey} step={step} />;
       case 'concept':
       case 'scenario':
-        return <ConceptCard step={step} />;
+        return <ConceptCard key={uniqueKey} step={step} />;
       case 'multiple-choice':
-        return <MultipleChoice step={step} onSelectAnswer={handleSelectAnswer} userAnswers={userAnswers} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
+        return <MultipleChoice key={uniqueKey} step={step} onSelectAnswer={handleSelectAnswer} userAnswers={userAnswers} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
        case 'fill-in-the-blank':
-        return <FillInTheBlank step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} />;
+        return <FillInTheBlank key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} />;
       case 'tap-the-pairs':
-        return <TapThePairs step={step} onComplete={() => setHasAnswered(true)} />;
+        return <TapThePairs key={uniqueKey} step={step} onComplete={handleInteractiveComplete} />;
       case 'interactive-sort':
-        return <InteractiveSort step={step} onComplete={() => setHasAnswered(true)} />;
+        return <InteractiveSort key={uniqueKey} step={step} onComplete={handleInteractiveComplete} />;
        case 'complete':
-        return <LessonComplete step={step} onContinue={handleLessonComplete} />;
+        return <LessonComplete key={uniqueKey} step={step} onContinue={handleLessonComplete} />;
       default:
         return <div>Unknown step type</div>;
     }

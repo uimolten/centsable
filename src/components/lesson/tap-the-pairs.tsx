@@ -9,7 +9,7 @@ import { shuffle } from 'lodash';
 
 interface TapThePairsProps {
   step: TapThePairsStep;
-  onComplete: () => void;
+  onComplete: (isCorrect: boolean) => void;
 }
 
 type Item = { id: number; text: string; pairId: number; type: 'term' | 'definition' };
@@ -18,6 +18,7 @@ export function TapThePairs({ step, onComplete }: TapThePairsProps) {
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [matchedPairs, setMatchedPairs] = useState<number[]>([]);
+  const [wasCompleted, setWasCompleted] = useState(false);
 
   useEffect(() => {
     const terms = step.pairs.map((p, i) => ({ id: i * 2, text: p.term, pairId: i, type: 'term' as const }));
@@ -26,13 +27,15 @@ export function TapThePairs({ step, onComplete }: TapThePairsProps) {
   }, [step]);
   
   useEffect(() => {
+    if (wasCompleted) return;
     if (matchedPairs.length > 0 && matchedPairs.length === step.pairs.length) {
-      onComplete();
+      onComplete(true);
+      setWasCompleted(true);
     }
-  }, [matchedPairs, step.pairs.length, onComplete]);
+  }, [matchedPairs, step.pairs.length, onComplete, wasCompleted]);
 
   const handleItemClick = (item: Item) => {
-    if (matchedPairs.includes(item.pairId) || item.id === selectedItem?.id) {
+    if (wasCompleted || matchedPairs.includes(item.pairId) || item.id === selectedItem?.id) {
       setSelectedItem(null);
       return;
     };
