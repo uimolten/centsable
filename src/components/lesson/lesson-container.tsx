@@ -7,41 +7,59 @@ import { X } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { AnswerFeedback } from './answer-feedback';
+import type { Step } from '@/types/lesson';
 
 interface LessonContainerProps {
   children: React.ReactNode;
   progress: number;
+  currentStep: Step;
   isCorrect: boolean | null;
   hasAnswered: boolean;
-  isCheckDisabled: boolean;
-  isContinuable: boolean;
-  onCheck: () => void;
+  userAnswers: string[];
+  onAction: () => void;
 }
 
 export function LessonContainer({
   children,
   progress,
+  currentStep,
   isCorrect,
   hasAnswered,
-  isCheckDisabled,
-  isContinuable,
-  onCheck,
+  userAnswers,
+  onAction,
 }: LessonContainerProps) {
   const router = useRouter();
 
   const getButtonText = () => {
-    if (isContinuable && hasAnswered && isCorrect !== false) return "Continue";
-    if (hasAnswered && isCorrect === false) return "Try Again";
-    if (
-        isContinuable &&
-        !hasAnswered &&
-        isCorrect === null
-    ) return "Continue";
+    const stepType = currentStep.type;
+    const isStepWithoutCheck = stepType === 'intro' || stepType === 'concept' || stepType === 'scenario' || stepType === 'complete';
+    const isInteractiveComplete = (stepType === 'tap-the-pairs' || stepType === 'interactive-sort') && hasAnswered;
+
+    if (isStepWithoutCheck || isInteractiveComplete || (hasAnswered && isCorrect)) {
+      return "Continue";
+    }
+    
+    if (hasAnswered && isCorrect === false) {
+      return "Try Again";
+    }
+
     return "Check";
+  };
+  
+  const isCheckDisabled = () => {
+    const stepType = currentStep.type;
+    if (stepType === 'multiple-choice' || stepType === 'fill-in-the-blank') {
+        return userAnswers.length === 0 || (userAnswers.length > 0 && userAnswers[0] === '');
+    }
+    return false;
   }
 
-  const handleButtonClick = () => {
-    onCheck();
+  const isButtonDisabled = () => {
+    const buttonText = getButtonText();
+    if (buttonText === 'Check') {
+        return isCheckDisabled();
+    }
+    return false;
   }
 
   return (
@@ -70,10 +88,11 @@ export function LessonContainer({
                 size="lg"
                 className={cn(
                   "text-lg font-bold min-w-[150px]",
-                  isCorrect ? "shadow-glow" : ""
+                  (hasAnswered && isCorrect) ? "shadow-glow bg-green-500/80 hover:bg-green-500 text-foreground" : "",
+                  (hasAnswered && isCorrect === false) ? "bg-red-500/80 hover:bg-red-500 text-foreground" : ""
                 )}
-                onClick={handleButtonClick}
-                disabled={isCheckDisabled && !isContinuable}
+                onClick={onAction}
+                disabled={isButtonDisabled()}
             >
                 {getButtonText()}
             </Button>

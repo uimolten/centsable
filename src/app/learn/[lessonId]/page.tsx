@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { isEqual } from 'lodash';
 
-import { lessonSaving1 } from '@/data/lesson-saving-1'; // Static import for now
+import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -16,10 +16,9 @@ import { TapThePairs } from '@/components/lesson/tap-the-pairs';
 import { InteractiveSort } from '@/components/lesson/interactive-sort';
 import type { Step, MultipleChoiceStep } from '@/types/lesson';
 
-// In a real app, you'd have a loader to fetch the correct lesson
 const getLessonData = (lessonId: string) => {
   if (lessonId === 's1') return lessonSaving1;
-  return null; // Handle not found case
+  return null;
 };
 
 export default function LessonPage() {
@@ -68,78 +67,67 @@ export default function LessonPage() {
         setUserAnswers([answer]);
       }
     } else {
-      // For fill-in-the-blank
       setUserAnswers([answer]);
     }
   };
-
-  const handleCheckAnswer = () => {
-    if (hasAnswered) {
-        handleContinue();
-        return;
-    }
-
-    setHasAnswered(true);
-    let correct = false;
-
-    switch (currentStep.type) {
-      case 'multiple-choice':
-        const mcStep = currentStep as MultipleChoiceStep;
-        if (Array.isArray(mcStep.correctAnswer)) {
-            // Multi-select: check if arrays are equal regardless of order
-            correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
-        } else {
-            // Single-select
-            correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
-        }
-        break;
-      case 'fill-in-the-blank':
-        correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
-        break;
-      // For types without a check, we just advance
-      default:
-        handleContinue();
-        return;
-    }
-    
-    setIsCorrect(correct);
+  
+  const handleLessonComplete = () => {
+    router.push(`/learn?completed=${lessonId}`);
   };
 
-  const handleContinue = () => {
-    if (isCorrect === false && !isContinuable()) {
+  const handleFooterAction = () => {
+    const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario';
+    const isInteractiveComplete = (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') && hasAnswered;
+    const isLessonComplete = currentStep.type === 'complete';
+    
+    // Case 1: "Continue" button for correct answers or non-checkable steps
+    if (isStepWithoutCheck || isInteractiveComplete || (hasAnswered && isCorrect)) {
+      if (isLessonComplete) {
+        handleLessonComplete();
+        return;
+      }
+
+      setCompletedSteps(prev => prev + 1);
+
+      if (stepIndex < currentModule.steps.length - 1) {
+        setStepIndex(stepIndex + 1);
+      } else if (moduleIndex < lesson.modules.length - 1) {
+        setModuleIndex(moduleIndex + 1);
+        setStepIndex(0);
+      }
+      
+      // Reset for next step
       setHasAnswered(false);
       setIsCorrect(null);
       setUserAnswers([]);
-      return;
+    
+    // Case 2: "Try Again" button for incorrect answers
+    } else if (hasAnswered && isCorrect === false) {
+      setHasAnswered(false);
+      setIsCorrect(null);
+      setUserAnswers([]);
+
+    // Case 3: "Check" button for questions that haven't been answered yet
+    } else {
+      setHasAnswered(true);
+      let correct = false;
+      
+      switch (currentStep.type) {
+        case 'multiple-choice':
+          const mcStep = currentStep as MultipleChoiceStep;
+          if (Array.isArray(mcStep.correctAnswer)) {
+            correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
+          } else {
+            correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+          }
+          break;
+        case 'fill-in-the-blank':
+          correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
+          break;
+      }
+      setIsCorrect(correct);
     }
-
-    setCompletedSteps(prev => prev + 1);
-
-    if (stepIndex < currentModule.steps.length - 1) {
-      setStepIndex(stepIndex + 1);
-    } else if (moduleIndex < lesson.modules.length - 1) {
-      setModuleIndex(moduleIndex + 1);
-      setStepIndex(0);
-    }
-
-    // Reset for next step
-    setHasAnswered(false);
-    setIsCorrect(null);
-    setUserAnswers([]);
   };
-
-  const handleLessonComplete = () => {
-    router.push(`/learn?completed=${lessonId}`);
-  }
-
-  const isContinuable = () => {
-     return currentStep.type === 'intro' ||
-        currentStep.type === 'concept' ||
-        currentStep.type === 'scenario' ||
-        (hasAnswered && isCorrect) ||
-        (currentStep.type === 'tap-the-pairs' && hasAnswered) || // simplified for now
-        (currentStep.type === 'interactive-sort' && hasAnswered)
-  }
 
   const renderStep = (step: Step) => {
     switch (step.type) {
@@ -163,21 +151,14 @@ export default function LessonPage() {
     }
   };
   
-  const isCheckDisabled = () => {
-    if (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank') {
-        return userAnswers.length === 0;
-    }
-    return false;
-  }
-
   return (
     <LessonContainer
       progress={progress}
-      onCheck={handleCheckAnswer}
+      onAction={handleFooterAction}
+      currentStep={currentStep}
       isCorrect={isCorrect}
       hasAnswered={hasAnswered}
-      isCheckDisabled={isCheckDisabled()}
-      isContinuable={isContinuable()}
+      userAnswers={userAnswers}
     >
       <AnimatePresence mode="wait">
         {renderStep(currentStep)}

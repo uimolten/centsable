@@ -29,15 +29,11 @@ export const lessonSaving1: Lesson = {
           pairs: [
             { term: 'Spending', definition: 'Using money now' },
             { term: 'Saving', definition: 'Keeping money for later' },
-            { term: 'Income', definition: 'Money you earn' },
-            { term: 'Expense', definition: 'Money you spend' },
           ],
         },
         {
           type: 'concept',
           text: 'Think of it like saving a power-up in a game for the final boss. It’s a smart move!',
-          image: 'https://placehold.co/600x400',
-          imageHint: 'game power-up',
         },
       ],
     },
@@ -48,8 +44,6 @@ export const lessonSaving1: Lesson = {
         {
           type: 'concept',
           text: 'Cool, but why save? You save to get things you really want later! These are called financial goals. 🎯',
-          image: 'https://placehold.co/600x400',
-          imageHint: 'mountain peak flag'
         },
         {
           type: 'multiple-choice',
@@ -92,9 +86,7 @@ export const lessonSaving1: Lesson = {
         },
         {
           type: 'concept',
-          text: 'A Need is something you must have to live. A Want is something that’s fun to have, but you can live without it.',
-          image: 'https://placehold.co/600x400',
-          imageHint: 'balance scale'
+          text: "A Need is something you absolutely must have to live, like food and a place to live. A Want is something that’s fun to have, but you'll be okay without it.",
         },
         {
           type: 'multiple-choice',
@@ -122,8 +114,6 @@ export const lessonSaving1: Lesson = {
         {
           type: 'scenario',
           text: "Time for your first quest! Let's say you get $20 allowance. You're thirsty, so you buy a soda for $2. You also need to pay your family $10 for your phone bill.",
-          image: 'https://placehold.co/600x400',
-          imageHint: 'teenager allowance money'
         },
         {
           type: 'multiple-choice',
@@ -145,8 +135,6 @@ export const lessonSaving1: Lesson = {
         {
           type: 'concept',
           text: "By choosing to save, you're now $8 closer to your goal! That's how it works. A little bit at a time.",
-          image: 'https://placehold.co/600x400',
-          imageHint: 'piggy bank video game'
         },
         {
           type: 'complete',
