@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { LeftSidebar } from '@/components/learn/left-sidebar';
 import { LearningPathway } from '@/components/learn/learning-pathway';
@@ -11,11 +12,21 @@ import { units as initialUnitsData, Unit, Activity } from '@/data/learn-data';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-
 export default function LearnPage() {
   const [units, setUnits] = useState<Unit[]>(initialUnitsData);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const completedActivityId = searchParams.get('completed');
+    if (completedActivityId) {
+      handleCompleteActivity(completedActivityId);
+      // Remove the query param from the URL without reloading the page
+      router.replace('/learn', { scroll: false });
+    }
+  }, [searchParams]);
   
   const handleSelectActivity = (activity: Activity) => {
     if (activity.state !== 'locked') {
@@ -24,14 +35,20 @@ export default function LearnPage() {
   };
 
   const handleStartActivity = (activity: Activity) => {
-    // This is a simulation of completing an activity.
-    console.log("Starting activity:", activity.title);
-    
+    if (activity.type === 'lesson' || activity.type === 'practice' || activity.type === 'quiz') {
+      router.push(`/learn/${activity.id}`);
+    } else {
+      console.log("Starting non-lesson activity:", activity.title);
+      handleCompleteActivity(activity.id);
+    }
+  };
+
+  const handleCompleteActivity = (activityId: string) => {
     // Mark current as completed
     const newUnits = units.map(unit => ({
       ...unit,
       activities: unit.activities.map(act => 
-        act.id === activity.id ? { ...act, state: 'completed' as const } : act
+        act.id === activityId ? { ...act, state: 'completed' as const } : act
       )
     }));
 
@@ -41,15 +58,15 @@ export default function LearnPage() {
       for (const act of unit.activities) {
         if (nextActivityFound && act.state === 'locked') {
           act.state = 'active';
-          
-          // On desktop, keep the sidebar open and select the new activity.
-          // On mobile/tablet, close the sheet. A user can tap the new active node to see details.
-          setSelectedActivity(isDesktop ? act : null);
-
+          if (isDesktop) {
+            setSelectedActivity(act);
+          } else {
+            setSelectedActivity(null);
+          }
           setUnits(newUnits);
           return;
         }
-        if (act.id === activity.id) {
+        if (act.id === activityId) {
           nextActivityFound = true;
         }
       }
@@ -60,7 +77,7 @@ export default function LearnPage() {
       setSelectedActivity(null);
       setUnits(newUnits);
     }
-  };
+  }
 
   const findUnitForActivity = (activity: Activity | null): Unit | undefined => {
     if (!activity) return undefined;
@@ -71,13 +88,13 @@ export default function LearnPage() {
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <div className="hidden md:block md:col-span-1 lg:col-span-1">
+        <div className="hidden lg:block lg:col-span-3 sticky top-24">
           <LeftSidebar />
         </div>
 
-        <div className="col-span-1 md:col-span-4 lg:col-span-4">
+        <div className="col-span-1 lg:col-span-6">
           <LearningPathway 
             units={units}
             onSelectActivity={handleSelectActivity}
@@ -86,7 +103,7 @@ export default function LearnPage() {
         </div>
 
         {isDesktop && (
-            <div className="hidden lg:block lg:col-span-1 sticky top-24">
+            <div className="hidden lg:block lg:col-span-3 sticky top-24">
               <AnimatePresence>
                 {selectedActivity && (
                   <RightSidebar

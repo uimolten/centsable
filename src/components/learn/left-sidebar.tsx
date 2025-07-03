@@ -25,7 +25,7 @@ export function LeftSidebar() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-sm">
       <Card className="bg-card/50 backdrop-blur-lg border-border/20">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold">Daily Quests</CardTitle>

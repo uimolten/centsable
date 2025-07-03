@@ -11,11 +11,13 @@ interface RightSidebarProps {
 export function RightSidebar({ activity, unit, onStart }: RightSidebarProps) {
   if (!activity || !unit) {
     return (
-        <div className="p-6 text-center text-muted-foreground">
+        <div className="p-6 text-center text-muted-foreground w-full max-w-sm">
             <p>Select an activity to see details.</p>
         </div>
     )
   }
+
+  const activityTypeLabel = activity.type.charAt(0).toUpperCase() + activity.type.slice(1);
 
   return (
     <motion.div
@@ -24,8 +26,13 @@ export function RightSidebar({ activity, unit, onStart }: RightSidebarProps) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="w-full max-w-sm"
     >
       <div className="space-y-6">
+        <div>
+          <p className="text-sm text-muted-foreground">Unit: {unit.title}</p>
+          <p className="text-sm text-muted-foreground">Type: {activityTypeLabel}</p>
+        </div>
         <div>
           <h4 className="font-semibold text-foreground mb-2">Rewards for Completion:</h4>
           <div className="space-y-2 text-sm">
@@ -46,7 +53,7 @@ export function RightSidebar({ activity, unit, onStart }: RightSidebarProps) {
             onClick={() => onStart(activity)}
             disabled={activity.state !== 'active'}
           >
-            {activity.state === 'completed' ? 'Completed' : 'Start'}
+            {activity.state === 'completed' ? 'Completed' : `Start ${activityTypeLabel}`}
           </Button>
         </div>
       </div>
