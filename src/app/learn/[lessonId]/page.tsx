@@ -122,6 +122,7 @@ export default function LessonPage() {
     if (hasAnswered && isCorrect === false) {
       setHasAnswered(false);
       setIsCorrect(null);
+      setIncorrectAttempts(prev => prev + 1);
       
       // For fill-in-the-blank, we don't clear the answer so user can edit.
       // For others, we reset.
@@ -173,9 +174,9 @@ export default function LessonPage() {
        case 'fill-in-the-blank':
         return <FillInTheBlank key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} hasAnswered={hasAnswered} isCorrect={isCorrect} incorrectAttempts={incorrectAttempts} />;
       case 'tap-the-pairs':
-        return <TapThePairs key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} />;
+        return <TapThePairs key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
       case 'interactive-sort':
-        return <InteractiveSort key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} />;
+        return <InteractiveSort key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
        case 'complete':
         return <LessonComplete key={uniqueKey} step={step} onContinue={handleLessonComplete} />;
       default:

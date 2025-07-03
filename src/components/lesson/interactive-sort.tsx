@@ -17,13 +17,14 @@ interface SortItem extends BaseSortItem {
 
 interface DraggableItemProps {
   item: SortItem;
-  onDrop: (item: { id: string }, zoneId: 'pool' | 'box1' | 'box2') => void;
+  canDrag: boolean;
 }
 
-const DraggableItem = ({ item, onDrop }: DraggableItemProps) => {
+const DraggableItem = ({ item, canDrag }: DraggableItemProps) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemType,
     item: { id: item.id },
+    canDrag: canDrag,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -37,8 +38,9 @@ const DraggableItem = ({ item, onDrop }: DraggableItemProps) => {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5 }}
       className={cn(
-        'p-4 bg-card border border-border/20 rounded-lg cursor-grab text-center font-semibold transition-all',
-        isDragging ? 'opacity-50 scale-105 z-10' : 'opacity-100'
+        'p-4 bg-card border border-border/20 rounded-lg text-center font-semibold transition-all',
+        isDragging ? 'opacity-50 scale-105 z-10' : 'opacity-100',
+        canDrag ? 'cursor-grab' : 'cursor-not-allowed'
       )}
     >
       {item.text}
@@ -87,21 +89,23 @@ interface InteractiveSortProps {
   step: InteractiveSortStep;
   onComplete: (isCorrect: boolean) => void;
   incorrectAttempts: number;
+  hasAnswered: boolean;
+  isCorrect: boolean | null;
 }
 
-export function InteractiveSort({ step, onComplete, incorrectAttempts }: InteractiveSortProps) {
+export function InteractiveSort({ step, onComplete, incorrectAttempts, hasAnswered, isCorrect }: InteractiveSortProps) {
   const [items, setItems] = useState<SortItem[]>([]);
-  const [wasCompleted, setWasCompleted] = useState(false);
   const [hintShown, setHintShown] = useState(false);
 
   useEffect(() => {
     setItems(shuffle(step.items).map(item => ({...item, location: 'pool'})));
-    setWasCompleted(false);
     setHintShown(false);
   }, [step]);
   
+  const isCompleteAndCorrect = hasAnswered && isCorrect === true;
+
   const handleDrop = (droppedItem: { id: string }, targetZoneId: 'pool' | 'box1' | 'box2') => {
-    if (wasCompleted) return;
+    if (isCompleteAndCorrect) return;
     setItems(prevItems => 
         prevItems.map(item => 
             item.id === droppedItem.id ? { ...item, location: targetZoneId } : item
@@ -110,16 +114,13 @@ export function InteractiveSort({ step, onComplete, incorrectAttempts }: Interac
   };
   
   useEffect(() => {
-    if (wasCompleted) return;
+    if (hasAnswered) return;
     const unplacedItems = items.filter(i => i.location === 'pool');
     if (items.length > 0 && unplacedItems.length === 0) {
       const isCorrect = items.every(item => item.location === item.correctBox);
       onComplete(isCorrect);
-      if (isCorrect) {
-        setWasCompleted(true);
-      }
     }
-  }, [items, onComplete, wasCompleted]);
+  }, [items, onComplete, hasAnswered, items.length]);
   
   useEffect(() => {
     if (incorrectAttempts >= 3 && !hintShown) {
@@ -161,19 +162,19 @@ export function InteractiveSort({ step, onComplete, incorrectAttempts }: Interac
 
         <DropZone zoneId="pool" onDrop={handleDrop} className="bg-background min-h-[100px] justify-center">
             {items.filter(i => i.location === 'pool').map(item => (
-                <DraggableItem key={item.id} item={item} onDrop={handleDrop} />
+                <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />
             ))}
         </DropZone>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <DropZone zoneId="box1" label={step.box1Label} onDrop={handleDrop} className="min-h-[200px]">
              {items.filter(i => i.location === 'box1').map(item => (
-                <DraggableItem key={item.id} item={item} onDrop={handleDrop} />
+                <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />
             ))}
           </DropZone>
           <DropZone zoneId="box2" label={step.box2Label} onDrop={handleDrop} className="min-h-[200px]">
             {items.filter(i => i.location === 'box2').map(item => (
-                <DraggableItem key={item.id} item={item} onDrop={handleDrop} />
+                <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />
             ))}
           </DropZone>
         </div>

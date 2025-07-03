@@ -12,15 +12,16 @@ interface TapThePairsProps {
   step: TapThePairsStep;
   onComplete: (isCorrect: boolean) => void;
   incorrectAttempts: number;
+  hasAnswered: boolean;
+  isCorrect: boolean | null;
 }
 
 type Item = { id: number; text: string; pairId: number; type: 'term' | 'definition' };
 
-export function TapThePairs({ step, onComplete, incorrectAttempts }: TapThePairsProps) {
+export function TapThePairs({ step, onComplete, incorrectAttempts, hasAnswered, isCorrect }: TapThePairsProps) {
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [matchedPairs, setMatchedPairs] = useState<number[]>([]);
-  const [wasCompleted, setWasCompleted] = useState(false);
   const [hintShown, setHintShown] = useState(false);
 
   useEffect(() => {
@@ -29,17 +30,18 @@ export function TapThePairs({ step, onComplete, incorrectAttempts }: TapThePairs
     setItems(shuffle([...terms, ...definitions]));
     setMatchedPairs([]);
     setSelectedItem(null);
-    setWasCompleted(false);
     setHintShown(false);
   }, [step]);
   
+  const isCompleteAndCorrect = hasAnswered && isCorrect === true;
+
   useEffect(() => {
-    if (wasCompleted) return;
+    if (hasAnswered) return;
+
     if (items.length > 0 && matchedPairs.length === step.pairs.length) {
       onComplete(true);
-      setWasCompleted(true);
     }
-  }, [matchedPairs, step.pairs.length, onComplete, wasCompleted, items.length]);
+  }, [matchedPairs, step.pairs.length, onComplete, items.length, hasAnswered]);
   
   useEffect(() => {
     if (incorrectAttempts >= 3 && !hintShown) {
@@ -53,7 +55,7 @@ export function TapThePairs({ step, onComplete, incorrectAttempts }: TapThePairs
   }, [incorrectAttempts, hintShown, matchedPairs, step.pairs]);
 
   const handleItemClick = (item: Item) => {
-    if (wasCompleted || matchedPairs.includes(item.pairId)) {
+    if (isCompleteAndCorrect || matchedPairs.includes(item.pairId)) {
       return;
     };
 
@@ -116,10 +118,10 @@ export function TapThePairs({ step, onComplete, incorrectAttempts }: TapThePairs
             className={cn(
               "text-lg h-auto py-4 min-h-[80px] whitespace-normal transition-all duration-300",
               selectedItem?.id === item.id && "bg-accent ring-2 ring-primary",
-              matchedPairs.includes(item.pairId) && "opacity-50 !bg-green-500/30 border-green-500 cursor-not-allowed"
+              (isCompleteAndCorrect || matchedPairs.includes(item.pairId)) && "opacity-50 !bg-green-500/30 border-green-500 cursor-not-allowed"
             )}
             onClick={() => handleItemClick(item)}
-            disabled={matchedPairs.includes(item.pairId)}
+            disabled={isCompleteAndCorrect || matchedPairs.includes(item.pairId)}
           >
             {item.text}
           </Button>
