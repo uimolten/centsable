@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { isEqual } from 'lodash';
+import { isEqual, shuffle } from 'lodash';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { LessonContainer } from '@/components/lesson/lesson-container';
@@ -54,7 +54,7 @@ export default function LessonPage() {
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   const handleSelectAnswer = (answer: string) => {
-    if (currentStep.type === 'multiple-choice' && hasAnswered) {
+     if (hasAnswered && isCorrect) {
       return;
     }
 
@@ -87,17 +87,9 @@ export default function LessonPage() {
       setIncorrectAttempts(prev => prev + 1);
     }
   };
-
-  const handleFooterAction = () => {
-    const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario' || currentStep.type === 'complete';
-    
-    if (isStepWithoutCheck || (hasAnswered && isCorrect)) {
-      if (currentStep.type === 'complete') {
-        handleLessonComplete();
-        return;
-      }
-
-      setCompletedSteps(prev => prev + 1);
+  
+  const goToNextStep = () => {
+     setCompletedSteps(prev => prev + 1);
 
       if (stepIndex < currentModule.steps.length - 1) {
         setStepIndex(stepIndex + 1);
@@ -110,23 +102,41 @@ export default function LessonPage() {
       setIsCorrect(null);
       setUserAnswers([]);
       setTryAgainCounter(0);
-      setIncorrectAttempts(0); // Reset attempts on successful continuation
+      setIncorrectAttempts(0);
+  }
+
+  const handleFooterAction = () => {
+    const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario' || currentStep.type === 'complete';
+    
+    // Case 1: Continue button is displayed (answer correct, or step doesn't need checking)
+    if (isStepWithoutCheck || (hasAnswered && isCorrect)) {
+      if (currentStep.type === 'complete') {
+        handleLessonComplete();
+      } else {
+        goToNextStep();
+      }
       return;
     }
 
+    // Case 2: Try Again button is displayed
     if (hasAnswered && isCorrect === false) {
       setHasAnswered(false);
       setIsCorrect(null);
+      
+      // For fill-in-the-blank, we don't clear the answer so user can edit.
+      // For others, we reset.
       if (currentStep.type !== 'fill-in-the-blank') {
           setUserAnswers([]);
       }
+      // Re-render interactive components to reset their internal state
       if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
           setTryAgainCounter(count => count + 1);
       }
       return;
     }
     
-    if (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank') {
+    // Case 3: Check button is displayed, and we need to validate the answer.
+    if (!hasAnswered) {
       setHasAnswered(true);
       let correct = false;
       
@@ -161,7 +171,7 @@ export default function LessonPage() {
       case 'multiple-choice':
         return <MultipleChoice key={uniqueKey} step={step} onSelectAnswer={handleSelectAnswer} userAnswers={userAnswers} hasAnswered={hasAnswered} isCorrect={isCorrect} incorrectAttempts={incorrectAttempts} />;
        case 'fill-in-the-blank':
-        return <FillInTheBlank key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} hasAnswered={hasAnswered} incorrectAttempts={incorrectAttempts} />;
+        return <FillInTheBlank key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} hasAnswered={hasAnswered} isCorrect={isCorrect} incorrectAttempts={incorrectAttempts} />;
       case 'tap-the-pairs':
         return <TapThePairs key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} />;
       case 'interactive-sort':

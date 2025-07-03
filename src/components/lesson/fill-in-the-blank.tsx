@@ -9,10 +9,11 @@ interface FillInTheBlankProps {
   userAnswer: string;
   onAnswerChange: (answer: string) => void;
   hasAnswered: boolean;
+  isCorrect: boolean | null;
   incorrectAttempts: number;
 }
 
-export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, incorrectAttempts }: FillInTheBlankProps) {
+export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, isCorrect, incorrectAttempts }: FillInTheBlankProps) {
   const parts = step.question.split('________');
 
   return (
@@ -33,9 +34,11 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
           className={cn(
             "inline-block w-48 text-2xl font-bold text-center mx-2 bg-muted/50 border-border/50 h-12",
             hasAnswered && "border-2",
-            hasAnswered && "border-destructive animate-shake"
+            hasAnswered && isCorrect && "border-green-500",
+            hasAnswered && !isCorrect && "border-destructive animate-shake"
           )}
           autoFocus
+          disabled={hasAnswered && isCorrect === true}
         />
         <span>{parts[1]}</span>
       </div>
