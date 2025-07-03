@@ -15,7 +15,7 @@ export function LessonComplete({ step, onContinue }: LessonCompleteProps) {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-      className="text-center space-y-8 flex flex-col items-center"
+      className="text-center space-y-8 flex flex-col items-center bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
     >
       <Award className="w-32 h-32 text-yellow-400" />
       <h1 className="text-4xl font-black text-primary font-headline">{step.title}</h1>

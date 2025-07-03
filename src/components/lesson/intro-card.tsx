@@ -14,7 +14,7 @@ export function IntroCard({ step }: IntroCardProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="text-center space-y-8"
+      className="text-center space-y-8 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
     >
       {step.mascotImage && (
         <div className="flex justify-center">

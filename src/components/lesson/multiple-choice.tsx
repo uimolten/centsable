@@ -30,6 +30,8 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
       setHint(null);
     }
   }, [incorrectAttempts, step, hint]);
+  
+  const isCompleteAndCorrect = hasAnswered && isCorrect === true;
 
   return (
     <motion.div
@@ -38,7 +40,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-6 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
     >
       <h2 className="text-2xl md:text-3xl font-bold text-center">{step.question}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -60,7 +62,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
                 hasAnswered && isTheCorrectAnswer && "bg-green-500/50 border-green-500 text-foreground"
               )}
               onClick={() => onSelectAnswer(option)}
-              disabled={hasAnswered}
+              disabled={isCompleteAndCorrect}
             >
               {option}
             </Button>

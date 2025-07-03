@@ -23,7 +23,7 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 text-center"
+      className="space-y-6 text-center bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
     >
       <div className="text-2xl md:text-3xl font-bold">
         <span>{parts[0]}</span>
@@ -34,8 +34,8 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
           className={cn(
             "inline-block w-48 text-2xl font-bold text-center mx-2 bg-muted/50 border-border/50 h-12",
             hasAnswered && "border-2",
-            hasAnswered && isCorrect && "border-green-500",
-            hasAnswered && !isCorrect && "border-destructive animate-shake"
+            hasAnswered && isCorrect === true && "border-green-500",
+            hasAnswered && isCorrect === false && "border-destructive animate-shake"
           )}
           autoFocus
           disabled={hasAnswered && isCorrect === true}

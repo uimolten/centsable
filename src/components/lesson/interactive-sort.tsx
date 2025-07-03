@@ -114,13 +114,15 @@ export function InteractiveSort({ step, onComplete, incorrectAttempts, hasAnswer
   };
   
   useEffect(() => {
-    if (hasAnswered) return;
+    if (hasAnswered && !isCorrect) return; // Stop checking if already answered incorrectly
+    if (isCompleteAndCorrect) return;
+
     const unplacedItems = items.filter(i => i.location === 'pool');
     if (items.length > 0 && unplacedItems.length === 0) {
       const isCorrect = items.every(item => item.location === item.correctBox);
       onComplete(isCorrect);
     }
-  }, [items, onComplete, hasAnswered, items.length]);
+  }, [items, onComplete, hasAnswered, isCorrect, isCompleteAndCorrect, step.items]);
   
   useEffect(() => {
     if (incorrectAttempts >= 3 && !hintShown) {
@@ -146,7 +148,7 @@ export function InteractiveSort({ step, onComplete, incorrectAttempts, hasAnswer
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="space-y-4"
+        className="space-y-4 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-center">{step.instructions}</h2>
         
