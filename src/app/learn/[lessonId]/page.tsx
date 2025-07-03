@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { isEqual, shuffle } from 'lodash';
@@ -76,10 +76,6 @@ export default function LessonPage() {
     }
   };
   
-  const handleLessonComplete = () => {
-    router.push(`/learn?completed=${lessonId}`);
-  };
-
   const handleInteractiveComplete = (correct: boolean) => {
     setHasAnswered(true);
     setIsCorrect(correct);
@@ -88,7 +84,7 @@ export default function LessonPage() {
     }
   };
   
-  const goToNextStep = () => {
+  const goToNextStep = useCallback(() => {
      setCompletedSteps(prev => prev + 1);
 
       if (stepIndex < currentModule.steps.length - 1) {
@@ -103,11 +99,23 @@ export default function LessonPage() {
       setUserAnswers([]);
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
-  }
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex]);
 
-  const handleFooterAction = () => {
+  const handleLessonComplete = useCallback(() => {
+    router.push(`/learn?completed=${lessonId}`);
+  }, [lessonId, router]);
+
+  const handleFooterAction = useCallback(() => {
     const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario' || currentStep.type === 'complete';
     
+    // Replicate button disabled logic to prevent Enter key from acting when button is disabled
+    const isCheckButton = !(isStepWithoutCheck || (hasAnswered && isCorrect) || (hasAnswered && isCorrect === false));
+    const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank') && (userAnswers.length === 0 || (userAnswers.length > 0 && userAnswers[0] === ''));
+
+    if (isCheckButton && isAnswerEmpty) {
+      return;
+    }
+
     // Case 1: Continue button is displayed (answer correct, or step doesn't need checking)
     if (isStepWithoutCheck || (hasAnswered && isCorrect)) {
       if (currentStep.type === 'complete') {
@@ -124,12 +132,9 @@ export default function LessonPage() {
       setIsCorrect(null);
       setIncorrectAttempts(prev => prev + 1);
       
-      // For fill-in-the-blank, we don't clear the answer so user can edit.
-      // For others, we reset.
       if (currentStep.type !== 'fill-in-the-blank') {
           setUserAnswers([]);
       }
-      // Re-render interactive components to reset their internal state
       if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
           setTryAgainCounter(count => count + 1);
       }
@@ -159,7 +164,23 @@ export default function LessonPage() {
         setIncorrectAttempts(prev => prev + 1);
       }
     }
-  };
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, handleLessonComplete]);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Stop default behavior like form submission
+        handleFooterAction();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleFooterAction]);
+
 
   const renderStep = (step: Step) => {
     const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;

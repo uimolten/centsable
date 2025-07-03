@@ -12,6 +12,7 @@ export const lessonSaving1: Lesson = {
           type: 'intro',
           text: "Welcome to your first quest! ⚔️ Let's talk about a real-life superpower: saving money.",
           mascotImage: 'https://placehold.co/400x400',
+          imageHint: 'friendly mascot',
         },
         {
           type: 'concept',
@@ -48,7 +49,7 @@ export const lessonSaving1: Lesson = {
         {
           type: 'multiple-choice',
           question: 'Which of these is a financial goal?',
-          options: ['Saving for a new gaming console', 'Watching a movie', 'Doing homework'],
+          options: ['Saving for a new gaming console', 'Watching a movie', 'Doing homework', 'Taking a nap'],
           correctAnswer: 'Saving for a new gaming console',
           reinforcement: "You got it! That's a goal.",
         },
@@ -129,7 +130,7 @@ export const lessonSaving1: Lesson = {
         {
           type: 'multiple-choice',
           question: "You really want a new video game that costs $60. What's the smartest thing to do with the $8?",
-          options: ['Spend it on snacks', 'Save it for the game', 'Leave it in your pocket'],
+          options: ['Spend it on snacks', 'Save it for the game', 'Leave it in your pocket', 'Buy a lottery ticket'],
           correctAnswer: 'Save it for the game',
         },
         {
