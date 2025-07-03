@@ -21,6 +21,8 @@ export interface IntroStep extends BaseStep {
 
 export interface ConceptStep extends BaseStep {
   type: 'concept';
+  image?: string;
+  imageHint?: string;
 }
 
 export interface FillInTheBlankStep extends BaseStep {
@@ -34,7 +36,7 @@ export interface MultipleChoiceStep extends BaseStep {
   type: 'multiple-choice';
   question: string;
   options: string[];
-  correctAnswer: string;
+  correctAnswer: string | string[];
   reinforcement?: string;
 }
 
@@ -60,6 +62,8 @@ export interface InteractiveSortStep extends BaseStep {
 
 export interface ScenarioStep extends BaseStep {
     type: 'scenario';
+    image?: string;
+    imageHint?: string;
 }
 
 export interface CompleteStep extends BaseStep {

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { AnswerFeedback } from './answer-feedback';
 
@@ -16,7 +16,6 @@ interface LessonContainerProps {
   isCheckDisabled: boolean;
   isContinuable: boolean;
   onCheck: () => void;
-  onContinue: () => void;
 }
 
 export function LessonContainer({
@@ -27,15 +26,22 @@ export function LessonContainer({
   isCheckDisabled,
   isContinuable,
   onCheck,
-  onContinue
 }: LessonContainerProps) {
   const router = useRouter();
 
   const getButtonText = () => {
-    if(isContinuable) return "Continue";
-    if (hasAnswered && isCorrect) return "Continue";
-    if (hasAnswered && !isCorrect) return "Try Again";
+    if (isContinuable && hasAnswered && isCorrect !== false) return "Continue";
+    if (hasAnswered && isCorrect === false) return "Try Again";
+    if (
+        isContinuable &&
+        !hasAnswered &&
+        isCorrect === null
+    ) return "Continue";
     return "Check";
+  }
+
+  const handleButtonClick = () => {
+    onCheck();
   }
 
   return (
@@ -57,14 +63,17 @@ export function LessonContainer({
 
       <footer className="flex-shrink-0 border-t border-border/10 relative overflow-hidden">
         <AnimatePresence>
-            {hasAnswered && <AnswerFeedback isCorrect={isCorrect ?? false} />}
+            {hasAnswered && isCorrect !== null && <AnswerFeedback isCorrect={isCorrect} />}
         </AnimatePresence>
         <div className="container mx-auto p-4 flex justify-end h-24 items-center">
             <Button
                 size="lg"
-                className="text-lg font-bold min-w-[150px] shadow-glow"
-                onClick={onCheck}
-                disabled={isCheckDisabled}
+                className={cn(
+                  "text-lg font-bold min-w-[150px]",
+                  isCorrect ? "shadow-glow" : ""
+                )}
+                onClick={handleButtonClick}
+                disabled={isCheckDisabled && !isContinuable}
             >
                 {getButtonText()}
             </Button>

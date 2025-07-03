@@ -26,13 +26,16 @@ export function TapThePairs({ step, onComplete }: TapThePairsProps) {
   }, [step]);
   
   useEffect(() => {
-    if (matchedPairs.length === step.pairs.length) {
+    if (matchedPairs.length > 0 && matchedPairs.length === step.pairs.length) {
       onComplete();
     }
   }, [matchedPairs, step.pairs.length, onComplete]);
 
   const handleItemClick = (item: Item) => {
-    if (matchedPairs.includes(item.pairId)) return;
+    if (matchedPairs.includes(item.pairId) || item.id === selectedItem?.id) {
+      setSelectedItem(null);
+      return;
+    };
 
     if (!selectedItem) {
       setSelectedItem(item);
@@ -42,8 +45,13 @@ export function TapThePairs({ step, onComplete }: TapThePairsProps) {
         setMatchedPairs([...matchedPairs, item.pairId]);
         setSelectedItem(null);
       } else {
-        // Not a match
-        setSelectedItem(null); // Just deselect, can add feedback later
+        // Not a match, create shake effect on selected item then deselect
+        const selectedButton = document.getElementById(`pair-item-${selectedItem.id}`);
+        selectedButton?.classList.add('animate-shake');
+        setTimeout(() => {
+            selectedButton?.classList.remove('animate-shake');
+            setSelectedItem(null);
+        }, 820);
       }
     }
   };
@@ -61,13 +69,14 @@ export function TapThePairs({ step, onComplete }: TapThePairsProps) {
       <div className="grid grid-cols-2 gap-4">
         {items.map((item) => (
           <Button
+            id={`pair-item-${item.id}`}
             key={item.id}
             variant="outline"
             size="lg"
             className={cn(
-              "text-lg h-auto py-4 min-h-[80px] whitespace-normal",
-              selectedItem?.id === item.id && "bg-accent",
-              matchedPairs.includes(item.pairId) && "opacity-25 !bg-transparent"
+              "text-lg h-auto py-4 min-h-[80px] whitespace-normal transition-all duration-300",
+              selectedItem?.id === item.id && "bg-accent ring-2 ring-primary",
+              matchedPairs.includes(item.pairId) && "opacity-25 !bg-green-500/30 border-green-500"
             )}
             onClick={() => handleItemClick(item)}
             disabled={matchedPairs.includes(item.pairId)}

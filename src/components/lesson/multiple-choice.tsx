@@ -5,16 +5,16 @@ import type { MultipleChoiceStep } from '@/types/lesson';
 
 interface MultipleChoiceProps {
   step: MultipleChoiceStep;
-  userAnswer: string | null;
+  userAnswers: string[];
   onSelectAnswer: (answer: string) => void;
   hasAnswered: boolean;
   isCorrect: boolean | null;
 }
 
-export function MultipleChoice({ step, userAnswer, onSelectAnswer, hasAnswered, isCorrect }: MultipleChoiceProps) {
+export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered, isCorrect }: MultipleChoiceProps) {
   return (
     <motion.div
-      key="multiple-choice"
+      key={step.question}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -24,8 +24,10 @@ export function MultipleChoice({ step, userAnswer, onSelectAnswer, hasAnswered, 
       <h2 className="text-2xl md:text-3xl font-bold text-center">{step.question}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {step.options.map((option, index) => {
-          const isSelected = userAnswer === option;
-          const isTheCorrectAnswer = step.correctAnswer === option;
+          const isSelected = userAnswers.includes(option);
+          const isTheCorrectAnswer = Array.isArray(step.correctAnswer)
+            ? step.correctAnswer.includes(option)
+            : step.correctAnswer === option;
 
           return (
             <Button

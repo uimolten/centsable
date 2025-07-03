@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
+import { isEqual } from 'lodash';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1'; // Static import for now
 import { LessonContainer } from '@/components/lesson/lesson-container';
@@ -13,7 +14,7 @@ import { ConceptCard } from '@/components/lesson/concept-card';
 import { FillInTheBlank } from '@/components/lesson/fill-in-the-blank';
 import { TapThePairs } from '@/components/lesson/tap-the-pairs';
 import { InteractiveSort } from '@/components/lesson/interactive-sort';
-import type { Step } from '@/types/lesson';
+import type { Step, MultipleChoiceStep } from '@/types/lesson';
 
 // In a real app, you'd have a loader to fetch the correct lesson
 const getLessonData = (lessonId: string) => {
@@ -29,7 +30,7 @@ export default function LessonPage() {
 
   const [moduleIndex, setModuleIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState<string | null>(null);
+  const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [totalSteps, setTotalSteps] = useState(0);
@@ -52,7 +53,24 @@ export default function LessonPage() {
 
   const handleSelectAnswer = (answer: string) => {
     if (hasAnswered) return;
-    setUserAnswer(answer);
+
+    if (currentStep.type === 'multiple-choice') {
+      const step = currentStep as MultipleChoiceStep;
+      const isMultiSelect = Array.isArray(step.correctAnswer);
+      
+      if (isMultiSelect) {
+        setUserAnswers(prev => 
+          prev.includes(answer) 
+            ? prev.filter(a => a !== answer) 
+            : [...prev, answer]
+        );
+      } else {
+        setUserAnswers([answer]);
+      }
+    } else {
+      // For fill-in-the-blank
+      setUserAnswers([answer]);
+    }
   };
 
   const handleCheckAnswer = () => {
@@ -66,8 +84,17 @@ export default function LessonPage() {
 
     switch (currentStep.type) {
       case 'multiple-choice':
+        const mcStep = currentStep as MultipleChoiceStep;
+        if (Array.isArray(mcStep.correctAnswer)) {
+            // Multi-select: check if arrays are equal regardless of order
+            correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
+        } else {
+            // Single-select
+            correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+        }
+        break;
       case 'fill-in-the-blank':
-        correct = userAnswer?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
+        correct = userAnswers[0]?.trim().toLowerCase() === currentStep.correctAnswer.toLowerCase();
         break;
       // For types without a check, we just advance
       default:
@@ -76,16 +103,13 @@ export default function LessonPage() {
     }
     
     setIsCorrect(correct);
-    if (!correct) {
-      // Logic for incorrect answer (e.g., shake animation, sound effect)
-    }
   };
 
   const handleContinue = () => {
-    if (isCorrect === false) { // Allow retry on incorrect answer
+    if (isCorrect === false && !isContinuable()) {
       setHasAnswered(false);
       setIsCorrect(null);
-      setUserAnswer(null);
+      setUserAnswers([]);
       return;
     }
 
@@ -96,20 +120,25 @@ export default function LessonPage() {
     } else if (moduleIndex < lesson.modules.length - 1) {
       setModuleIndex(moduleIndex + 1);
       setStepIndex(0);
-    } else {
-      // Lesson is complete, but we handle this via the 'complete' step type
-      // so this case might not be hit if the last step is 'complete'
-      console.log('Lesson finished');
     }
 
     // Reset for next step
     setHasAnswered(false);
     setIsCorrect(null);
-    setUserAnswer(null);
+    setUserAnswers([]);
   };
 
   const handleLessonComplete = () => {
     router.push(`/learn?completed=${lessonId}`);
+  }
+
+  const isContinuable = () => {
+     return currentStep.type === 'intro' ||
+        currentStep.type === 'concept' ||
+        currentStep.type === 'scenario' ||
+        (hasAnswered && isCorrect) ||
+        (currentStep.type === 'tap-the-pairs' && hasAnswered) || // simplified for now
+        (currentStep.type === 'interactive-sort' && hasAnswered)
   }
 
   const renderStep = (step: Step) => {
@@ -120,15 +149,13 @@ export default function LessonPage() {
       case 'scenario':
         return <ConceptCard step={step} />;
       case 'multiple-choice':
-        return <MultipleChoice step={step} onSelectAnswer={handleSelectAnswer} userAnswer={userAnswer} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
+        return <MultipleChoice step={step} onSelectAnswer={handleSelectAnswer} userAnswers={userAnswers} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
        case 'fill-in-the-blank':
-        return <FillInTheBlank step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswer ?? ''} />;
+        return <FillInTheBlank step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} />;
       case 'tap-the-pairs':
-        // These more complex components would need state management for completion
-        // For now, they will just display and continue
-        return <TapThePairs step={step} onComplete={() => setUserAnswer('completed')} />;
+        return <TapThePairs step={step} onComplete={() => setHasAnswered(true)} />;
       case 'interactive-sort':
-        return <InteractiveSort step={step} onComplete={() => setUserAnswer('completed')} />;
+        return <InteractiveSort step={step} onComplete={() => setHasAnswered(true)} />;
        case 'complete':
         return <LessonComplete step={step} onContinue={handleLessonComplete} />;
       default:
@@ -138,7 +165,7 @@ export default function LessonPage() {
   
   const isCheckDisabled = () => {
     if (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank') {
-        return !userAnswer;
+        return userAnswers.length === 0;
     }
     return false;
   }
@@ -147,17 +174,10 @@ export default function LessonPage() {
     <LessonContainer
       progress={progress}
       onCheck={handleCheckAnswer}
-      onContinue={handleContinue}
       isCorrect={isCorrect}
       hasAnswered={hasAnswered}
       isCheckDisabled={isCheckDisabled()}
-      isContinuable={
-        currentStep.type === 'intro' ||
-        currentStep.type === 'concept' ||
-        currentStep.type === 'scenario' ||
-        currentStep.type === 'tap-the-pairs' || // simplified for now
-        currentStep.type === 'interactive-sort' // simplified for now
-      }
+      isContinuable={isContinuable()}
     >
       <AnimatePresence mode="wait">
         {renderStep(currentStep)}
