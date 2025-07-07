@@ -1,3 +1,4 @@
+
 export type StepType =
   | 'intro'
   | 'concept'
@@ -6,6 +7,8 @@ export type StepType =
   | 'tap-the-pairs'
   | 'interactive-sort'
   | 'scenario'
+  | 'goal-builder'
+  | 'goal-summary'
   | 'complete';
 
 interface BaseStep {
@@ -17,12 +20,14 @@ interface BaseStep {
 
 export interface IntroStep extends BaseStep {
   type: 'intro';
+  imageHint?: string; // image hint was missing
 }
 
 export interface ConceptStep extends BaseStep {
   type: 'concept';
   image?: string;
   imageHint?: string;
+  icon?: 'search' | 'tag' | 'thumbs-up' | 'heart' | 'calendar';
 }
 
 export interface FillInTheBlankStep extends BaseStep {
@@ -66,6 +71,22 @@ export interface ScenarioStep extends BaseStep {
     imageHint?: string;
 }
 
+export type GoalBuilderInputType = 'text' | 'number' | 'date';
+
+export interface GoalBuilderStep extends BaseStep {
+  type: 'goal-builder';
+  instructions: string;
+  inputType: GoalBuilderInputType;
+  placeholder?: string;
+  dateOptions?: { label: string; value: string }[];
+  storageKey: string;
+}
+
+export interface GoalSummaryStep extends BaseStep {
+  type: 'goal-summary';
+  textTemplate: string;
+}
+
 export interface CompleteStep extends BaseStep {
   type: 'complete';
   rewards: {
@@ -82,6 +103,8 @@ export type Step =
   | TapThePairsStep
   | InteractiveSortStep
   | ScenarioStep
+  | GoalBuilderStep
+  | GoalSummaryStep
   | CompleteStep;
 
 export interface Module {

@@ -7,6 +7,7 @@ import { AnimatePresence } from 'framer-motion';
 import { isEqual } from 'lodash';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
+import { lessonSaving2 } from '@/data/lesson-saving-2';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -15,65 +16,60 @@ import { ConceptCard } from '@/components/lesson/concept-card';
 import { FillInTheBlank } from '@/components/lesson/fill-in-the-blank';
 import { TapThePairs } from '@/components/lesson/tap-the-pairs';
 import { InteractiveSort } from '@/components/lesson/interactive-sort';
-import type { Step, MultipleChoiceStep, FillInTheBlankStep } from '@/types/lesson';
+import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goal-builder-step';
+import { GoalSummary } from '@/components/lesson/goal-summary';
+
+import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep } from '@/types/lesson';
 
 const getLessonData = (lessonId: string) => {
   if (lessonId === 's1') return lessonSaving1;
+  if (lessonId === 's2') return lessonSaving2;
   return null;
 };
 
 const isAnswerSimilar = (userAnswer: string, correctAnswer: string): boolean => {
   const formattedUserAnswer = userAnswer.trim().toLowerCase();
-  const formattedCorrectAnswer = correctAnswer.trim().toLowerCase();
+  
+  // Split correct answer by potential separators and trim
+  const correctAnswers = correctAnswer.toLowerCase().split(/(\/|,| or )/).map(s => s.trim()).filter(Boolean);
 
-  // 1. Exact match
-  if (formattedUserAnswer === formattedCorrectAnswer) {
-    return true;
-  }
-
-  // 2. Check for plural/singular forms (simple version)
-  if (
-    formattedUserAnswer === `${formattedCorrectAnswer}s` || 
-    formattedCorrectAnswer === `${formattedUserAnswer}s`
-  ) {
-    return true;
+  // 1. Exact match with any of the possibilities
+  if (correctAnswers.includes(formattedUserAnswer)) {
+      return true;
   }
   
-  // 3. Levenshtein distance for typos
-  const levenshtein = (a: string, b: string): number => {
-    const an = a.length;
-    const bn = b.length;
-    if (an === 0) return bn;
-    if (bn === 0) return an;
-    const matrix = new Array(bn + 1);
-    for (let i = 0; i <= bn; ++i) {
-      matrix[i] = new Array(an + 1);
+  // Check for plural/singular forms and small typos against each correct answer
+  return correctAnswers.some(correct => {
+    if (
+        formattedUserAnswer === `${correct}s` ||
+        correct === `${formattedUserAnswer}s`
+    ) {
+        return true;
     }
-    for (let i = 0; i <= bn; ++i) {
-      matrix[i][0] = i;
-    }
-    for (let j = 0; j <= an; ++j) {
-      matrix[0][j] = j;
-    }
-    for (let i = 1; i <= bn; ++i) {
-      for (let j = 1; j <= an; ++j) {
-        const cost = a[j - 1] === b[i - 1] ? 0 : 1;
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j] + 1, // deletion
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j - 1] + cost // substitution
-        );
+    
+    const levenshtein = (a: string, b: string): number => {
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      const matrix = Array.from(Array(a.length + 1), () => Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i++) { matrix[i][0] = i; }
+      for (let j = 0; j <= b.length; j++) { matrix[0][j] = j; }
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
       }
-    }
-    return matrix[bn][an];
-  };
+      return matrix[a.length][b.length];
+    };
 
-  const distance = levenshtein(formattedUserAnswer, formattedCorrectAnswer);
-
-  // Allow 1 error for words up to 7 chars, 2 for longer ones.
-  const threshold = formattedCorrectAnswer.length > 7 ? 2 : 1;
-
-  return distance <= threshold;
+    const distance = levenshtein(formattedUserAnswer, correct);
+    const threshold = correct.length > 7 ? 2 : 1;
+    return distance <= threshold;
+  });
 };
 
 
@@ -92,6 +88,8 @@ export default function LessonPage() {
   const [completedSteps, setCompletedSteps] = useState(0);
   const [tryAgainCounter, setTryAgainCounter] = useState(0);
   const [incorrectAttempts, setIncorrectAttempts] = useState(0);
+  const [goalData, setGoalData] = useState<Record<string, string | number>>({});
+
 
   useEffect(() => {
     if (lesson) {
@@ -163,12 +161,13 @@ export default function LessonPage() {
   }, [lessonId, router]);
 
   const handleFooterAction = useCallback(() => {
-    const isStepWithoutCheck = currentStep.type === 'intro' || currentStep.type === 'concept' || currentStep.type === 'scenario' || currentStep.type === 'complete';
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
     
-    // Replicate button disabled logic to prevent Enter key from acting when button is disabled
-    const isCheckButton = !(isStepWithoutCheck || (hasAnswered && isCorrect) || (hasAnswered && isCorrect === false));
-    const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank') && (userAnswers.length === 0 || (userAnswers.length > 0 && userAnswers[0] === ''));
+    const isGoalBuilderStep = currentStep.type === 'goal-builder';
 
+    const isCheckButton = !(isStepWithoutCheck || isGoalBuilderStep || (hasAnswered && isCorrect) || (hasAnswered && isCorrect === false));
+    const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank' || currentStep.type === 'goal-builder') && (userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === ''));
+    
     if (isCheckButton && isAnswerEmpty) {
       return;
     }
@@ -176,10 +175,14 @@ export default function LessonPage() {
     const isInteractiveCorrect = (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') && hasAnswered && isCorrect;
 
     // Case 1: Continue button is displayed (answer correct, or step doesn't need checking)
-    if (isStepWithoutCheck || (hasAnswered && isCorrect) || isInteractiveCorrect) {
+    if (isStepWithoutCheck || isGoalBuilderStep || (hasAnswered && isCorrect) || isInteractiveCorrect) {
       if (currentStep.type === 'complete') {
         handleLessonComplete();
       } else {
+        if(isGoalBuilderStep) {
+            const step = currentStep as GoalBuilderStep;
+            setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
+        }
         goToNextStep();
       }
       return;
@@ -190,11 +193,10 @@ export default function LessonPage() {
         setIncorrectAttempts(prev => prev + 1);
         
         if (currentStep.type === 'fill-in-the-blank') {
-            // Re-check the current answer. The input is not disabled, so user can edit.
             const correct = isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
             setIsCorrect(correct);
+            if(correct) setIncorrectAttempts(0);
         } else {
-            // For other types, reset the state to allow a new attempt.
             setHasAnswered(false);
             setIsCorrect(null);
             setUserAnswers([]);
@@ -232,8 +234,8 @@ export default function LessonPage() {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        event.preventDefault(); // Stop default behavior like form submission
+      if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
+        event.preventDefault(); 
         handleFooterAction();
       }
     };
@@ -262,6 +264,10 @@ export default function LessonPage() {
         return <TapThePairs key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
       case 'interactive-sort':
         return <InteractiveSort key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
+      case 'goal-builder':
+        return <GoalBuilderComponent key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} />;
+      case 'goal-summary':
+        return <GoalSummary key={uniqueKey} step={step} goalData={goalData} />;
        case 'complete':
         return <LessonComplete key={uniqueKey} step={step} onContinue={handleLessonComplete} />;
       default:

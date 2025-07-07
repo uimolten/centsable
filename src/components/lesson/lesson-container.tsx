@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -32,14 +33,14 @@ export function LessonContainer({
 
   const getButtonText = () => {
     const stepType = currentStep.type;
-    const isStepWithoutCheck = stepType === 'intro' || stepType === 'concept' || stepType === 'scenario' || stepType === 'complete';
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(stepType);
     const isInteractiveComplete = (stepType === 'tap-the-pairs' || stepType === 'interactive-sort') && hasAnswered;
     
     if (hasAnswered && isCorrect === false) {
       return "Try Again";
     }
 
-    if (isStepWithoutCheck || isInteractiveComplete || (hasAnswered && isCorrect)) {
+    if (isStepWithoutCheck || stepType === 'goal-builder' || isInteractiveComplete || (hasAnswered && isCorrect)) {
       return "Continue";
     }
 
@@ -48,15 +49,15 @@ export function LessonContainer({
   
   const isCheckDisabled = () => {
     const stepType = currentStep.type;
-    if (stepType === 'multiple-choice' || stepType === 'fill-in-the-blank') {
-        return userAnswers.length === 0 || (userAnswers.length > 0 && userAnswers[0] === '');
+    if (stepType === 'multiple-choice' || stepType === 'fill-in-the-blank' || stepType === 'goal-builder') {
+        return userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
     }
     return false;
   }
 
   const isButtonDisabled = () => {
     const buttonText = getButtonText();
-    if (buttonText === 'Check') {
+    if (buttonText === 'Check' || buttonText === 'Continue') {
         return isCheckDisabled();
     }
     return false;
@@ -66,7 +67,6 @@ export function LessonContainer({
     <div className="relative flex flex-col h-screen bg-background overflow-hidden">
       <AnimatedBackground />
 
-      {/* Decorative Icons for fun! */}
       <Gem className="absolute top-[15%] left-[5%] h-12 w-12 md:h-16 md:w-16 text-primary/10 rotate-12 opacity-50" />
       <Star className="absolute top-[20%] right-[8%] h-8 w-8 md:h-12 md:w-12 text-yellow-400/10 -rotate-12 opacity-50" />
       <PiggyBank className="absolute bottom-[25%] left-[10%] h-16 w-16 md:h-20 md:w-20 text-pink-400/10 rotate-[15deg] opacity-50" />
@@ -83,7 +83,7 @@ export function LessonContainer({
         </header>
 
         <main className="flex-grow flex items-center justify-center overflow-y-auto p-4">
-          <div className="w-full max-w-2xl">
+          <div className="w-full max-w-3xl">
               {children}
           </div>
         </main>
@@ -95,7 +95,7 @@ export function LessonContainer({
             : ''
         )}>
           <div className="container mx-auto p-4 flex justify-between h-24 items-center">
-              <div>
+              <div className="flex-1">
                   <AnimatePresence>
                       {hasAnswered && isCorrect !== null && (
                       <motion.div
@@ -116,13 +116,14 @@ export function LessonContainer({
                   </AnimatePresence>
               </div>
             
-              <div>
+              <div className="flex-shrink-0">
                   <Button
                       size="lg"
                       className={cn(
                           "text-lg font-bold min-w-[150px]",
-                          (hasAnswered && isCorrect) ? "shadow-glow bg-green-500/80 hover:bg-green-500 text-foreground" : "",
-                          (hasAnswered && isCorrect === false) ? "bg-red-500/80 hover:bg-red-500 text-foreground" : ""
+                          (hasAnswered && isCorrect) && "shadow-glow bg-green-500/80 hover:bg-green-500 text-foreground",
+                          (hasAnswered && isCorrect === false) && "bg-red-500/80 hover:bg-red-500 text-foreground",
+                           (currentStep.type === 'goal-builder') && "shadow-glow"
                       )}
                       onClick={onAction}
                       disabled={isButtonDisabled()}
