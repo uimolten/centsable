@@ -20,7 +20,7 @@ interface BaseStep {
 
 export interface IntroStep extends BaseStep {
   type: 'intro';
-  imageHint?: string; // image hint was missing
+  imageHint?: string;
 }
 
 export interface ConceptStep extends BaseStep {
@@ -37,11 +37,18 @@ export interface FillInTheBlankStep extends BaseStep {
   reinforcement: string;
 }
 
+export interface MultipleChoiceOption {
+  id: string;
+  text?: string;
+  image?: string;
+  imageHint?: string;
+}
+
 export interface MultipleChoiceStep extends BaseStep {
   type: 'multiple-choice';
   question: string;
-  options: string[];
-  correctAnswer: string | string[];
+  options: MultipleChoiceOption[];
+  correctAnswer: string | string[]; // Now refers to option IDs
   reinforcement?: string;
 }
 

@@ -4,10 +4,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { isEqual } from 'lodash';
+import { isEqual, shuffle } from 'lodash';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
+import { lessonSaving3 } from '@/data/lesson-saving-3';
+import { lessonSaving4 } from '@/data/lesson-saving-4';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -19,11 +21,13 @@ import { InteractiveSort } from '@/components/lesson/interactive-sort';
 import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goal-builder-step';
 import { GoalSummary } from '@/components/lesson/goal-summary';
 
-import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep } from '@/types/lesson';
+import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson } from '@/types/lesson';
 
-const getLessonData = (lessonId: string) => {
+const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 's1') return lessonSaving1;
   if (lessonId === 's2') return lessonSaving2;
+  if (lessonId === 's3') return lessonSaving3;
+  if (lessonId === 's4') return lessonSaving4;
   return null;
 };
 

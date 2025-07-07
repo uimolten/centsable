@@ -1,3 +1,4 @@
+
 import type { Lesson } from '@/types/lesson';
 
 export const lessonSaving1: Lesson = {
@@ -49,8 +50,13 @@ export const lessonSaving1: Lesson = {
         {
           type: 'multiple-choice',
           question: 'Which of these is a financial goal?',
-          options: ['Saving for a new gaming console', 'Watching a movie', 'Doing homework', 'Taking a nap'],
-          correctAnswer: 'Saving for a new gaming console',
+          options: [
+            { id: 'opt1', text: 'Saving for a new gaming console' },
+            { id: 'opt2', text: 'Watching a movie' },
+            { id: 'opt3', text: 'Doing homework' },
+            { id: 'opt4', text: 'Taking a nap' },
+          ],
+          correctAnswer: 'opt1',
           reinforcement: "You got it! That's a goal.",
         },
         {
@@ -92,15 +98,25 @@ export const lessonSaving1: Lesson = {
         {
           type: 'multiple-choice',
           question: 'Tap all the Needs.',
-          options: ['🍕 Pizza', '💧 Water', '📱 New Phone Case', '🏠 Shelter'],
-          correctAnswer: ['💧 Water', '🏠 Shelter'],
+          options: [
+            { id: 'opt1', text: '🍕 Pizza' },
+            { id: 'opt2', text: '💧 Water' },
+            { id: 'opt3', text: '📱 New Phone Case' },
+            { id: 'opt4', text: '🏠 Shelter' },
+          ],
+          correctAnswer: ['opt2', 'opt4'],
           reinforcement: 'Great job! Those are essential.',
         },
         {
           type: 'multiple-choice',
           question: 'Now, tap all the Wants.',
-          options: ['🥤 Boba Tea', '👟 Rare Sneakers', '🍎 An Apple', '🎮 A Video Game'],
-          correctAnswer: ['🥤 Boba Tea', '👟 Rare Sneakers', '🎮 A Video Game'],
+          options: [
+            { id: 'opt1', text: '🥤 Boba Tea' },
+            { id: 'opt2', text: '👟 Rare Sneakers' },
+            { id: 'opt3', text: '🍎 An Apple' },
+            { id: 'opt4', text: '🎮 A Video Game' },
+          ],
+          correctAnswer: ['opt1', 'opt2', 'opt4'],
         },
         {
           type: 'concept',
@@ -119,8 +135,11 @@ export const lessonSaving1: Lesson = {
         {
           type: 'multiple-choice',
           question: 'Which one is the Need?',
-          options: ['The soda', 'The phone bill'],
-          correctAnswer: 'The phone bill',
+          options: [
+            { id: 'opt1', text: 'The soda' },
+            { id: 'opt2', text: 'The phone bill' },
+          ],
+          correctAnswer: 'opt2',
           reinforcement: "Correct! That's a responsibility.",
         },
         {
@@ -130,8 +149,13 @@ export const lessonSaving1: Lesson = {
         {
           type: 'multiple-choice',
           question: "You really want a new video game that costs $60. What's the smartest thing to do with the $8?",
-          options: ['Spend it on snacks', 'Save it for the game', 'Leave it in your pocket', 'Buy a lottery ticket'],
-          correctAnswer: 'Save it for the game',
+          options: [
+            { id: 'opt1', text: 'Spend it on snacks' },
+            { id: 'opt2', text: 'Save it for the game' },
+            { id: 'opt3', text: 'Leave it in your pocket' },
+            { id: 'opt4', text: 'Buy a lottery ticket' },
+          ],
+          correctAnswer: 'opt2',
         },
         {
           type: 'concept',

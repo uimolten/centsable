@@ -22,8 +22,11 @@ export const lessonSaving2: Lesson = {
         {
           type: 'multiple-choice',
           question: 'Which one is a real goal?',
-          options: ['I want to be rich.', 'I will save $50 for concert tickets by next month.'],
-          correctAnswer: 'I will save $50 for concert tickets by next month.',
+          options: [
+            { id: 'opt1', text: 'I want to be rich.' },
+            { id: 'opt2', text: 'I will save $50 for concert tickets by next month.' },
+          ],
+          correctAnswer: 'opt2',
           reinforcement: 'Exactly! A real goal has details.',
         },
         {
@@ -44,8 +47,11 @@ export const lessonSaving2: Lesson = {
         {
           type: 'multiple-choice',
           question: 'Which goal is more Specific?',
-          options: ['Saving for new shoes.', 'Saving for the new Air Jordan 1s.'],
-          correctAnswer: 'Saving for the new Air Jordan 1s.',
+          options: [
+            { id: 'opt1', text: 'Saving for new shoes.' },
+            { id: 'opt2', text: 'Saving for the new Air Jordan 1s.' },
+          ],
+          correctAnswer: 'opt2',
           reinforcement: 'Perfect! Details matter.',
         },
         {
@@ -67,8 +73,11 @@ export const lessonSaving2: Lesson = {
         {
           type: 'multiple-choice',
           question: 'If you get $20 allowance a week, which goal is more Achievable in one month?',
-          options: ['Saving for a $5,000 trip.', 'Saving for a $70 video game.'],
-          correctAnswer: 'Saving for a $70 video game.',
+          options: [
+            { id: 'opt1', text: 'Saving for a $5,000 trip.' },
+            { id: 'opt2', text: 'Saving for a $70 video game.' },
+          ],
+          correctAnswer: 'opt2',
           reinforcement: "Right! Start with what's possible.",
         },
         {
@@ -144,13 +153,17 @@ export const lessonSaving2: Lesson = {
         {
           type: 'multiple-choice',
           question: "What's missing from their goal?",
-          options: ["It's not Specific.", "It's not Measurable.", "It's not Relevant."],
-          correctAnswer: "It's not Measurable.",
+          options: [
+            { id: 'opt1', text: "It's not Specific." },
+            { id: 'opt2', text: "It's not Measurable." },
+            { id: 'opt3', text: "It's not Relevant." },
+          ],
+          correctAnswer: 'opt2',
           reinforcement: "Exactly! We don't know how much the laptop costs.",
         },
         {
           type: 'concept',
-          text: 'Without a target amount, it\'s hard to know how much to save each week. A good goal is a clear map to success!',
+          text: "Without a target amount, it's hard to know how much to save each week. A good goal is a clear map to success!",
         },
         {
           type: 'complete',
