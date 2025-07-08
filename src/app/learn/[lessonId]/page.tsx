@@ -288,8 +288,7 @@ export default function LessonPage() {
   const renderStepContent = (step: Step) => {
     const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
     const stepProps = {
-      key: uniqueKey,
-      step: step as any, // Cast to any to avoid TS errors with varied props
+      step: step as any,
       userAnswers,
       onSelectAnswer: handleSelectAnswer,
       hasAnswered,
@@ -303,16 +302,16 @@ export default function LessonPage() {
     };
   
     switch (step.type) {
-      case 'intro': return <IntroCard {...stepProps} />;
+      case 'intro': return <IntroCard key={uniqueKey} {...stepProps} />;
       case 'concept':
-      case 'scenario': return <ConceptCard {...stepProps} />;
-      case 'multiple-choice': return <MultipleChoice {...stepProps} />;
-      case 'fill-in-the-blank': return <FillInTheBlank {...stepProps} />;
-      case 'tap-the-pairs': return <TapThePairs {...stepProps} />;
-      case 'interactive-sort': return <InteractiveSort {...stepProps} />;
-      case 'goal-builder': return <GoalBuilderComponent {...stepProps} />;
-      case 'goal-summary': return <GoalSummary {...stepProps} />;
-      case 'complete': return <LessonComplete {...stepProps} onContinue={handleLessonComplete}/>;
+      case 'scenario': return <ConceptCard key={uniqueKey} {...stepProps} />;
+      case 'multiple-choice': return <MultipleChoice key={uniqueKey} {...stepProps} />;
+      case 'fill-in-the-blank': return <FillInTheBlank key={uniqueKey} {...stepProps} />;
+      case 'tap-the-pairs': return <TapThePairs key={uniqueKey} {...stepProps} />;
+      case 'interactive-sort': return <InteractiveSort key={uniqueKey} {...stepProps} />;
+      case 'goal-builder': return <GoalBuilderComponent key={uniqueKey} {...stepProps} />;
+      case 'goal-summary': return <GoalSummary key={uniqueKey} {...stepProps} />;
+      case 'complete': return <LessonComplete key={uniqueKey} {...stepProps} onContinue={handleLessonComplete}/>;
       default: return <div>Unknown step type</div>;
     }
   };
