@@ -172,26 +172,30 @@ export default function LessonPage() {
     router.push(`/learn?completed=${lessonId}`);
   }, [lessonId, router]);
 
-  const handleCheck = () => {
-    if (hasAnswered) return;
-
-    setHasAnswered(true);
-    let correct = false;
-    
+  // Pure function to check the current answer
+  const checkAnswer = useCallback(() => {
     switch (currentStep.type) {
       case 'multiple-choice':
         const mcStep = currentStep as MultipleChoiceStep;
         if (Array.isArray(mcStep.correctAnswer)) {
-          correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
-        } else {
-          correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+          return isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
         }
-        break;
+        return userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
       case 'fill-in-the-blank':
-        correct = isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
-        break;
+        return isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
+      default:
+        return false;
     }
+  }, [currentStep, userAnswers]);
+
+  const handleCheck = () => {
+    if (hasAnswered) return;
+
+    const correct = checkAnswer();
+    
+    setHasAnswered(true);
     setIsCorrect(correct);
+
     if (correct) {
       setStreak(prev => prev + 1);
     } else {
@@ -234,18 +238,22 @@ export default function LessonPage() {
     if (hasAnswered && isCorrect === false) {
       setIncorrectAttempts(prev => prev + 1);
       
-      // Reset for non-text-input questions
-      if (currentStep.type !== 'fill-in-the-blank') {
-          setHasAnswered(false);
-          setIsCorrect(null);
-          setUserAnswers([]);
-          // TapThePairs and InteractiveSort need a key change to fully reset internal state
-          if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
-              setTryAgainCounter(count => count + 1);
+      if (currentStep.type === 'fill-in-the-blank') {
+          // Re-check fill-in-the-blank without resetting the whole UI
+          const correct = checkAnswer();
+          setIsCorrect(correct);
+          if (correct) {
+              setStreak(prev => prev + 1);
           }
       } else {
-        // For fill-in-the-blank, just allow re-checking.
-        handleCheck();
+        // Reset for non-text-input questions
+        setHasAnswered(false);
+        setIsCorrect(null);
+        setUserAnswers([]);
+        // TapThePairs and InteractiveSort need a key change to fully reset internal state
+        if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
+            setTryAgainCounter(count => count + 1);
+        }
       }
       return;
     }
@@ -253,7 +261,7 @@ export default function LessonPage() {
     // Case 4: This is the first time checking the answer for this step
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, checkAnswer]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
