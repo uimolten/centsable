@@ -21,10 +21,8 @@ export function IntroCard({ step }: IntroCardProps) {
           <Image
             src={step.mascotImage}
             alt="Centsable Mascot"
-            width={250}
-            height={250}
-            className="rounded-full"
-            data-ai-hint="friendly mascot"
+            width={300}
+            height={300}
           />
         </div>
       )}

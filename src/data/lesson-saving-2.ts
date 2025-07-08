@@ -12,8 +12,7 @@ export const lessonSaving2: Lesson = {
         {
           type: 'intro',
           text: "Quest accepted: Creating a Savings Goal! Last time, you learned why to save. Now, let's learn how to make it happen. ✨",
-          mascotImage: 'https://placehold.co/400x400',
-          imageHint: 'friendly mascot',
+          mascotImage: '/images/mascot-idle.png',
         },
         {
           type: 'concept',

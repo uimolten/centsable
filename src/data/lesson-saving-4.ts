@@ -12,8 +12,7 @@ export const lessonSaving4: Lesson = {
         {
           type: 'intro',
           text: "THE FINAL CHALLENGE! 👑 Time to test your knowledge of the Savings Unit. Let's do this!",
-          mascotImage: 'https://placehold.co/400x400',
-          imageHint: 'friendly mascot',
+          mascotImage: '/images/mascot-idle.png',
         },
         {
           type: 'multiple-choice',

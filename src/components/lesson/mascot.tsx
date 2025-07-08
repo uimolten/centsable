@@ -21,6 +21,8 @@ export function Mascot({ isHappy, isSad }: MascotProps) {
     };
   }
 
+  const mascotImage = isHappy ? '/images/mascot-happy.png' : isSad ? '/images/mascot-sad.png' : '/images/mascot-idle.png';
+
   return (
     <motion.div
       initial={{ scale: 0, y: 50 }}
@@ -31,11 +33,10 @@ export function Mascot({ isHappy, isSad }: MascotProps) {
     >
       <motion.div animate={animation}>
         <Image
-          src="https://placehold.co/400x400"
+          src={mascotImage}
           alt="Centsable Mascot"
           width={160}
           height={160}
-          data-ai-hint="friendly robot mascot"
           className="drop-shadow-lg"
         />
       </motion.div>

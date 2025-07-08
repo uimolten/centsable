@@ -12,8 +12,7 @@ export const lessonSaving3: Lesson = {
         {
           type: 'intro',
           text: "Welcome to the training dojo! 🥋 Let's practice making your goals even SMARTER. No pressure, this is just for practice.",
-          mascotImage: 'https://placehold.co/400x400',
-          imageHint: 'friendly mascot',
+          mascotImage: '/images/mascot-idle.png',
         },
         {
           type: 'concept',
