@@ -112,9 +112,8 @@ export default function LessonPage() {
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   const handleSelectAnswer = (answer: string) => {
-     if (hasAnswered && isCorrect) {
-      return;
-    }
+    const isCompleteAndCorrect = hasAnswered && isCorrect === true;
+    if (isCompleteAndCorrect) return;
 
     if (currentStep.type === 'multiple-choice') {
       const step = currentStep as MultipleChoiceStep;
@@ -135,7 +134,8 @@ export default function LessonPage() {
   };
   
   const handleInteractiveComplete = (correct: boolean) => {
-    if (hasAnswered && isCorrect) return;
+    const isCompleteAndCorrect = hasAnswered && isCorrect === true;
+    if (isCompleteAndCorrect) return;
 
     setHasAnswered(true);
     setIsCorrect(correct);
@@ -213,8 +213,7 @@ export default function LessonPage() {
     }
 
     const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
-    const isInteractiveCorrect = (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') && hasAnswered && isCorrect;
-
+    
     // Case 1: For steps that just need "Continue"
     if (isStepWithoutCheck || currentStep.type === 'goal-builder') {
       if (currentStep.type === 'goal-builder') {
@@ -224,28 +223,28 @@ export default function LessonPage() {
       goToNextStep();
       return;
     }
-
+    
     // Case 2: Answer has been checked and is correct
     if (hasAnswered && isCorrect) {
       goToNextStep();
       return;
     }
     
-    // Case 3: Answer has been checked and is incorrect
+    // Case 3: Answer has been checked and is incorrect ("Try Again" logic)
     if (hasAnswered && isCorrect === false) {
-      // This is the "Try Again" logic
       setIncorrectAttempts(prev => prev + 1);
       
+      // Reset for non-text-input questions
       if (currentStep.type !== 'fill-in-the-blank') {
           setHasAnswered(false);
           setIsCorrect(null);
           setUserAnswers([]);
+          // TapThePairs and InteractiveSort need a key change to fully reset internal state
           if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
               setTryAgainCounter(count => count + 1);
           }
-      }
-      // For fill-in-the-blank, we allow re-checking the same input
-       else {
+      } else {
+        // For fill-in-the-blank, just allow re-checking.
         handleCheck();
       }
       return;
@@ -325,6 +324,7 @@ export default function LessonPage() {
             instructionText="Congratulations!"
             lives={lives}
             streak={streak}
+            incorrectAttempts={incorrectAttempts}
             isCorrect={null}
             hasAnswered={false}
             userAnswers={[]}
@@ -349,6 +349,7 @@ export default function LessonPage() {
       instructionText={getInstructionText(currentStep)}
       lives={lives}
       streak={streak}
+      incorrectAttempts={incorrectAttempts}
     >
       <AnimatePresence mode="wait">
         {renderStepContent(currentStep)}
@@ -356,4 +357,3 @@ export default function LessonPage() {
     </LessonContainer>
   );
 }
-

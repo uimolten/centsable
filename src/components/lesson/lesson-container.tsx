@@ -24,6 +24,7 @@ interface LessonContainerProps {
   instructionText: string;
   lives: number;
   streak: number;
+  incorrectAttempts: number;
 }
 
 export function LessonContainer({
@@ -37,6 +38,7 @@ export function LessonContainer({
   instructionText,
   lives,
   streak,
+  incorrectAttempts,
 }: LessonContainerProps) {
   const router = useRouter();
 
@@ -120,7 +122,7 @@ export function LessonContainer({
                 onAction={onAction}
                 buttonText={getButtonText()}
                 isButtonDisabled={isButtonDisabled()}
-                correctAnswerText={getCorrectAnswerText()}
+                correctAnswerText={incorrectAttempts >= 3 ? getCorrectAnswerText() : undefined}
               />
             ) : (
               <motion.div

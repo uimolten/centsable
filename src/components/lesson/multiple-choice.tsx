@@ -16,21 +16,22 @@ interface MultipleChoiceProps {
 }
 
 export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered, isCorrect, incorrectAttempts }: MultipleChoiceProps) {
-  const [hint, setHint] = useState<string | null>(null);
+  const [eliminatedOptionId, setEliminatedOptionId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (incorrectAttempts >= 3 && !hint) {
-      const correctAnswers = Array.isArray(step.correctAnswer) ? step.correctAnswer : [step.correctAnswer];
-      const incorrectOption = step.options.find(opt => !correctAnswers.includes(opt.id));
-      if (incorrectOption?.text) {
-        setHint(`Hint: It's probably not "${incorrectOption.text}".`);
-      }
+    if (incorrectAttempts >= 3 && !eliminatedOptionId) {
+        const correctAnswers = Array.isArray(step.correctAnswer) ? step.correctAnswer : [step.correctAnswer];
+        const incorrectOption = step.options.find(opt => !correctAnswers.includes(opt.id));
+        if (incorrectOption) {
+            setEliminatedOptionId(incorrectOption.id);
+        }
     }
-    return () => {
-      setHint(null);
-    }
-  }, [incorrectAttempts, step, hint]);
+  }, [incorrectAttempts, step.options, step.correctAnswer, eliminatedOptionId]);
   
+  useEffect(() => {
+    setEliminatedOptionId(null);
+  }, [step.question]);
+
   const isCompleteAndCorrect = hasAnswered && isCorrect === true;
 
   const renderOptionContent = (option: typeof step.options[0]) => {
@@ -70,6 +71,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
           const isTheCorrectAnswer = Array.isArray(step.correctAnswer)
             ? step.correctAnswer.includes(option.id)
             : step.correctAnswer === option.id;
+          const isEliminated = option.id === eliminatedOptionId;
 
           return (
             <Button
@@ -81,24 +83,25 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
                 "hover:bg-accent hover:border-primary",
                 option.image ? "flex-col p-4 h-full" : "justify-center",
                 isSelected && "bg-accent border-primary",
-                hasAnswered && isSelected && !isCorrect && "bg-destructive/50 border-destructive text-destructive-foreground animate-shake",
-                hasAnswered && isTheCorrectAnswer && "bg-green-500/50 border-green-500 text-foreground"
+                hasAnswered && isSelected && isCorrect === false && "bg-destructive/50 border-destructive text-destructive-foreground animate-shake",
+                hasAnswered && isTheCorrectAnswer && "bg-green-500/50 border-green-500 text-foreground",
+                isEliminated && "opacity-50 bg-muted/30 border-muted-foreground/10 cursor-not-allowed"
               )}
               onClick={() => onSelectAnswer(option.id)}
-              disabled={isCompleteAndCorrect}
+              disabled={isCompleteAndCorrect || isEliminated}
             >
               {renderOptionContent(option)}
             </Button>
           );
         })}
       </div>
-      {hint && !hasAnswered && (
+      {eliminatedOptionId && !hasAnswered && (
        <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="mt-4 text-primary text-lg text-center font-semibold"
       >
-        {hint}
+        Hint: I've removed one incorrect option for you.
       </motion.div>
     )}
     </motion.div>
