@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Check, X, Heart, Flame } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Step } from '@/types/lesson';
 import { AnimatedBackground } from '@/components/animated-background';
@@ -111,31 +111,41 @@ export function LessonContainer({
           </div>
         </main>
 
-        <footer className="flex-shrink-0 relative">
-          <AnimatePresence>
-            {hasAnswered && isCorrect !== null && (
-              <AnswerFeedback 
-                isCorrect={isCorrect} 
-                onContinue={onAction}
+        <footer className="flex-shrink-0 relative h-28">
+           <AnimatePresence mode="wait">
+            {hasAnswered && isCorrect !== null ? (
+              <AnswerFeedback
+                key="feedback"
+                isCorrect={isCorrect}
+                onAction={onAction}
+                buttonText={getButtonText()}
+                isButtonDisabled={isButtonDisabled()}
                 correctAnswerText={getCorrectAnswerText()}
               />
-            )}
-          </AnimatePresence>
-
-          <div className="container mx-auto p-4 flex justify-center h-24 items-center">
-              <Button
+            ) : (
+              <motion.div
+                key="action"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="container mx-auto p-4 flex justify-center h-full items-center"
+              >
+                <Button
                   size="lg"
                   className={cn(
-                      "text-lg font-bold w-full max-w-sm shadow-lg active:scale-95 transition-transform",
-                      getButtonText() === 'Continue' && "shadow-glow",
-                      getButtonText() === 'Try Again' && "bg-amber-500 hover:bg-amber-600",
+                    "text-lg font-bold w-full max-w-sm shadow-lg active:scale-95 transition-transform",
+                    getButtonText() === 'Continue' && "shadow-glow",
+                    getButtonText() === 'Try Again' && "bg-amber-500 hover:bg-amber-600"
                   )}
                   onClick={onAction}
                   disabled={isButtonDisabled()}
-              >
+                >
                   {getButtonText()}
-              </Button>
-          </div>
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </footer>
       </div>
     </div>

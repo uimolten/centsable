@@ -1,14 +1,17 @@
+
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 
 interface AnswerFeedbackProps {
   isCorrect: boolean;
-  onContinue: () => void;
+  onAction: () => void;
+  buttonText: string;
+  isButtonDisabled: boolean;
   correctAnswerText?: string;
 }
 
-export function AnswerFeedback({ isCorrect, onContinue, correctAnswerText }: AnswerFeedbackProps) {
+export function AnswerFeedback({ isCorrect, onAction, buttonText, isButtonDisabled, correctAnswerText }: AnswerFeedbackProps) {
   const message = isCorrect ? 'Awesome! ✨' : 'Not quite.';
   const reinforcement = isCorrect ? 'You\'re on a roll!' : correctAnswerText ? `The correct answer is: ${correctAnswerText}` : "Let's review that one.";
 
@@ -19,11 +22,11 @@ export function AnswerFeedback({ isCorrect, onContinue, correctAnswerText }: Ans
       exit={{ y: '100%' }}
       transition={{ ease: 'easeInOut', duration: 0.3 }}
       className={cn(
-        'absolute bottom-0 left-0 w-full p-6',
+        'absolute bottom-0 left-0 w-full p-6 z-20',
         isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'
       )}
     >
-      <div className="container mx-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
         <div className="flex-grow text-center sm:text-left">
           <p className={cn(
             "text-xl font-bold",
@@ -35,11 +38,12 @@ export function AnswerFeedback({ isCorrect, onContinue, correctAnswerText }: Ans
           size="lg"
           className={cn(
             "text-lg font-bold w-full sm:w-auto min-w-[200px] active:scale-95 transition-transform",
-            isCorrect ? 'bg-green-500/80 hover:bg-green-500 text-foreground' : 'bg-red-500/80 hover:bg-red-500 text-foreground'
+            isCorrect ? 'bg-green-500/80 hover:bg-green-500 text-foreground' : 'bg-amber-500 hover:bg-amber-600'
           )}
-          onClick={onContinue}
+          onClick={onAction}
+          disabled={isButtonDisabled}
         >
-          Continue
+          {buttonText}
         </Button>
       </div>
     </motion.div>
