@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import type { IntroStep } from '@/types/lesson';
 
@@ -7,6 +6,9 @@ interface IntroCardProps {
 }
 
 export function IntroCard({ step }: IntroCardProps) {
+  // The intro step's text is handled by the SpeechBubble in LessonContainer.
+  // The mascot is also handled by LessonContainer.
+  // This component is now just a placeholder for animations and layout consistency.
   return (
     <motion.div
       key="intro"
@@ -16,16 +18,7 @@ export function IntroCard({ step }: IntroCardProps) {
       transition={{ duration: 0.3 }}
       className="flex items-center justify-center h-full min-h-[300px]"
     >
-      {step.mascotImage && (
-        <div className="flex justify-center">
-          <Image
-            src={step.mascotImage}
-            alt="Centsable Mascot"
-            width={300}
-            height={300}
-          />
-        </div>
-      )}
+      {/* No content needed here as it's handled by the main LessonContainer */}
     </motion.div>
   );
 }

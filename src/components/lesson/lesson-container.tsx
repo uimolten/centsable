@@ -12,6 +12,7 @@ import { AnimatedBackground } from '@/components/animated-background';
 import { Mascot } from './mascot';
 import { SpeechBubble } from './speech-bubble';
 import { AnswerFeedback } from './answer-feedback';
+import React from 'react';
 
 interface LessonContainerProps {
   children: React.ReactNode;
@@ -104,8 +105,8 @@ export function LessonContainer({
 
         <main className="flex-grow flex flex-col items-center justify-between overflow-y-auto p-4 w-full">
           <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
-              <Mascot isHappy={isCorrect} isSad={isCorrect === false} />
               <SpeechBubble text={instructionText} />
+              <Mascot isHappy={isCorrect} isSad={isCorrect === false} />
           </div>
 
           <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center my-4">

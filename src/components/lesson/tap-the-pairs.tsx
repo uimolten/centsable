@@ -96,9 +96,8 @@ export function TapThePairs({ step, onComplete, incorrectAttempts, hasAnswered, 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
+      className="space-y-6 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12 w-full"
     >
-      <h2 className="text-2xl md:text-3xl font-bold text-center">{step.instructions}</h2>
       {hintShown && (
         <motion.div
             initial={{ opacity: 0, y: 10 }}

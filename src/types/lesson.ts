@@ -15,7 +15,6 @@ interface BaseStep {
   type: StepType;
   title?: string;
   text?: string;
-  mascotImage?: string;
 }
 
 export interface IntroStep extends BaseStep {

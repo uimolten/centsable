@@ -12,7 +12,6 @@ export const lessonSaving1: Lesson = {
         {
           type: 'intro',
           text: "Welcome to your first quest! ⚔️ Let's talk about a real-life superpower: saving money.",
-          mascotImage: '/images/mascot-idle.png',
         },
         {
           type: 'concept',
