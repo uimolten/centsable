@@ -1,14 +1,16 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Check, X } from 'lucide-react';
+import { Button } from '../ui/button';
 
 interface AnswerFeedbackProps {
   isCorrect: boolean;
+  onContinue: () => void;
+  correctAnswerText?: string;
 }
 
-export function AnswerFeedback({ isCorrect }: AnswerFeedbackProps) {
-  const message = isCorrect ? 'Great job! ✨' : 'Let\'s try that again.';
-  const Icon = isCorrect ? Check : X;
+export function AnswerFeedback({ isCorrect, onContinue, correctAnswerText }: AnswerFeedbackProps) {
+  const message = isCorrect ? 'Awesome! ✨' : 'Not quite.';
+  const reinforcement = isCorrect ? 'You\'re on a roll!' : correctAnswerText ? `The correct answer is: ${correctAnswerText}` : "Let's review that one.";
 
   return (
     <motion.div
@@ -17,13 +19,28 @@ export function AnswerFeedback({ isCorrect }: AnswerFeedbackProps) {
       exit={{ y: '100%' }}
       transition={{ ease: 'easeInOut', duration: 0.3 }}
       className={cn(
-        'absolute bottom-0 left-0 w-full p-4 h-full flex items-center',
-        isCorrect ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+        'absolute bottom-0 left-0 w-full p-6',
+        isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'
       )}
     >
-      <div className="container mx-auto flex items-center gap-4">
-        <Icon className="h-8 w-8" />
-        <p className="text-xl font-bold">{message}</p>
+      <div className="container mx-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+        <div className="flex-grow text-center sm:text-left">
+          <p className={cn(
+            "text-xl font-bold",
+            isCorrect ? 'text-green-300' : 'text-red-300'
+            )}>{message}</p>
+          <p className="text-foreground/80">{reinforcement}</p>
+        </div>
+        <Button
+          size="lg"
+          className={cn(
+            "text-lg font-bold w-full sm:w-auto min-w-[200px] active:scale-95 transition-transform",
+            isCorrect ? 'bg-green-500/80 hover:bg-green-500 text-foreground' : 'bg-red-500/80 hover:bg-red-500 text-foreground'
+          )}
+          onClick={onContinue}
+        >
+          Continue
+        </Button>
       </div>
     </motion.div>
   );

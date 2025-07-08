@@ -5,15 +5,17 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-image: radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.1), transparent);
 }
 
 .background > div {
   position: absolute;
   border-radius: 50%;
   background-color: hsl(var(--primary));
-  opacity: 0.15;
+  opacity: 0.1;
   filter: blur(100px);
   animation: move 20s infinite alternate ease-in-out;
+  will-change: transform;
 }
 
 .shape1 {
@@ -50,11 +52,22 @@
     animation-delay: -10s;
 }
 
+.shape5 {
+  width: 250px;
+  height: 250px;
+  top: 50%;
+  left: 40%;
+  animation-duration: 30s;
+  animation-delay: -8s;
+  background-color: hsl(180, 63%, 59%);
+}
+
+
 @keyframes move {
   from {
     transform: translate(0, 0) scale(1) rotate(0deg);
   }
   to {
-    transform: translate(100px, 50px) scale(1.2) rotate(20deg);
+    transform: translate(var(--tx, 100px), var(--ty, 50px)) scale(var(--s, 1.2)) rotate(var(--r, 20deg));
   }
 }

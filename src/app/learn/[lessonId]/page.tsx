@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { isEqual, shuffle } from 'lodash';
+import { isEqual } from 'lodash';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
@@ -22,6 +22,7 @@ import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goa
 import { GoalSummary } from '@/components/lesson/goal-summary';
 
 import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson } from '@/types/lesson';
+import { useToast } from '@/hooks/use-toast';
 
 const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 's1') return lessonSaving1;
@@ -34,15 +35,12 @@ const getLessonData = (lessonId: string): Lesson | null => {
 const isAnswerSimilar = (userAnswer: string, correctAnswer: string): boolean => {
   const formattedUserAnswer = userAnswer.trim().toLowerCase();
   
-  // Split correct answer by potential separators and trim
   const correctAnswers = correctAnswer.toLowerCase().split(/(\/|,| or )/).map(s => s.trim()).filter(Boolean);
 
-  // 1. Exact match with any of the possibilities
   if (correctAnswers.includes(formattedUserAnswer)) {
       return true;
   }
   
-  // Check for plural/singular forms and small typos against each correct answer
   return correctAnswers.some(correct => {
     if (
         formattedUserAnswer === `${correct}s` ||
@@ -80,6 +78,7 @@ const isAnswerSimilar = (userAnswer: string, correctAnswer: string): boolean => 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
+  const { toast } = useToast();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
   const lesson = getLessonData(lessonId);
 
@@ -93,6 +92,8 @@ export default function LessonPage() {
   const [tryAgainCounter, setTryAgainCounter] = useState(0);
   const [incorrectAttempts, setIncorrectAttempts] = useState(0);
   const [goalData, setGoalData] = useState<Record<string, string | number>>({});
+  const [lives, setLives] = useState(5);
+  const [streak, setStreak] = useState(0);
 
 
   useEffect(() => {
@@ -138,19 +139,26 @@ export default function LessonPage() {
 
     setHasAnswered(true);
     setIsCorrect(correct);
-    if (!correct) {
+    if (correct) {
+      setStreak(prev => prev + 1);
+    } else {
       setIncorrectAttempts(prev => prev + 1);
+      setStreak(0);
+      setLives(prev => Math.max(0, prev - 1));
     }
   };
   
   const goToNextStep = useCallback(() => {
-     setCompletedSteps(prev => prev + 1);
+     if(!hasAnswered) setCompletedSteps(prev => prev + 1);
 
       if (stepIndex < currentModule.steps.length - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < lesson.modules.length - 1) {
         setModuleIndex(moduleIndex + 1);
         setStepIndex(0);
+      } else {
+        // This was the last step of the last module
+        setStepIndex(stepIndex + 1); 
       }
       
       setHasAnswered(false);
@@ -158,126 +166,178 @@ export default function LessonPage() {
       setUserAnswers([]);
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, hasAnswered]);
 
   const handleLessonComplete = useCallback(() => {
     router.push(`/learn?completed=${lessonId}`);
   }, [lessonId, router]);
 
-  const handleFooterAction = useCallback(() => {
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
-    
-    const isGoalBuilderStep = currentStep.type === 'goal-builder';
+  const handleCheck = () => {
+    if (hasAnswered) return;
 
-    const isCheckButton = !(isStepWithoutCheck || isGoalBuilderStep || (hasAnswered && isCorrect) || (hasAnswered && isCorrect === false));
-    const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank' || currentStep.type === 'goal-builder') && (userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === ''));
+    setHasAnswered(true);
+    let correct = false;
     
-    if (isCheckButton && isAnswerEmpty) {
+    switch (currentStep.type) {
+      case 'multiple-choice':
+        const mcStep = currentStep as MultipleChoiceStep;
+        if (Array.isArray(mcStep.correctAnswer)) {
+          correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
+        } else {
+          correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+        }
+        break;
+      case 'fill-in-the-blank':
+        correct = isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
+        break;
+    }
+    setIsCorrect(correct);
+    if (correct) {
+      setStreak(prev => prev + 1);
+    } else {
+      setIncorrectAttempts(prev => prev + 1);
+      setStreak(0);
+      setLives(prev => Math.max(0, prev - 1));
+    }
+  }
+
+  const handleFooterAction = useCallback(() => {
+    if (lives === 0) {
+      toast({
+        variant: "destructive",
+        title: "Out of lives!",
+        description: "Review the lesson and try again.",
+      });
+       router.push('/learn');
       return;
     }
-    
+
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
     const isInteractiveCorrect = (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') && hasAnswered && isCorrect;
 
-    // Case 1: Continue button is displayed (answer correct, or step doesn't need checking)
-    if (isStepWithoutCheck || isGoalBuilderStep || (hasAnswered && isCorrect) || isInteractiveCorrect) {
-      if (currentStep.type === 'complete') {
-        handleLessonComplete();
-      } else {
-        if(isGoalBuilderStep) {
-            const step = currentStep as GoalBuilderStep;
-            setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
-        }
-        goToNextStep();
+    // Case 1: For steps that just need "Continue"
+    if (isStepWithoutCheck || currentStep.type === 'goal-builder') {
+      if (currentStep.type === 'goal-builder') {
+        const step = currentStep as GoalBuilderStep;
+        setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
       }
+      goToNextStep();
       return;
     }
 
-    // Case 2: Try Again button is displayed
-    if (hasAnswered && isCorrect === false) {
-        setIncorrectAttempts(prev => prev + 1);
-        
-        if (currentStep.type === 'fill-in-the-blank') {
-            const correct = isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
-            setIsCorrect(correct);
-            if(correct) setIncorrectAttempts(0);
-        } else {
-            setHasAnswered(false);
-            setIsCorrect(null);
-            setUserAnswers([]);
-            if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
-                setTryAgainCounter(count => count + 1);
-            }
-        }
-        return;
+    // Case 2: Answer has been checked and is correct
+    if (hasAnswered && isCorrect) {
+      goToNextStep();
+      return;
     }
     
-    // Case 3: Check button is displayed, and we need to validate the answer.
-    if (!hasAnswered) {
-      setHasAnswered(true);
-      let correct = false;
+    // Case 3: Answer has been checked and is incorrect
+    if (hasAnswered && isCorrect === false) {
+      // This is the "Try Again" logic
+      setIncorrectAttempts(prev => prev + 1);
       
-      switch (currentStep.type) {
-        case 'multiple-choice':
-          const mcStep = currentStep as MultipleChoiceStep;
-          if (Array.isArray(mcStep.correctAnswer)) {
-            correct = isEqual(userAnswers.sort(), mcStep.correctAnswer.sort());
-          } else {
-            correct = userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
+      if (currentStep.type !== 'fill-in-the-blank') {
+          setHasAnswered(false);
+          setIsCorrect(null);
+          setUserAnswers([]);
+          if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
+              setTryAgainCounter(count => count + 1);
           }
-          break;
-        case 'fill-in-the-blank':
-          correct = isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
-          break;
       }
-      setIsCorrect(correct);
-      if (!correct) {
-        setIncorrectAttempts(prev => prev + 1);
+      // For fill-in-the-blank, we allow re-checking the same input
+       else {
+        handleCheck();
       }
+      return;
     }
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, handleLessonComplete]);
+    
+    // Case 4: This is the first time checking the answer for this step
+    handleCheck();
+
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
+        const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank' || currentStep.type === 'goal-builder') && (userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === ''));
+        if (isAnswerEmpty) return;
+        
         event.preventDefault(); 
         handleFooterAction();
       }
     };
-
     document.addEventListener('keydown', handleKeyPress);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleFooterAction]);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [handleFooterAction, currentStep, userAnswers]);
 
 
-  const renderStep = (step: Step) => {
-    const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
+  const getInstructionText = (step: Step): string => {
     switch (step.type) {
-      case 'intro':
-        return <IntroCard key={uniqueKey} step={step} />;
-      case 'concept':
-      case 'scenario':
-        return <ConceptCard key={uniqueKey} step={step} />;
-      case 'multiple-choice':
-        return <MultipleChoice key={uniqueKey} step={step} onSelectAnswer={handleSelectAnswer} userAnswers={userAnswers} hasAnswered={hasAnswered} isCorrect={isCorrect} incorrectAttempts={incorrectAttempts} />;
-       case 'fill-in-the-blank':
-        return <FillInTheBlank key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} hasAnswered={hasAnswered} isCorrect={isCorrect} incorrectAttempts={incorrectAttempts} />;
+      case 'fill-in-the-blank':
+        return 'Complete the sentence:';
       case 'tap-the-pairs':
-        return <TapThePairs key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
       case 'interactive-sort':
-        return <InteractiveSort key={uniqueKey} step={step} onComplete={handleInteractiveComplete} incorrectAttempts={incorrectAttempts} hasAnswered={hasAnswered} isCorrect={isCorrect} />;
-      case 'goal-builder':
-        return <GoalBuilderComponent key={uniqueKey} step={step} onAnswerChange={handleSelectAnswer} userAnswer={userAnswers[0] ?? ''} />;
-      case 'goal-summary':
-        return <GoalSummary key={uniqueKey} step={step} goalData={goalData} />;
-       case 'complete':
-        return <LessonComplete key={uniqueKey} step={step} onContinue={handleLessonComplete} />;
+        return step.instructions;
+      case 'multiple-choice':
+        return step.question;
       default:
-        return <div>Unknown step type</div>;
+        return step.text ?? '';
+    }
+  }
+
+  const renderStepContent = (step: Step) => {
+    const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
+    const stepProps = {
+      key: uniqueKey,
+      step: step as any, // Cast to any to avoid TS errors with varied props
+      userAnswers,
+      onSelectAnswer: handleSelectAnswer,
+      hasAnswered,
+      isCorrect,
+      incorrectAttempts,
+      onComplete: handleInteractiveComplete,
+      onAnswerChange: handleSelectAnswer,
+      userAnswer: userAnswers[0] ?? '',
+      goalData,
+      onContinue: handleLessonComplete,
+    };
+  
+    switch (step.type) {
+      case 'intro': return <IntroCard {...stepProps} />;
+      case 'concept':
+      case 'scenario': return <ConceptCard {...stepProps} />;
+      case 'multiple-choice': return <MultipleChoice {...stepProps} />;
+      case 'fill-in-the-blank': return <FillInTheBlank {...stepProps} />;
+      case 'tap-the-pairs': return <TapThePairs {...stepProps} />;
+      case 'interactive-sort': return <InteractiveSort {...stepProps} />;
+      case 'goal-builder': return <GoalBuilderComponent {...stepProps} />;
+      case 'goal-summary': return <GoalSummary {...stepProps} />;
+      case 'complete': return <LessonComplete {...stepProps} onContinue={handleLessonComplete}/>;
+      default: return <div>Unknown step type</div>;
     }
   };
+  
+  // Handle case where lesson is finished
+  if (stepIndex >= currentModule.steps.length) {
+      return (
+          <LessonContainer
+            progress={100}
+            onAction={handleLessonComplete}
+            instructionText="Congratulations!"
+            lives={lives}
+            streak={streak}
+            isCorrect={null}
+            hasAnswered={false}
+            userAnswers={[]}
+            currentStep={currentStep}
+          >
+              <LessonComplete 
+                step={lesson.modules.slice(-1)[0].steps.slice(-1)[0] as any} 
+                onContinue={handleLessonComplete} 
+              />
+          </LessonContainer>
+      );
+  }
   
   return (
     <LessonContainer
@@ -287,10 +347,14 @@ export default function LessonPage() {
       isCorrect={isCorrect}
       hasAnswered={hasAnswered}
       userAnswers={userAnswers}
+      instructionText={getInstructionText(currentStep)}
+      lives={lives}
+      streak={streak}
     >
       <AnimatePresence mode="wait">
-        {renderStep(currentStep)}
+        {renderStepContent(currentStep)}
       </AnimatePresence>
     </LessonContainer>
   );
 }
+

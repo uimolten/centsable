@@ -8,6 +8,7 @@ export function AnimatedBackground() {
         <div className={styles.shape2}></div>
         <div className={styles.shape3}></div>
         <div className={styles.shape4}></div>
+        <div className={styles.shape5} style={{ '--tx': '-80px', '--ty': '-30px', '--s': 1.1, '--r': '-15deg' } as React.CSSProperties}></div>
       </div>
     </div>
   );

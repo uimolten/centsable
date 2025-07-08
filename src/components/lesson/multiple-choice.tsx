@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { MultipleChoiceStep, MultipleChoiceOption } from '@/types/lesson';
+import type { MultipleChoiceStep } from '@/types/lesson';
 import { useState, useEffect } from 'react';
 
 interface MultipleChoiceProps {
@@ -23,10 +23,9 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
       const correctAnswers = Array.isArray(step.correctAnswer) ? step.correctAnswer : [step.correctAnswer];
       const incorrectOption = step.options.find(opt => !correctAnswers.includes(opt.id));
       if (incorrectOption?.text) {
-        setHint(`Hint: It's not "${incorrectOption.text}".`);
+        setHint(`Hint: It's probably not "${incorrectOption.text}".`);
       }
     }
-    // Reset hint if the step changes (due to key change on parent)
     return () => {
       setHint(null);
     }
@@ -34,7 +33,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
   
   const isCompleteAndCorrect = hasAnswered && isCorrect === true;
 
-  const renderOptionContent = (option: MultipleChoiceOption) => {
+  const renderOptionContent = (option: typeof step.options[0]) => {
     if (option.image) {
       return (
         <div className="flex flex-col items-center justify-center gap-2">
@@ -46,7 +45,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
             height={150}
             className="rounded-lg object-cover aspect-square"
           />
-          {option.text && <span className="text-center">{option.text}</span>}
+          {option.text && <span className="text-center font-semibold">{option.text}</span>}
         </div>
       );
     }
@@ -60,11 +59,10 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
+      className="space-y-4 w-full"
     >
-      <h2 className="text-2xl md:text-3xl font-bold text-center">{step.question}</h2>
       <div className={cn(
-        "grid grid-cols-1 gap-4",
+        "grid grid-cols-1 gap-3",
         step.options.some(o => o.image) ? "md:grid-cols-3" : "md:grid-cols-2"
       )}>
         {step.options.map((option) => {
@@ -79,9 +77,10 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
               variant="outline"
               size="lg"
               className={cn(
-                "text-lg h-auto py-4 whitespace-normal",
-                option.image ? "flex-col p-4 h-full" : "justify-start",
-                isSelected && "bg-accent",
+                "text-lg h-auto py-4 whitespace-normal transition-all duration-200 border-2 border-border/30 bg-card/50",
+                "hover:bg-accent hover:border-primary",
+                option.image ? "flex-col p-4 h-full" : "justify-center",
+                isSelected && "bg-accent border-primary",
                 hasAnswered && isSelected && !isCorrect && "bg-destructive/50 border-destructive text-destructive-foreground animate-shake",
                 hasAnswered && isTheCorrectAnswer && "bg-green-500/50 border-green-500 text-foreground"
               )}
@@ -93,11 +92,11 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
           );
         })}
       </div>
-      {hint && (
+      {hint && !hasAnswered && (
        <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mt-4 text-primary text-lg text-center"
+        className="mt-4 text-primary text-lg text-center font-semibold"
       >
         {hint}
       </motion.div>
