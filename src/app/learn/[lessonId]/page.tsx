@@ -325,6 +325,7 @@ export default function LessonPage() {
   
   // Handle case where lesson is finished
   if (stepIndex >= currentModule.steps.length) {
+      const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0];
       return (
           <LessonContainer
             progress={100}
@@ -336,10 +337,10 @@ export default function LessonPage() {
             isCorrect={null}
             hasAnswered={false}
             userAnswers={[]}
-            currentStep={currentStep}
+            currentStep={lastStep}
           >
               <LessonComplete 
-                step={lesson.modules.slice(-1)[0].steps.slice(-1)[0] as any} 
+                step={lastStep as any} 
                 onContinue={handleLessonComplete} 
               />
           </LessonContainer>
