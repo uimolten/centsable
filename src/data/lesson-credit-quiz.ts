@@ -48,7 +48,7 @@ export const lessonCreditQuiz: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "The fee a lender charges you for borrowing money is called *_________*. ",
+          question: "The fee a lender charges you for borrowing money is called <b>_________</b>.",
           correctAnswer: 'Interest',
         },
         {

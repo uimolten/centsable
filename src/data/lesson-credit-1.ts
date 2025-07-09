@@ -15,7 +15,7 @@ export const lessonCredit1: Lesson = {
         },
         {
           type: 'scenario',
-          text: "You see your dream phone online for <b>$800</b>. You don’t have the cash. What's your move?",
+          text: "You see your dream phone online for $<b>800</b>. You don’t have the cash. What's your move?",
         },
         {
           type: 'multiple-choice',
@@ -81,7 +81,7 @@ export const lessonCredit1: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "The 3-digit number that shows how trustworthy you are with money is your credit *______*.",
+          question: "The 3-digit number that shows how trustworthy you are with money is your credit <b>______</b>.",
           correctAnswer: 'score',
         },
         {

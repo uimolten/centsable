@@ -11,11 +11,11 @@ export const lessonCredit4: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's talk about the true cost of using credit. It's all about understanding interest and avoiding common traps.",
+          text: "Let's talk about the <b>true</b> cost of using credit. It's all about understanding interest and avoiding common traps.",
         },
         {
           type: 'scenario',
-          text: "You buy a new laptop for <b>$1,000</b> on a credit card with 20% APR. The minimum payment is only <b>$25</b> a month. Seems manageable, right?",
+          text: "You buy a new laptop for $<b>1,000</b> on a credit card with 20% APR. The minimum payment is only $<b>25</b> a month. Seems manageable, right?",
         },
         {
           type: 'multiple-choice',
@@ -51,7 +51,7 @@ export const lessonCredit4: Lesson = {
         },
         {
           type: 'scenario',
-          text: "On that <b>$1,000</b> laptop: If you paid it off in one year (about $93/month), you'd pay about <b>$110</b> in total interest. If you only paid the minimum ($25/month), you'd pay almost <b>$800</b> in interest. That's an extra $690!",
+          text: "On that $<b>1,000</b> laptop: If you paid it off in one year (about $93/month), you'd pay about $<b>110</b> in total interest. If you only paid the minimum ($25/month), you'd pay almost $<b>800</b> in interest. That's an extra $<b>690</b>!",
         },
         {
           type: 'multiple-choice',

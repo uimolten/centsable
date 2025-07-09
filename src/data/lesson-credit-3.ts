@@ -11,7 +11,7 @@ export const lessonCredit3: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's go deeper into your financial gradebook. What's actually *in* a credit report and how is the score calculated?",
+          text: "Let's go deeper into your financial gradebook. What's actually <b>in</b> a credit report and how is the score calculated?",
         },
         {
             type: 'multiple-choice',
@@ -37,8 +37,8 @@ export const lessonCredit3: Lesson = {
           type: 'tap-the-pairs',
           instructions: 'Match the inquiry type to its description.',
           pairs: [
-            { term: 'Hard Inquiry', definition: 'A lender checks your credit for a new loan or card. This can temporarily lower your score a few points.' },
-            { term: 'Soft Inquiry', definition: 'You check your own credit, or a company pre-approves you for an offer. This does NOT affect your score.' },
+            { term: 'Hard Inquiry', definition: 'A lender checks your credit for a new loan or card. This can <b>temporarily</b> lower your score a few points.' },
+            { term: 'Soft Inquiry', definition: 'You check your own credit, or a company pre-approves you for an offer. This does <b>NOT</b> affect your score.' },
           ],
         },
       ],
@@ -49,7 +49,7 @@ export const lessonCredit3: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'Your credit score is calculated from the data in your report. It might seem mysterious, but it\'s mostly based on five factors.',
+          text: "Your credit score is calculated from the data in your report. It might seem mysterious, but it's mostly based on <b>five</b> factors.",
           image: 'https://placehold.co/400x225',
           imageHint: 'pie chart credit factors',
         },

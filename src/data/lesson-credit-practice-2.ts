@@ -55,7 +55,7 @@ export const lessonCreditPractice2: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "Paying only the smallest amount required by the lender each month is known as the *_________ Payment Trap*.",
+          question: "Paying only the smallest amount required by the lender each month is known as the <b>_________ Payment Trap</b>.",
           correctAnswer: 'Minimum',
         },
         {

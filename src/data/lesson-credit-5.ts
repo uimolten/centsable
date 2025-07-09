@@ -31,7 +31,7 @@ export const lessonCredit5: Lesson = {
             { id: 'opt2', text: 'Red Flag 🚩' },
           ],
           correctAnswer: 'opt1',
-          reinforcement: "It's a green light, but be careful! You need to know what the APR will be *after* the 6 months are over.",
+          reinforcement: "It's a green light, but be careful! You need to know what the APR will be <b>after</b> the 6 months are over.",
         },
       ],
     },
@@ -53,7 +53,7 @@ export const lessonCredit5: Lesson = {
         },
         {
             type: 'goal-builder',
-            instructions: 'What’s one simple step you can take *this week* to protect your financial information?',
+            instructions: 'What’s one simple step you can take <b>this week</b> to protect your financial information?',
             inputType: 'text',
             placeholder: 'e.g., Enable two-factor authentication',
             storageKey: 'protectionStep',

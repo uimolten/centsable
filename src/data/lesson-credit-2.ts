@@ -49,7 +49,7 @@ export const lessonCredit2: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "If your credit limit is $1,000, you should try to keep your balance below $______ to have good credit utilization.",
+          question: "If your credit limit is $1,000, you should try to keep your balance below $<b>______</b> to have good credit utilization.",
           correctAnswer: '300',
         },
         {
@@ -113,7 +113,7 @@ export const lessonCredit2: Lesson = {
             { id: 'opt1', text: 'It goes up ✅' },
             { id: 'opt2', text: 'It goes down ❌' },
             { id: 'opt3', text: 'It stays the same' },
-            { id: 'opt4', 'text': 'The stores give you free stuff'}
+            { id: 'opt4', text: 'The stores give you free stuff'}
           ],
           correctAnswer: 'opt2',
           reinforcement: 'Correct. Opening many new accounts in a short time can temporarily lower your score.',
