@@ -87,7 +87,7 @@ export const lessonSaving1: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'So, where does saving money come from? The secret is knowing the difference between <b>Needs</b> and <b>Wants</b>.',
+          text: "So, where does saving money come from? The secret is knowing the difference between <b>Needs</b> and <b><i>Wants</i></b>.",
         },
         {
           type: 'concept',
@@ -128,7 +128,7 @@ export const lessonSaving1: Lesson = {
       steps: [
         {
           type: 'scenario',
-          text: "Time for your first quest! Let's say you get $20 allowance. You're thirsty, so you buy a soda for $2. You also need to pay your family $10 for your phone bill.",
+          text: "Time for your first quest! Let's say you get <b>$20</b> allowance. You're thirsty, so you buy a soda for <b>$2</b>. You also need to pay your family <b>$10</b> for your phone bill.",
         },
         {
           type: 'multiple-choice',
@@ -136,17 +136,19 @@ export const lessonSaving1: Lesson = {
           options: [
             { id: 'opt1', text: 'The soda' },
             { id: 'opt2', text: 'The phone bill' },
+            { id: 'opt3', text: 'Both' },
+            { id: 'opt4', text: 'Neither' },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Correct! That's a responsibility.",
         },
         {
           type: 'scenario',
-          text: 'You started with $20, spent $2 on a want, and $10 on a need. You have $8 left.',
+          text: 'You started with <b>$20</b>, spent <b>$2</b> on a want, and <b>$10</b> on a need. You have <b>$8</b> left.',
         },
         {
           type: 'multiple-choice',
-          question: "You really want a new video game that costs $60. What's the smartest thing to do with the $8?",
+          question: "You really want a new video game that costs <b>$60</b>. What's the smartest thing to do with the <b>$8</b>?",
           options: [
             { id: 'opt1', text: 'Spend it on snacks' },
             { id: 'opt2', text: 'Save it for the game' },
@@ -157,7 +159,7 @@ export const lessonSaving1: Lesson = {
         },
         {
           type: 'concept',
-          text: "By choosing to save, you're now $8 closer to your goal! That's how it works. A little bit at a time.",
+          text: "By choosing to save, you're now <b>$8</b> closer to your goal! That's how it works. A little bit at a time.",
         },
         {
           type: 'complete',

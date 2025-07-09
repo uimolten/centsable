@@ -11,7 +11,7 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Imagine a crisp $20 bill lands in your pocket every Friday. After a month, you'd have $80! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <i>really</i> goes.",
+          text: "Imagine a crisp <b>$20</b> bill lands in your pocket every Friday. After a month, you'd have <b>$80</b>! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <b><i>really</i></b> goes.",
         },
         {
           type: 'concept',
@@ -67,7 +67,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'scenario',
-          text: "That $5 coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's $80 a month that just vanishes!",
+          text: "That <b>$5</b> coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <b>$80</b> a month that just vanishes!",
         },
         {
             type: 'multiple-choice',
@@ -85,7 +85,7 @@ export const lessonBudgeting2: Lesson = {
     },
     {
       title: "Your Detective's Toolkit",
-      xp: 10,
+      xp: 15,
       steps: [
         {
             type: 'concept',
@@ -151,7 +151,7 @@ export const lessonBudgeting2: Lesson = {
     },
     {
       title: 'Your First Mission',
-      xp: 5,
+      xp: 0,
       steps: [
         {
           type: 'concept',

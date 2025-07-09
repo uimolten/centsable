@@ -15,14 +15,14 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'concept',
-          text: "A 'wish' is saying 'I want a new computer someday.' A 'goal' is saying 'I will save $1,000 for a new computer in 6 months.' See the difference?",
+          text: "A 'wish' is saying 'I want a new computer someday.' A 'goal' is saying 'I will save <b>$1,000</b> for a new computer in 6 months.' See the difference?",
         },
         {
           type: 'multiple-choice',
           question: 'Which one is a real goal?',
           options: [
             { id: 'opt1', text: 'I want to be rich.' },
-            { id: 'opt2', text: 'I will save $50 for concert tickets by next month.' },
+            { id: 'opt2', text: 'I will save <b>$50</b> for concert tickets by next month.' },
             { id: 'opt3', text: 'Saving is important.' },
             { id: 'opt4', text: 'I will buy a new phone.' },
           ],
@@ -74,7 +74,7 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'If you get $20 allowance a week, which goal is more <b>Achievable</b> in one month?',
+          question: 'If you get <b>$20</b> allowance a week, which goal is more <b>Achievable</b> in one month?',
           options: [
             { id: 'opt1', text: 'Saving for a $5,000 trip.' },
             { id: 'opt2', text: 'Saving for a $70 video game.' },
@@ -161,6 +161,7 @@ export const lessonSaving2: Lesson = {
             { id: 'opt1', text: "It's not Specific." },
             { id: 'opt2', text: "It's not Measurable." },
             { id: 'opt3', text: "It's not Relevant." },
+            { id: 'opt4', text: "It's not Time-bound." },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Exactly! We don't know how much the laptop costs.",

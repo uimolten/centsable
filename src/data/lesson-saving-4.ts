@@ -60,7 +60,7 @@ export const lessonSaving4: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: "Maria wants to save $50 for new shoes, but she hasn't set a deadline. Which SMART element is missing?",
+          question: "Maria wants to save <b>$50</b> for new shoes, but she hasn't set a deadline. Which SMART element is missing?",
           options: [
             { id: 's', text: 'Specific (S)' },
             { id: 'm', text: 'Measurable (M)' },
@@ -71,7 +71,7 @@ export const lessonSaving4: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'You have $15. Which of these is a <b>Need</b>?',
+          question: 'You have <b>$15</b>. Which of these is a <b>Need</b>?',
           options: [
             { id: 'game', image: 'https://placehold.co/200x200', imageHint: 'video game icon', text: 'Video Game' },
             { id: 'bus', image: 'https://placehold.co/200x200', imageHint: 'bus pass icon', text: 'Bus Pass' },

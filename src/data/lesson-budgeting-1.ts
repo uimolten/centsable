@@ -37,7 +37,7 @@ export const lessonBudgeting1: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "So, why bother? A budget helps you avoid that 'where did my money go?!' feeling.",
+          text: "So, why bother? A budget helps you avoid that <b><i>where did my money go?!</i></b> feeling.",
         },
         {
           type: 'concept',
@@ -49,22 +49,6 @@ export const lessonBudgeting1: Lesson = {
           correctAnswer: 'goals',
           reinforcement: 'You got it! A budget is your roadmap to your goals.',
         },
-      ],
-    },
-    {
-      title: 'Remember: Needs vs. Wants',
-      xp: 5,
-      steps: [
-        {
-          type: 'concept',
-          text: "Remember 'Needs vs. Wants' from our <a href='/learn/s1' target='_blank' rel='noopener noreferrer' class='text-primary underline'>Importance of Saving</a> lesson? That's a key part of budgeting!",
-          image: 'https://placehold.co/400x225',
-          imageHint: 'needs wants',
-        },
-        {
-          type: 'concept',
-          text: "Just to recap: <b>Needs</b> are essential for survival (like a bus pass for school), while <b>Wants</b> are things that make life more fun (like going out for pizza). Plan for needs first!",
-        }
       ],
     },
     {
@@ -96,7 +80,7 @@ export const lessonBudgeting1: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've learned the 'why' behind budgeting. You're ready to start taking control of your money!",
           rewards: {
-            xp: 60,
+            xp: 40,
             coins: 5,
           },
         },

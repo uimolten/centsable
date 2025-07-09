@@ -11,15 +11,11 @@ export const lessonSaving3: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Welcome to the training dojo! 🥋 Let's practice making your goals even <b>SMARTER</b>. No pressure, this is just for practice.",
-        },
-        {
-          type: 'concept',
-          text: 'Is this a SMART goal?',
+          text: "Welcome to the training dojo! 🥋 Let's practice making your goals even <b><i>SMARTER</i></b>. No pressure, this is just for practice.",
         },
         {
           type: 'multiple-choice',
-          question: "I will save $150 for the new 'Cyber-Punk 2' video game by selling old stuff online over the next two months.",
+          question: "Is this a SMART goal? <br> 'I will save <b>$150</b> for the new 'Cyber-Punk 2' video game by selling old stuff online over the next two months.'",
           options: [
             { id: 'yes', text: 'Yes ✅' },
             { id: 'no', text: 'No ❌' },
@@ -28,12 +24,8 @@ export const lessonSaving3: Lesson = {
           reinforcement: "Correct! It's Specific, Measurable, and Time-bound.",
         },
         {
-          type: 'concept',
-          text: 'How about this one? Is this a SMART goal?',
-        },
-        {
           type: 'multiple-choice',
-          question: 'I want to save money for a trip.',
+          question: "How about this one? Is this a SMART goal? <br> 'I want to save money for a trip.'",
           options: [
             { id: 'yes', text: 'Yes ✅' },
             { id: 'no', text: 'No ❌' },
@@ -51,6 +43,8 @@ export const lessonSaving3: Lesson = {
           options: [
             { id: 'opt1', text: 'I want a cool skateboard.' },
             { id: 'opt2', text: 'I want the Powell-Peralta flight deck, which costs $90.' },
+            { id: 'opt3', text: 'I want an expensive skateboard.' },
+            { id: 'opt4', text: 'I want to go to a skate shop.' },
           ],
           correctAnswer: 'opt2',
         },
@@ -60,12 +54,14 @@ export const lessonSaving3: Lesson = {
           options: [
             { id: 'opt1', text: "I'll get it someday." },
             { id: 'opt2', text: "I'll save up for it in the next 3 months." },
+            { id: 'opt3', text: 'I will get it when I get it.' },
+            { id: 'opt4', text: 'I will ask for it for my birthday.' },
           ],
           correctAnswer: 'opt2',
         },
         {
           type: 'concept',
-          text: "<b>GOAL FIXED!</b> 🛠️ You turned 'I want a skateboard' into 'I will save $90 for the Powell-Peralta flight deck in the next 3 months.' That's a plan!",
+          text: "<b>GOAL FIXED!</b> 🛠️ You turned 'I want a skateboard' into 'I will save <b>$90</b> for the Powell-Peralta flight deck in the next 3 months.' That's a plan!",
         },
         {
           type: 'complete',

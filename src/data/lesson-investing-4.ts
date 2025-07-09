@@ -25,6 +25,8 @@ export const lessonInvesting4: Lesson = {
           options: [
             { id: 'opt1', text: 'My investment probably goes UP 📈' },
             { id: 'opt2', text: 'My investment probably goes DOWN 📉' },
+            { id: 'opt3', text: 'Nothing happens' },
+            { id: 'opt4', text: 'The company gives me free ice cream' },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Exactly! Your whole investment is at risk.",
