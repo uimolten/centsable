@@ -24,6 +24,7 @@ export const lessonBudgeting1: Lesson = {
             { id: 'opt1', text: 'Stop you from having fun.' },
             { id: 'opt2', text: 'Control your money, so you can spend it on what you really want.' },
             { id: 'opt3', text: 'Only for adults with tons of money.' },
+            { id: 'opt4', text: 'Make you feel guilty about spending.' },
           ],
           correctAnswer: 'opt2',
           reinforcement: 'Exactly! It’s not about restriction, it’s about control.',
@@ -51,33 +52,17 @@ export const lessonBudgeting1: Lesson = {
       ],
     },
     {
-      title: 'Needs vs. Wants',
-      xp: 20,
+      title: 'Remember: Needs vs. Wants',
+      xp: 5,
       steps: [
         {
           type: 'concept',
-          text: "To build a budget, you have to know the difference between 'Needs' and 'Wants'.",
+          text: "Remember 'Needs vs. Wants' from our Savings unit? That's a key part of budgeting! Knowing the difference helps you decide where your money should go first.",
+          icon: 'heart'
         },
         {
           type: 'concept',
-          text: 'A NEED is something you must have to live and function. A WANT is something that’s fun to have, but not essential.',
-        },
-        {
-          type: 'interactive-sort',
-          instructions: 'Is it a Need or a Want? Drag each item to the correct category.',
-          box1Label: 'Needs',
-          box2Label: 'Wants',
-          items: [
-            { id: 'item-1', text: 'Fixing your broken phone screen ($80)', correctBox: 'box1' },
-            { id: 'item-2', text: 'Spotify Premium ($10/month)', correctBox: 'box2' },
-            { id: 'item-3', text: 'Bus pass to get to school ($25/month)', correctBox: 'box1' },
-            { id: 'item-4', text: 'New Nikes for the basketball team ($120)', correctBox: 'box2' },
-            { id: 'item-5', text: 'Going out for pizza with friends ($15)', correctBox: 'box2' },
-          ],
-        },
-        {
-            type: 'concept',
-            text: "Nice sorting! Knowing the difference helps you prioritize. Needs first, then plan for wants!"
+          text: "Just to recap: Needs are essential for survival (like a bus pass for school), while Wants are things that make life more fun (like going out for pizza). Plan for needs first!",
         }
       ],
     },
