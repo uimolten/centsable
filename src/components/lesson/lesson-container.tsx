@@ -28,8 +28,7 @@ interface LessonContainerProps {
   incorrectAttempts: number;
   onBack: () => void;
   isFirstStep: boolean;
-  isAwaitingSort: boolean;
-  onDismissSortWarning: () => void;
+  isSortIncomplete: boolean;
 }
 
 export function LessonContainer({
@@ -46,8 +45,7 @@ export function LessonContainer({
   incorrectAttempts,
   onBack,
   isFirstStep,
-  isAwaitingSort,
-  onDismissSortWarning,
+  isSortIncomplete,
 }: LessonContainerProps) {
   const router = useRouter();
 
@@ -126,19 +124,7 @@ export function LessonContainer({
 
         <footer className="flex-shrink-0 relative h-28">
            <AnimatePresence mode="wait">
-            {isAwaitingSort ? (
-              <AnswerFeedback
-                key="awaiting-sort"
-                isCorrect={false}
-                onAction={onDismissSortWarning}
-                buttonText="Got It"
-                isButtonDisabled={false}
-                customMessage="Not quite yet!"
-                customReinforcement="Please sort all items into a category before checking your answer."
-                onBack={onBack}
-                isFirstStep={isFirstStep}
-              />
-            ) : hasAnswered && isCorrect !== null ? (
+            {hasAnswered && isCorrect !== null ? (
               <AnswerFeedback
                 key="feedback"
                 isCorrect={isCorrect}
@@ -148,6 +134,7 @@ export function LessonContainer({
                 correctAnswerText={incorrectAttempts >= 3 ? getCorrectAnswerText() : undefined}
                 onBack={onBack}
                 isFirstStep={isFirstStep}
+                isSortIncomplete={isSortIncomplete}
               />
             ) : (
               <motion.div

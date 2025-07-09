@@ -11,7 +11,7 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Imagine a crisp <b>$20</b> bill lands in your pocket every Friday. After a month, you'd have <b>$80</b>! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <i>really</i> goes.",
+          text: "Imagine a crisp $20 bill lands in your pocket every Friday. After a month, you'd have $80! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <i>really</i> goes.",
         },
         {
           type: 'concept',
@@ -67,7 +67,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'scenario',
-          text: "That <b>$5</b> coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <b>$80</b> a month that just vanishes!",
+          text: "That $5 coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's $80 a month that just vanishes!",
         },
         {
             type: 'multiple-choice',
@@ -84,7 +84,7 @@ export const lessonBudgeting2: Lesson = {
       ]
     },
     {
-      title: "Find Your Tracking Tool",
+      title: "Your Detective's Toolkit",
       xp: 10,
       steps: [
         {
@@ -118,6 +118,7 @@ export const lessonBudgeting2: Lesson = {
                 { id: 'opt1', text: 'The most popular one.' },
                 { id: 'opt2', text: 'The one with the most features.' },
                 { id: 'opt3', text: 'The one you will actually use.' },
+                { id: 'opt4', text: 'The most expensive one.' },
             ],
             correctAnswer: 'opt3',
             reinforcement: 'Exactly! Consistency is what matters most.',
@@ -134,7 +135,7 @@ export const lessonBudgeting2: Lesson = {
             },
             {
                 type: 'fill-in-the-blank',
-                question: "First, what is the TOTAL of all your expenses this month? <b>$______</b>",
+                question: "First, what is the TOTAL of all your expenses this month? $________",
                 correctAnswer: '270',
                 reinforcement: 'Correct! Total expenses are $270.',
                 image: 'https://placehold.co/600x400/1a1a1a/f8f8f8?text=Expenses%0A-%20Phone%20Bill:%20$50%0A-%20Subscription:%20$15%0A-%20Food:%20$120%0A-%20Shopping:%20$60%0A-%20Movie:%20$25',
@@ -142,7 +143,7 @@ export const lessonBudgeting2: Lesson = {
             },
             {
                 type: 'fill-in-the-blank',
-                question: "You started with <b>$340</b> and spent <b>$270</b>. How much do you have left over? <b>$______</b>",
+                question: "You started with <b>$340</b> and spent <b>$270</b>. How much do you have left over? $________",
                 correctAnswer: '70',
                 reinforcement: "That's right! You have $70 left to save or spend wisely.",
             }

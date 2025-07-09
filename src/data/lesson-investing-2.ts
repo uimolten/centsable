@@ -25,6 +25,7 @@ export const lessonInvesting2: Lesson = {
           options: [
             { id: 'easy', text: 'Easy Mode' },
             { id: 'story', text: 'Story Mode' },
+            { id: 'normal', text: 'Normal Mode' },
             { id: 'nightmare', text: 'Nightmare Mode' },
           ],
           correctAnswer: 'nightmare',

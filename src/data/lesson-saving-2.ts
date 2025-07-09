@@ -23,6 +23,8 @@ export const lessonSaving2: Lesson = {
           options: [
             { id: 'opt1', text: 'I want to be rich.' },
             { id: 'opt2', text: 'I will save $50 for concert tickets by next month.' },
+            { id: 'opt3', text: 'Saving is important.' },
+            { id: 'opt4', text: 'I will buy a new phone.' },
           ],
           correctAnswer: 'opt2',
           reinforcement: 'Exactly! A real goal has details.',
@@ -48,6 +50,8 @@ export const lessonSaving2: Lesson = {
           options: [
             { id: 'opt1', text: 'Saving for new shoes.' },
             { id: 'opt2', text: 'Saving for the new Air Jordan 1s.' },
+            { id: 'opt3', text: 'Getting some new stuff.' },
+            { id: 'opt4', text: 'Saving $180.' },
           ],
           correctAnswer: 'opt2',
           reinforcement: 'Perfect! Details matter.',
@@ -74,6 +78,8 @@ export const lessonSaving2: Lesson = {
           options: [
             { id: 'opt1', text: 'Saving for a $5,000 trip.' },
             { id: 'opt2', text: 'Saving for a $70 video game.' },
+            { id: 'opt3', text: 'Saving for a new car.' },
+            { id: 'opt4', text: 'Becoming a millionaire in a month.' },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Right! Start with what's possible.",

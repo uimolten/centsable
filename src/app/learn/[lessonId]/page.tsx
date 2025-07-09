@@ -114,7 +114,7 @@ export default function LessonPage() {
   const [lives, setLives] = useState(5);
   const [streak, setStreak] = useState(0);
   const [interactiveSortItems, setInteractiveSortItems] = useState<SortItem[]>([]);
-  const [isAwaitingSort, setIsAwaitingSort] = useState(false);
+  const [isSortIncomplete, setIsSortIncomplete] = useState(false);
   
   const currentModule = lesson?.modules[moduleIndex];
   const currentStep = currentModule?.steps[stepIndex];
@@ -128,16 +128,31 @@ export default function LessonPage() {
       setTotalSteps(lesson.modules.reduce((acc, module) => acc + module.steps.length, 0));
     }
   }, [lesson]);
+
+  // Derived state for progress to ensure accuracy
+  useEffect(() => {
+    if (!lesson) return;
+    
+    let stepsSoFar = 0;
+    for (let i = 0; i < moduleIndex; i++) {
+      stepsSoFar += lesson.modules[i].steps.length;
+    }
+    stepsSoFar += stepIndex;
+    
+    setCompletedSteps(stepsSoFar);
+  }, [moduleIndex, stepIndex, lesson]);
   
   useEffect(() => {
     if (currentStep?.type === 'interactive-sort') {
       setInteractiveSortItems(shuffle(currentStep.items).map(item => ({ ...item, location: 'pool' })));
     }
   }, [currentStep]);
+
+  const handleLessonComplete = useCallback(() => {
+    router.push(`/learn?completed=${lessonId}`);
+  }, [lessonId, router]);
   
   const goToNextStep = useCallback(() => {
-     if(!hasAnswered) setCompletedSteps(prev => prev + 1);
-
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
@@ -152,12 +167,11 @@ export default function LessonPage() {
       setUserAnswers([]);
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, hasAnswered]);
+      setIsSortIncomplete(false);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
-
-    setCompletedSteps(prev => Math.max(0, prev - 1));
 
     if (stepIndex > 0) {
       setStepIndex(stepIndex - 1);
@@ -174,12 +188,8 @@ export default function LessonPage() {
     setUserAnswers([]);
     setTryAgainCounter(0);
     setIncorrectAttempts(0);
-    setIsAwaitingSort(false);
+    setIsSortIncomplete(false);
   }, [moduleIndex, stepIndex, lesson]);
-
-  const handleLessonComplete = useCallback(() => {
-    router.push(`/learn?completed=${lessonId}`);
-  }, [lessonId, router]);
 
   const checkAnswer = useCallback(() => {
     if (!currentStep) return false;
@@ -193,6 +203,8 @@ export default function LessonPage() {
       case 'fill-in-the-blank':
         return isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
       case 'interactive-sort':
+         // An answer is correct only if every item is in its correct box.
+         // Items left in the pool automatically make it incorrect.
         return interactiveSortItems.every(item => item.location === item.correctBox);
       default:
         return false;
@@ -227,17 +239,21 @@ export default function LessonPage() {
       return;
     }
     
+    // When there are no more steps, complete the lesson.
     if (!currentStep) {
+        // This makes sure the progress bar hits 100%
+        setCompletedSteps(totalSteps);
         handleLessonComplete();
         return;
     }
-
+    
     if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
-      setIsAwaitingSort(true);
+      setIsSortIncomplete(true);
+      handleCheck(); // This will register as an incorrect answer
       return;
     }
     
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'tap-the-pairs'].includes(currentStep.type);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
     
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
@@ -261,6 +277,7 @@ export default function LessonPage() {
       
       setHasAnswered(false);
       setIsCorrect(null);
+      setIsSortIncomplete(false);
       if (currentStep.type !== 'fill-in-the-blank' && currentStep.type !== 'interactive-sort') {
           setUserAnswers([]);
       }
@@ -273,23 +290,22 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
         event.preventDefault(); 
         
-        if (!currentStep) {
-          handleLessonComplete();
-          return;
-        }
-
-        const isInputBasedStep = ['multiple-choice', 'fill-in-the-blank', 'goal-builder'].includes(currentStep.type);
         const isAnswerEmpty = userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
 
-        if (isInputBasedStep && isAnswerEmpty) {
-          return;
+        if (!currentStep) {
+          // Allow enter on lesson complete screen
+        } else {
+            const isInputBasedStep = ['multiple-choice', 'fill-in-the-blank', 'goal-builder'].includes(currentStep.type);
+            if (isInputBasedStep && isAnswerEmpty) {
+              return;
+            }
         }
         
         handleFooterAction();
@@ -297,7 +313,7 @@ export default function LessonPage() {
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [handleFooterAction, currentStep, userAnswers, handleLessonComplete]);
+  }, [handleFooterAction, currentStep, userAnswers]);
 
 
   if (!lesson) {
@@ -420,8 +436,7 @@ export default function LessonPage() {
         incorrectAttempts={incorrectAttempts}
         onBack={goToPreviousStep}
         isFirstStep={isFirstStep}
-        isAwaitingSort={isAwaitingSort}
-        onDismissSortWarning={() => setIsAwaitingSort(false)}
+        isSortIncomplete={isSortIncomplete}
       >
         <AnimatePresence mode="wait">
           {currentStep ? renderStepContent(currentStep) : (

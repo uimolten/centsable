@@ -13,13 +13,19 @@ interface AnswerFeedbackProps {
   isFirstStep: boolean;
   customMessage?: string;
   customReinforcement?: string;
+  isSortIncomplete?: boolean;
 }
 
-export function AnswerFeedback({ isCorrect, onAction, buttonText, isButtonDisabled, correctAnswerText, onBack, isFirstStep, customMessage, customReinforcement }: AnswerFeedbackProps) {
+export function AnswerFeedback({ isCorrect, onAction, buttonText, isButtonDisabled, correctAnswerText, onBack, isFirstStep, customMessage, customReinforcement, isSortIncomplete }: AnswerFeedbackProps) {
   const standardMessage = isCorrect ? 'Awesome! ✨' : 'Not quite.';
   const message = customMessage ?? standardMessage;
   
-  const standardReinforcement = isCorrect ? 'You\'re on a roll!' : correctAnswerText ? `The correct answer is: ${correctAnswerText}` : "Let's review that one.";
+  let standardReinforcement = isCorrect ? 'You\'re on a roll!' : correctAnswerText ? `The correct answer is: ${correctAnswerText}` : "Let's review that one.";
+  
+  if (isSortIncomplete) {
+    standardReinforcement = "Please sort all items into a category before checking your answer.";
+  }
+
   const reinforcement = customReinforcement ?? standardReinforcement;
 
   return (
