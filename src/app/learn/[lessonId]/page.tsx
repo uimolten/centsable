@@ -241,16 +241,6 @@ export default function LessonPage() {
 
   const handleCheck = () => {
     if (hasAnswered) return;
-    
-    // Specific check for interactive-sort being incomplete
-    if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
-      toast({
-        variant: "destructive",
-        title: "Not quite yet!",
-        description: "Please sort all the items into a category before checking your answer.",
-      });
-      return; // Stop the function here
-    }
 
     const correct = checkAnswer();
     
@@ -279,6 +269,15 @@ export default function LessonPage() {
 
     if (!currentStep) return;
 
+    if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
+      toast({
+        variant: "destructive",
+        title: "Not quite yet!",
+        description: "Please sort all the items into a category before checking your answer.",
+      });
+      return;
+    }
+    
     const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'tap-the-pairs'].includes(currentStep.type);
     
     if (currentStep.type === 'goal-builder') {
