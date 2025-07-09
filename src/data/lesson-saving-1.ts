@@ -111,7 +111,7 @@ export const lessonSaving1: Lesson = {
           options: [
             { id: 'opt1', text: '🥤 Boba Tea' },
             { id: 'opt2', text: '👟 Rare Sneakers' },
-            { id: 'opt3', text: '🍎 An Apple' },
+            { id: 'opt3', text: '💧 Water' },
             { id: 'opt4', text: '🎮 A Video Game' },
           ],
           correctAnswer: ['opt1', 'opt2', 'opt4'],
