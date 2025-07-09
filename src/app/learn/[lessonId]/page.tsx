@@ -14,6 +14,12 @@ import { lessonSaving3 } from '@/data/lesson-saving-3';
 import { lessonSaving4 } from '@/data/lesson-saving-4';
 import { lessonBudgeting1 } from '@/data/lesson-budgeting-1';
 import { lessonBudgeting2 } from '@/data/lesson-budgeting-2';
+import { lessonBudgeting3 } from '@/data/lesson-budgeting-3';
+import { lessonBudgeting4 } from '@/data/lesson-budgeting-4';
+import { lessonBudgeting5 } from '@/data/lesson-budgeting-5';
+import { lessonBudgetingPractice1 } from '@/data/lesson-budgeting-practice-1';
+import { lessonBudgetingPractice2 } from '@/data/lesson-budgeting-practice-2';
+import { lessonBudgetingQuiz } from '@/data/lesson-budgeting-quiz';
 import { lessonInvesting1 } from '@/data/lesson-investing-1';
 import { lessonInvesting2 } from '@/data/lesson-investing-2';
 import { lessonInvesting3 } from '@/data/lesson-investing-3';
@@ -37,17 +43,29 @@ import { useToast } from '@/hooks/use-toast';
 type SortItem = BaseSortItem & { location: 'pool' | 'box1' | 'box2' };
 
 const getLessonData = (lessonId: string): Lesson | null => {
+  // Savings
   if (lessonId === 's1') return lessonSaving1;
   if (lessonId === 's2') return lessonSaving2;
   if (lessonId === 's3') return lessonSaving3;
   if (lessonId === 's4') return lessonSaving4;
+  
+  // Budgeting
   if (lessonId === 'b1') return lessonBudgeting1;
   if (lessonId === 'b2') return lessonBudgeting2;
+  if (lessonId === 'bp1') return lessonBudgetingPractice1;
+  if (lessonId === 'b3') return lessonBudgeting3;
+  if (lessonId === 'bp2') return lessonBudgetingPractice2;
+  if (lessonId === 'b4') return lessonBudgeting4;
+  if (lessonId === 'b5') return lessonBudgeting5;
+  if (lessonId === 'bq1') return lessonBudgetingQuiz;
+
+  // Investing
   if (lessonId === 'i1') return lessonInvesting1;
   if (lessonId === 'i2') return lessonInvesting2;
   if (lessonId === 'i3') return lessonInvesting3;
   if (lessonId === 'i4') return lessonInvesting4;
   if (lessonId === 'i5') return lessonInvesting5;
+
   return null;
 };
 
