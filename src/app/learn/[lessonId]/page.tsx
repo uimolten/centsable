@@ -269,9 +269,6 @@ export default function LessonPage() {
       return;
     }
     
-    // Always clear this flag on any action
-    setIsAwaitingSort(false);
-
     if (!currentStep) return;
 
     if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
@@ -415,6 +412,7 @@ export default function LessonPage() {
             onBack={goToPreviousStep}
             isFirstStep={false}
             isAwaitingSort={isAwaitingSort}
+            onDismissSortWarning={() => setIsAwaitingSort(false)}
           >
               <LessonComplete 
                 step={lastStep as any} 
@@ -441,6 +439,7 @@ export default function LessonPage() {
       onBack={goToPreviousStep}
       isFirstStep={isFirstStep}
       isAwaitingSort={isAwaitingSort}
+      onDismissSortWarning={() => setIsAwaitingSort(false)}
     >
       <AnimatePresence mode="wait">
         {renderStepContent(currentStep)}

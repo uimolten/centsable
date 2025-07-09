@@ -29,6 +29,7 @@ interface LessonContainerProps {
   onBack: () => void;
   isFirstStep: boolean;
   isAwaitingSort: boolean;
+  onDismissSortWarning: () => void;
 }
 
 export function LessonContainer({
@@ -46,6 +47,7 @@ export function LessonContainer({
   onBack,
   isFirstStep,
   isAwaitingSort,
+  onDismissSortWarning,
 }: LessonContainerProps) {
   const router = useRouter();
 
@@ -128,7 +130,7 @@ export function LessonContainer({
               <AnswerFeedback
                 key="awaiting-sort"
                 isCorrect={false}
-                onAction={onAction}
+                onAction={onDismissSortWarning}
                 buttonText="Got It"
                 isButtonDisabled={false}
                 customMessage="Not quite yet!"
