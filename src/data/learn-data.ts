@@ -2,7 +2,10 @@
 import type { Unit } from '@/types/learn';
 import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase } from 'lucide-react';
 
-export const units: Unit[] = [
+// Set this to `false` before deploying to production to enable sequential unlocking.
+const DEV_MODE_UNLOCK_ALL = true;
+
+const rawUnitsData: Unit[] = [
   {
     id: 'unit-1',
     title: 'Saving',
@@ -93,3 +96,16 @@ export const units: Unit[] = [
     ],
   },
 ];
+
+// Logic to set the initial state of activities
+export const units: Unit[] = rawUnitsData.map((unit, unitIndex) => ({
+    ...unit,
+    activities: unit.activities.map((activity, activityIndex) => {
+        const isFirstActivityOfAll = unitIndex === 0 && activityIndex === 0;
+        
+        // In dev mode, all activities are active. In prod, only the very first one is.
+        const state = DEV_MODE_UNLOCK_ALL ? 'active' : (isFirstActivityOfAll ? 'active' : 'locked');
+        
+        return { ...activity, state };
+    })
+}));
