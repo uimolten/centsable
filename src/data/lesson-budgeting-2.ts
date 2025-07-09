@@ -11,15 +11,15 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Time to become a money detective! 🕵️‍♀️ To make a good budget, you first need to know where your money is *actually* going.",
+          text: "In our last quest, we learned what a <b>budget</b> is. Now, let's become money detectives and learn how to track our <b>income</b> and <b>expenses</b>. 🕵️‍♀️",
         },
         {
           type: 'concept',
-          text: "Tracking your spending is like checking your phone's screen time report. It doesn't judge you; it just gives you the data so YOU can decide if you want to make a change. It's about awareness, not shame.",
+          text: "Tracking your spending is like checking your phone's screen time report. It doesn't judge you; it just gives you the data so YOU can decide if you want to make a change.",
         },
         {
           type: 'concept',
-          text: "A key part of this is understanding your <b>Cash Flow</b>: the difference between the money flowing IN (your income) and the money flowing OUT (your expenses). Positive cash flow means you have money left over to save!",
+          text: "A key part of this is understanding your <b>Cash Flow</b>. That's the difference between the money flowing IN (your income) and the money flowing OUT (your expenses). Positive cash flow means you have money left over to save!",
         },
       ],
     },
@@ -29,11 +29,11 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Expenses come in two flavors. <b>Fixed Expenses</b> are predictable costs that stay the same each month, like a phone bill or a subscription service. 🗓️",
+          text: "Your <b>expenses</b> come in two main flavors. First up are <b>Fixed Expenses</b>: predictable costs that stay the same each month, like a phone bill or a subscription service. 🗓️",
         },
         {
           type: 'concept',
-          text: "<b>Variable Expenses</b> change based on your choices. This includes things like eating out, shopping for clothes, or how much you spend on gas.  fluctuating.  fluctuating.  fluctuating.  fluctating  fluctating. 🛍️",
+          text: "The other flavor is <b>Variable Expenses</b>. These change based on your choices, like how much you spend eating out, shopping, or on gas. 🛍️",
         },
         {
           type: 'interactive-sort',
@@ -50,20 +50,20 @@ export const lessonBudgeting2: Lesson = {
       ]
     },
     {
-      title: 'Spending Leaks & Tools',
+      title: "Your Detective's Toolkit",
       xp: 20,
       steps: [
         {
           type: 'concept',
-          text: 'Watch out for "Spending Leaks" or "Budget Vampires"! 🧛 These are small, frequent purchases that secretly drain your cash.',
+          text: 'Watch out for "Spending Leaks"! 🧛 These are small, frequent purchases that secretly drain your cash without you even noticing.',
         },
         {
           type: 'scenario',
-          text: "That <b>$5</b> coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <b>$80</b> a month that just vanishes!",
+          text: "That <b>$5</b> energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <b>$80</b> a month that just vanishes! Tracking helps you spot these leaks.",
         },
         {
           type: 'concept',
-          text: "Luckily, you have tools to spot these leaks! You can use an **Automator** app (like Mint or Empower) to track for you, a **Planner** app (like YNAB) to give every dollar a job, or the **DIY Method** with a simple spreadsheet.",
+          text: "Luckily, you have tools to help! You can use an **Automator** app (like Mint or Empower) to track for you, a **Planner** app (like YNAB) to give every dollar a job, or the **DIY Method** with a simple spreadsheet.",
         },
         {
             type: 'multiple-choice',

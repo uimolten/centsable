@@ -11,25 +11,25 @@ export const lessonBudgeting3: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: 'Okay, you know *why* you need a budget and you*ve tracked your spending. Now, let*s actually **build** one with a simple, powerful framework: the <b>50/30/20 Rule</b>.',
+          text: 'You know *why* you need a budget and you*ve tracked your spending. Now, let*s actually **build** one with a simple, powerful framework: the <b>50/30/20 Rule</b>.',
         },
         {
           type: 'concept',
-          text: 'Imagine your income is a pizza. 🍕 The 50/30/20 rule is a recipe for how to slice it up perfectly every time.',
+          text: 'Imagine your income is a pizza. 🍕 The 50/30/20 rule is a recipe for how to slice it up based on the <b>Needs</b> and <b>Wants</b> we defined in the first lesson.',
           image: 'https://placehold.co/400x225',
           imageHint: 'pizza slices',
         },
         {
           type: 'concept',
-          text: "<b>50%</b> of your income goes to 🍽️ <b>Needs</b> (essentials like a bus pass, your share of bills, or lunch money).",
+          text: "<b>50%</b> of your income goes to your 🍽️ <b>Needs</b>. Remember, these are the absolute essentials you can't live without.",
         },
         {
           type: 'concept',
-          text: "<b>30%</b> goes to 🎉 <b>Wants</b> (fun stuff like concerts, shopping, subscriptions, or eating out).",
+          text: "<b>30%</b> goes to your 🎉 <b>Wants</b>—the fun stuff that makes life exciting.",
         },
         {
           type: 'concept',
-          text: "<b>20%</b> goes to 💾 <b>Savings & Debt Repayment</b> (money for your future goals or an emergency fund).",
+          text: "And the most important slice, <b>20%</b>, goes to 💾 <b>Savings & Goals</b>. This is for your future self.",
         },
         {
           type: 'multiple-choice',

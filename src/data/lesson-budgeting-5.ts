@@ -11,7 +11,7 @@ export const lessonBudgeting5: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's talk about the real reason we budget: to turn dreams into reality. 🚀 A budget is the rocket fuel for your goals.",
+          text: "Let's talk about the real reason we've learned to budget: to turn dreams into reality. 🚀 Your <b>budget</b> is the rocket fuel for your goals.",
         },
         {
           type: 'multiple-choice',
@@ -74,7 +74,7 @@ export const lessonBudgeting5: Lesson = {
         },
         {
           type: 'concept',
-          text: 'It’s when your money earns interest, then THAT interest earns its own interest. It’s like a tiny snowball that grows into a huge one over time.',
+          text: 'It’s when your money earns interest, then THAT interest earns its own interest. It’s like a tiny snowball that grows into a huge one over time. We will explore this more in the Investing unit!',
           image: 'https://placehold.co/400x225',
           imageHint: 'compounding chart growth',
         },

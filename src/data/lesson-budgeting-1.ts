@@ -6,7 +6,7 @@ export const lessonBudgeting1: Lesson = {
   title: 'Why Budgeting Matters',
   modules: [
     {
-      title: 'What Even Is a Budget?',
+      title: 'What is a Budget?',
       xp: 25,
       steps: [
         {
@@ -15,7 +15,15 @@ export const lessonBudgeting1: Lesson = {
         },
         {
           type: 'concept',
-          text: "A <b>Budget</b> is just a plan for your money. Think of it like your phone's battery saver mode—it helps you make sure your money lasts for what truly matters.",
+          text: "A <b>Budget</b> is just a plan for your money. It's how you tell your cash where to go instead of wondering where it went. A budget shows you two main things...",
+        },
+        {
+          type: 'concept',
+          text: "First, your <b>Income</b>: any money coming IN (from a job, allowance, gifts, etc.). 💸",
+        },
+        {
+          type: 'concept',
+          text: "And second, your <b>Expenses</b>: any money going OUT (on food, games, clothes, bills, etc.). 🛍️",
         },
         {
           type: 'multiple-choice',
@@ -32,32 +40,16 @@ export const lessonBudgeting1: Lesson = {
       ],
     },
     {
-      title: 'The Core Components',
+      title: 'Needs vs. Wants',
       xp: 25,
       steps: [
         {
           type: 'concept',
-          text: "Every budget has two core parts. First up is <b>Income</b>: any money coming IN (from a job, allowance, gifts, etc.). 💸",
+          text: "The secret to making a budget work is knowing the difference between <b>Needs</b> and <b>Wants</b>.",
         },
         {
           type: 'concept',
-          text: "The second part is <b>Expenses</b>: any money going OUT (on food, games, clothes, bills, etc.). 🛍️",
-        },
-        {
-            type: 'tap-the-pairs',
-            instructions: 'Match the term to its meaning.',
-            pairs: [
-              { term: 'Income', definition: 'Money you get' },
-              { term: 'Expense', definition: 'Money you spend' },
-            ]
-        },
-        {
-          type: 'concept',
-          text: "Now for the secret to making it all work: understanding the difference between <b>Needs</b> and <b>Wants</b>.",
-        },
-        {
-          type: 'concept',
-          text: "A <b>Need</b> is something you absolutely must have to live, like food or a bus pass to get to school. A <b>Want</b> is something that’s fun to have, but you'll be okay without it, like a new video game or fancy coffee.",
+          text: "A <b>Need</b> is something you absolutely must have to live, like food or a bus pass to get to school. A <b>Want</b> is something that’s fun to have, but you'll survive without it, like a new video game or fancy coffee.",
         },
         {
           type: 'interactive-sort',
