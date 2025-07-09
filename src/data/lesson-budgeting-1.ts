@@ -58,7 +58,8 @@ export const lessonBudgeting1: Lesson = {
         {
           type: 'concept',
           text: "Remember 'Needs vs. Wants' from our <a href='/learn/s1' target='_blank' rel='noopener noreferrer' class='text-primary underline'>Importance of Saving</a> lesson? That's a key part of budgeting!",
-          icon: 'heart'
+          image: 'https://placehold.co/400x225',
+          imageHint: 'needs wants',
         },
         {
           type: 'concept',
