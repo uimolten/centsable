@@ -21,40 +21,43 @@ export default function LearnPage() {
   const searchParams = useSearchParams();
 
   const handleCompleteActivity = useCallback((activityId: string) => {
-    // Mark current as completed
-    const newUnits = units.map(unit => ({
-      ...unit,
-      activities: unit.activities.map(act => 
-        act.id === activityId ? { ...act, state: 'completed' as const } : act
-      )
-    }));
+    setUnits(currentUnits => {
+      // Mark current as completed
+      const newUnits = currentUnits.map(unit => ({
+        ...unit,
+        activities: unit.activities.map(act => 
+          act.id === activityId ? { ...act, state: 'completed' as const } : act
+        )
+      }));
 
-    // Find and unlock the next one
-    let nextActivityFound = false;
-    for (const unit of newUnits) {
-      for (const act of unit.activities) {
-        if (nextActivityFound && act.state === 'locked') {
-          act.state = 'active';
-          if (isDesktop) {
-            setSelectedActivity(act);
-          } else {
-            setSelectedActivity(null);
+      // Find and unlock the next one
+      let nextActivityFound = false;
+      for (const unit of newUnits) {
+        for (const act of unit.activities) {
+          if (nextActivityFound && act.state === 'locked') {
+            act.state = 'active';
+            if (isDesktop) {
+              setSelectedActivity(act);
+            } else {
+              setSelectedActivity(null);
+            }
+            // Return the updated units and stop searching
+            return newUnits;
           }
-          setUnits(newUnits);
-          return;
-        }
-        if (act.id === activityId) {
-          nextActivityFound = true;
+          if (act.id === activityId) {
+            nextActivityFound = true;
+          }
         }
       }
-    }
-    
-    // If we reached the end
-    if(nextActivityFound) {
-      setSelectedActivity(null);
-      setUnits(newUnits);
-    }
-  }, [units, isDesktop]);
+      
+      // If we reached the end
+      if(nextActivityFound) {
+        setSelectedActivity(null);
+      }
+
+      return newUnits;
+    });
+  }, [isDesktop]);
 
   useEffect(() => {
     const completedActivityId = searchParams.get('completed');
