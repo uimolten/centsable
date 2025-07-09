@@ -21,7 +21,7 @@ export const units: Unit[] = [
     description: "Master the art of budgeting to take control of your income and expenses.",
     unitIcon: PieChart,
     activities: [
-      { id: 'b1', title: 'What is a Budget?', type: 'lesson', state: 'locked', xp: 10 },
+      { id: 'b1', title: 'Why Budgeting Matters', type: 'lesson', state: 'locked', xp: 10 },
       { id: 'b2', title: 'Needs vs. Wants', type: 'lesson', state: 'locked', xp: 10 },
       { id: 'b3', title: 'Practice: Categorize Expenses', type: 'practice', state: 'locked', xp: 15 },
       { id: 'b4', title: 'The 50/30/20 Rule', type: 'lesson', state: 'locked', xp: 10 },

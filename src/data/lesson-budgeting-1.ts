@@ -3,7 +3,7 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonBudgeting1: Lesson = {
   id: 'b1',
-  title: 'What is a Budget?',
+  title: 'Why Budgeting Matters',
   modules: [
     {
       title: 'What Even Is a Budget?',
