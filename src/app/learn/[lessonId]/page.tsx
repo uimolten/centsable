@@ -100,12 +100,7 @@ export default function LessonPage() {
   const { toast } = useToast();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
   
-  // Use a state for the lesson to avoid re-calculating
   const [lesson, setLesson] = useState<Lesson | null>(null);
-  useEffect(() => {
-    setLesson(getLessonData(lessonId));
-  }, [lessonId]);
-
   const [moduleIndex, setModuleIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
@@ -120,6 +115,13 @@ export default function LessonPage() {
   const [streak, setStreak] = useState(0);
   const [interactiveSortItems, setInteractiveSortItems] = useState<SortItem[]>([]);
   const [isAwaitingSort, setIsAwaitingSort] = useState(false);
+  
+  const currentModule = lesson?.modules[moduleIndex];
+  const currentStep = currentModule?.steps[stepIndex];
+
+  useEffect(() => {
+    setLesson(getLessonData(lessonId));
+  }, [lessonId]);
 
   useEffect(() => {
     if (lesson) {
@@ -127,58 +129,11 @@ export default function LessonPage() {
     }
   }, [lesson]);
   
-  const currentModule = lesson?.modules[moduleIndex];
-  const currentStep = currentModule?.steps[stepIndex];
-  
-  // Initialize state for interactive sort when the step becomes active
   useEffect(() => {
     if (currentStep?.type === 'interactive-sort') {
       setInteractiveSortItems(shuffle(currentStep.items).map(item => ({ ...item, location: 'pool' })));
     }
   }, [currentStep]);
-
-  if (!lesson) {
-    return <div>Lesson not found or has ended! Redirecting...</div>;
-  }
-  
-  const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
-
-  const handleSelectAnswer = (answer: string) => {
-    const isCompleteAndCorrect = hasAnswered && isCorrect === true;
-    if (isCompleteAndCorrect) return;
-
-    if (currentStep?.type === 'multiple-choice') {
-      const step = currentStep as MultipleChoiceStep;
-      const isMultiSelect = Array.isArray(step.correctAnswer);
-      
-      if (isMultiSelect) {
-        setUserAnswers(prev => 
-          prev.includes(answer) 
-            ? prev.filter(a => a !== answer) 
-            : [...prev, answer]
-        );
-      } else {
-        setUserAnswers([answer]);
-      }
-    } else {
-      setUserAnswers([answer]);
-    }
-  };
-  
-  const handleInteractiveComplete = (correct: boolean) => {
-    const isCompleteAndCorrect = hasAnswered && isCorrect === true;
-    if (isCompleteAndCorrect) return;
-
-    setHasAnswered(true);
-    setIsCorrect(correct);
-    if (correct) {
-      setStreak(prev => prev + 1);
-    } else {
-      setIncorrectAttempts(prev => prev + 1);
-      setStreak(0);
-      setLives(prev => Math.max(0, prev - 1));
-    }
-  };
   
   const goToNextStep = useCallback(() => {
      if(!hasAnswered) setCompletedSteps(prev => prev + 1);
@@ -244,7 +199,7 @@ export default function LessonPage() {
     }
   }, [currentStep, userAnswers, interactiveSortItems]);
 
-  const handleCheck = () => {
+  const handleCheck = useCallback(() => {
     if (hasAnswered) return;
 
     const correct = checkAnswer();
@@ -259,7 +214,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }
+  }, [checkAnswer, hasAnswered]);
 
   const handleFooterAction = useCallback(() => {
     if (lives === 0) {
@@ -345,6 +300,49 @@ export default function LessonPage() {
   }, [handleFooterAction, currentStep, userAnswers, handleLessonComplete]);
 
 
+  if (!lesson) {
+    return <div>Lesson not found or has ended! Redirecting...</div>;
+  }
+  
+  const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+
+  const handleSelectAnswer = (answer: string) => {
+    const isCompleteAndCorrect = hasAnswered && isCorrect === true;
+    if (isCompleteAndCorrect) return;
+
+    if (currentStep?.type === 'multiple-choice') {
+      const step = currentStep as MultipleChoiceStep;
+      const isMultiSelect = Array.isArray(step.correctAnswer);
+      
+      if (isMultiSelect) {
+        setUserAnswers(prev => 
+          prev.includes(answer) 
+            ? prev.filter(a => a !== answer) 
+            : [...prev, answer]
+        );
+      } else {
+        setUserAnswers([answer]);
+      }
+    } else {
+      setUserAnswers([answer]);
+    }
+  };
+  
+  const handleInteractiveComplete = (correct: boolean) => {
+    const isCompleteAndCorrect = hasAnswered && isCorrect === true;
+    if (isCompleteAndCorrect) return;
+
+    setHasAnswered(true);
+    setIsCorrect(correct);
+    if (correct) {
+      setStreak(prev => prev + 1);
+    } else {
+      setIncorrectAttempts(prev => prev + 1);
+      setStreak(0);
+      setLives(prev => Math.max(0, prev - 1));
+    }
+  };
+  
   const getInstructionText = (step?: Step): string => {
     if (!step) return "Congratulations!";
     switch (step.type) {
