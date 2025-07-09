@@ -13,7 +13,10 @@ export function SpeechBubble({ text }: SpeechBubbleProps) {
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className="relative bg-card/70 backdrop-blur-lg border border-border/20 text-foreground rounded-2xl p-6 w-full max-w-2xl text-center shadow-lg"
     >
-      <p className="text-xl md:text-2xl font-semibold leading-relaxed">{text}</p>
+      <p
+        className="text-xl md:text-2xl font-semibold leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: text }}
+      />
       <div className="absolute left-1/2 -bottom-2.5 transform -translate-x-1/2 w-5 h-5 bg-card/70 border-b border-r border-border/20 rotate-45 backdrop-blur-lg"></div>
     </motion.div>
   );

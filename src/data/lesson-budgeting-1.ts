@@ -57,7 +57,7 @@ export const lessonBudgeting1: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Remember 'Needs vs. Wants' from our Savings unit? That's a key part of budgeting! Knowing the difference helps you decide where your money should go first.",
+          text: "Remember 'Needs vs. Wants' from our <a href='/learn/s1' target='_blank' rel='noopener noreferrer' class='text-primary underline'>Importance of Saving</a> lesson? That's a key part of budgeting!",
           icon: 'heart'
         },
         {
