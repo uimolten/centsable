@@ -7,6 +7,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { cn } from '@/lib/utils';
 import type { InteractiveSortStep, SortItem as BaseSortItem } from '@/types/lesson';
 
+const ItemType = 'SORT_ITEM';
+
 interface SortItem extends BaseSortItem {
     location: 'pool' | 'box1' | 'box2';
 }
@@ -24,7 +26,7 @@ const DraggableItem = ({ item, canDrag }: DraggableItemProps) => {
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }), [canDrag]);
+  }), [item.id, canDrag]);
 
   return (
     <motion.div
@@ -52,8 +54,6 @@ interface DropZoneProps {
   label?: string;
 }
 
-const ItemType = 'SORT_ITEM';
-
 const DropZone = ({ zoneId, onDrop, children, className, label }: DropZoneProps) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemType,
@@ -61,7 +61,7 @@ const DropZone = ({ zoneId, onDrop, children, className, label }: DropZoneProps)
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
-  }));
+  }), [onDrop, zoneId]);
 
   return (
     <div className="space-y-2">
