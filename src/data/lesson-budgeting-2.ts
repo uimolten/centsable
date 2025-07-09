@@ -1,3 +1,4 @@
+
 import type { Lesson } from '@/types/lesson';
 
 export const lessonBudgeting2: Lesson = {
@@ -10,11 +11,11 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Imagine a crisp $20 bill lands in your pocket every Friday. After a month, you'd have $80! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money *really* goes.",
+          text: "Imagine a crisp $20 bill lands in your pocket every Friday. After a month, you'd have $80! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <strong>really</strong> goes.",
         },
         {
           type: 'concept',
-          text: "Tracking your money is like checking your phone's screen time report. It doesn't judge you; it just shows you the data so YOU can decide if you want to make a change. It's about awareness, not shame.",
+          text: "Tracking your money is like checking your phone's screen time report. It doesn't judge you; it just shows you the data so <strong>you</strong> can decide if you want to make a change. It's about awareness, not shame.",
         },
         {
           type: 'multiple-choice',
@@ -36,11 +37,11 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Think of <strong>Fixed Expenses</strong> like your school schedule—the same, predictable costs each month (like a phone bill or subscription).",
+          text: "Think of <strong><em>Fixed Expenses</em></strong> like your school schedule—the same, predictable costs each month (like a phone bill or subscription).",
         },
         {
           type: 'concept',
-          text: "<strong>Variable Expenses</strong> are like your weekend plans—they change based on your choices (like eating out or shopping).",
+          text: "<strong><em>Variable Expenses</em></strong> are like your weekend plans—they change based on your choices (like eating out or shopping).",
         },
         {
           type: 'interactive-sort',
@@ -66,11 +67,11 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'scenario',
-          text: "That $5 coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <strong>$80 a month</strong> that just vanishes!",
+          text: "That $5 coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's $80 a month that just vanishes!",
         },
         {
           type: 'concept',
-          text: "Luckily, you have tools! Apps like <strong>Mint</strong> can automate tracking, <strong>YNAB</strong> helps you plan every dollar, and <strong>Google Sheets</strong> lets you build your own system.",
+          text: "Luckily, you have tools! Apps like Mint automate tracking. YNAB helps you tell every dollar where to go <strong>before</strong> you spend it. And Google Sheets lets you build your own system.",
           image: 'https://placehold.co/400x225',
           imageHint: 'apps phone',
         },
@@ -94,7 +95,7 @@ export const lessonBudgeting2: Lesson = {
         steps: [
             {
                 type: 'scenario',
-                text: "Time for a challenge! Your income this month is <strong>$340</strong> ($250 paycheck, $50 gift, $40 from selling clothes)."
+                text: "Time for a challenge! Your income this month is $340 ($250 paycheck, $50 gift, $40 from selling clothes)."
             },
             {
                 type: 'scenario',
@@ -121,6 +122,10 @@ export const lessonBudgeting2: Lesson = {
         {
           type: 'concept',
           text: 'And that is the power of tracking! Now you know exactly where your money went, and you can decide if you want to change anything next month.',
+        },
+        {
+          type: 'concept',
+          text: "Think about the <strong>one</strong> expense category you're most curious about tracking for yourself. That's your first mission!"
         },
         {
           type: 'complete',
