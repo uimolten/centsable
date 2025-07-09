@@ -10,6 +10,7 @@ import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
 import { lessonSaving3 } from '@/data/lesson-saving-3';
 import { lessonSaving4 } from '@/data/lesson-saving-4';
+import { lessonBudgeting1 } from '@/data/lesson-budgeting-1';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -29,6 +30,7 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 's2') return lessonSaving2;
   if (lessonId === 's3') return lessonSaving3;
   if (lessonId === 's4') return lessonSaving4;
+  if (lessonId === 'b1') return lessonBudgeting1;
   return null;
 };
 
