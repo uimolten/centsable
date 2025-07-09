@@ -11,7 +11,7 @@ export const lessonSaving1: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Welcome to your first quest! ⚔️ Let's talk about a real-life superpower: saving money.",
+          text: "Welcome to your first quest! ⚔️ Let's talk about a real-life superpower: <b>saving money</b>.",
         },
         {
           type: 'concept',
@@ -43,7 +43,7 @@ export const lessonSaving1: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'Cool, but why save? You save to get things you really want later! These are called financial goals. 🎯',
+          text: 'Cool, but why save? You save to get things you really want later! These are called <b>financial goals</b>. 🎯',
         },
         {
           type: 'multiple-choice',
@@ -87,15 +87,15 @@ export const lessonSaving1: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'So, where does saving money come from? The secret is knowing the difference between Needs and Wants.',
+          text: 'So, where does saving money come from? The secret is knowing the difference between <b>Needs</b> and <b>Wants</b>.',
         },
         {
           type: 'concept',
-          text: "A Need is something you absolutely must have to live, like food and a place to live. A Want is something that’s fun to have, but you'll be okay without it.",
+          text: "A <b>Need</b> is something you absolutely must have to live, like food and a place to live. A <b>Want</b> is something that’s fun to have, but you'll be okay without it.",
         },
         {
           type: 'multiple-choice',
-          question: 'Tap all the Needs.',
+          question: 'Tap all the <b>Needs</b>.',
           options: [
             { id: 'opt1', text: '🍕 Pizza' },
             { id: 'opt2', text: '💧 Water' },
@@ -107,7 +107,7 @@ export const lessonSaving1: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'Now, tap all the Wants.',
+          question: 'Now, tap all the <b>Wants</b>.',
           options: [
             { id: 'opt1', text: '🥤 Boba Tea' },
             { id: 'opt2', text: '👟 Rare Sneakers' },
@@ -132,7 +132,7 @@ export const lessonSaving1: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'Which one is the Need?',
+          question: 'Which one is the <b>Need</b>?',
           options: [
             { id: 'opt1', text: 'The soda' },
             { id: 'opt2', text: 'The phone bill' },

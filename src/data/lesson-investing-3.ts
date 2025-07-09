@@ -15,7 +15,7 @@ export const lessonInvesting3: Lesson = {
         },
         {
           type: 'concept',
-          text: "The first piece of gear is a <strong>Stock</strong>. Buying a stock means you own a tiny piece of a company, like Apple or Nike. It's like having a powerful but risky magic sword! ⚔️",
+          text: "The first piece of gear is a <b>Stock</b>. Buying a stock means you own a tiny piece of a company, like Apple or Nike. It's like having a powerful but risky magic sword! ⚔️",
           image: 'https://placehold.co/400x225',
           imageHint: 'magic sword',
         },
@@ -33,7 +33,7 @@ export const lessonInvesting3: Lesson = {
         },
         {
           type: 'concept',
-          text: "Next up is a <strong>Bond</strong>. A bond is basically a loan you give to a company or government. They promise to pay you back with extra 'interest'. It's like a sturdy, reliable shield. 🛡️",
+          text: "Next up is a <b>Bond</b>. A bond is basically a loan you give to a company or government. They promise to pay you back with extra 'interest'. It's like a sturdy, reliable shield. 🛡️",
           image: 'https://placehold.co/400x225',
           imageHint: 'magic shield',
         },
@@ -49,7 +49,7 @@ export const lessonInvesting3: Lesson = {
         },
         {
           type: 'concept',
-          text: "Finally, there are <strong>Mutual Funds</strong> and <strong>ETFs</strong>. Think of these as a pre-made inventory bag 🎒 full of many different stocks and bonds. It's an easy way to get a mix of everything!",
+          text: "Finally, there are <b>Mutual Funds</b> and <b>ETFs</b>. Think of these as a pre-made inventory bag 🎒 full of many different stocks and bonds. It's an easy way to get a mix of everything!",
           image: 'https://placehold.co/400x225',
           imageHint: 'inventory bag',
         },

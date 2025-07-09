@@ -15,13 +15,13 @@ export const lessonInvesting5: Lesson = {
         },
         {
           type: 'concept',
-          text: "To invest in real life, you need a special <strong>Brokerage Account</strong>. Think of it as your official player profile that lets you buy and sell stocks, bonds, and funds.",
+          text: "To invest in real life, you need a special <b>Brokerage Account</b>. Think of it as your official player profile that lets you buy and sell stocks, bonds, and funds.",
           image: 'https://placehold.co/400x225',
           imageHint: 'player profile',
         },
         {
           type: 'concept',
-          text: "Since you're under 18, you'll need a parent or guardian to help you open a <strong>Custodial Account</strong>. It's your account, but they help manage it until you're an adult.",
+          text: "Since you're under 18, you'll need a parent or guardian to help you open a <b>Custodial Account</b>. It's your account, but they help manage it until you're an adult.",
           image: 'https://placehold.co/400x225',
           imageHint: 'adult child team',
         },
@@ -39,7 +39,7 @@ export const lessonInvesting5: Lesson = {
         },
         {
           type: 'concept',
-          text: "One of the most popular starting investments is an <strong>Index Fund</strong>. It's a type of ETF that holds hundreds of stocks (like the S&P 500), making it instantly diversified. It's a great 'starter pack' for new investors!",
+          text: "One of the most popular starting investments is an <b>Index Fund</b>. It's a type of ETF that holds hundreds of stocks (like the S&P 500), making it instantly diversified. It's a great 'starter pack' for new investors!",
           image: 'https://placehold.co/400x225',
           imageHint: 'starter pack',
         },

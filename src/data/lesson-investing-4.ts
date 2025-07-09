@@ -15,7 +15,7 @@ export const lessonInvesting4: Lesson = {
         },
         {
           type: 'concept',
-          text: "<strong>Diversification</strong> is a fancy word for not putting all your eggs (or money) in one basket. It's about spreading your investments out to lower your overall risk.",
+          text: "<b>Diversification</b> is a fancy word for not putting all your eggs (or money) in one basket. It's about spreading your investments out to lower your overall risk.",
           image: 'https://placehold.co/400x225',
           imageHint: 'eggs basket',
         },

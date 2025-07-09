@@ -11,7 +11,7 @@ export const lessonSaving3: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Welcome to the training dojo! 🥋 Let's practice making your goals even SMARTER. No pressure, this is just for practice.",
+          text: "Welcome to the training dojo! 🥋 Let's practice making your goals even <b>SMARTER</b>. No pressure, this is just for practice.",
         },
         {
           type: 'concept',
@@ -47,7 +47,7 @@ export const lessonSaving3: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: "Let's make it Specific and Measurable. Tap the better option.",
+          question: "Let's make it <b>Specific</b> and <b>Measurable</b>. Tap the better option.",
           options: [
             { id: 'opt1', text: 'I want a cool skateboard.' },
             { id: 'opt2', text: 'I want the Powell-Peralta flight deck, which costs $90.' },
@@ -56,7 +56,7 @@ export const lessonSaving3: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: "Great! Now let's make it Time-bound. How would you add a deadline?",
+          question: "Great! Now let's make it <b>Time-bound</b>. How would you add a deadline?",
           options: [
             { id: 'opt1', text: "I'll get it someday." },
             { id: 'opt2', text: "I'll save up for it in the next 3 months." },
@@ -65,7 +65,7 @@ export const lessonSaving3: Lesson = {
         },
         {
           type: 'concept',
-          text: "GOAL FIXED! 🛠️ You turned 'I want a skateboard' into 'I will save $90 for the Powell-Peralta flight deck in the next 3 months.' That's a plan!",
+          text: "<b>GOAL FIXED!</b> 🛠️ You turned 'I want a skateboard' into 'I will save $90 for the Powell-Peralta flight deck in the next 3 months.' That's a plan!",
         },
         {
           type: 'complete',

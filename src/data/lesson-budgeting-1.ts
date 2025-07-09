@@ -11,7 +11,7 @@ export const lessonBudgeting1: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's talk about a word that sounds boring but is actually a superpower: budgeting. 🦸‍♂️ Ready to unlock it?",
+          text: "Let's talk about a word that sounds boring but is actually a superpower: <b>budgeting</b>. 🦸‍♂️ Ready to unlock it?",
         },
         {
           type: 'concept',
@@ -63,7 +63,7 @@ export const lessonBudgeting1: Lesson = {
         },
         {
           type: 'concept',
-          text: "Just to recap: Needs are essential for survival (like a bus pass for school), while Wants are things that make life more fun (like going out for pizza). Plan for needs first!",
+          text: "Just to recap: <b>Needs</b> are essential for survival (like a bus pass for school), while <b>Wants</b> are things that make life more fun (like going out for pizza). Plan for needs first!",
         }
       ],
     },
@@ -73,11 +73,11 @@ export const lessonBudgeting1: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Let's learn two key terms. INCOME is any money coming IN. 💸",
+          text: "Let's learn two key terms. <b>INCOME</b> is any money coming IN. 💸",
         },
         {
           type: 'concept',
-          text: 'EXPENSES are any money going OUT. 🛍️',
+          text: '<b>EXPENSES</b> are any money going OUT. 🛍️',
         },
         {
             type: 'fill-in-the-blank',

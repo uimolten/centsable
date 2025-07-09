@@ -1,3 +1,4 @@
+
 import type { Lesson } from '@/types/lesson';
 
 export const lessonInvesting1: Lesson = {
@@ -14,13 +15,13 @@ export const lessonInvesting1: Lesson = {
         },
         {
           type: 'concept',
-          text: "Saving is keeping your money safe in a piggy bank or account. It's super important, but it doesn't really grow.",
+          text: "<b>Saving</b> is keeping your money safe in a piggy bank or account. It's super important, but it doesn't really grow.",
           image: 'https://placehold.co/400x225',
           imageHint: 'piggy bank',
         },
         {
           type: 'concept',
-          text: 'Investing is like planting a money seed. 🌱 You put your money into something that has the potential to grow into a much bigger money tree over time.',
+          text: '<b>Investing</b> is like planting a money seed. 🌱 You put your money into something that has the potential to grow into a much bigger money tree over time.',
           image: 'https://placehold.co/400x225',
           imageHint: 'money tree grow',
         },
@@ -34,13 +35,13 @@ export const lessonInvesting1: Lesson = {
         },
         {
           type: 'concept',
-          text: 'Now for the real magic: Compounding! ✨ This is the most powerful level-up in finance.',
+          text: 'Now for the real magic: <b>Compounding</b>! ✨ This is the most powerful level-up in finance.',
           image: 'https://placehold.co/400x225',
           imageHint: 'magic sparkle',
         },
         {
           type: 'concept',
-          text: "Watch what happens. Your money tree grows a few coins (your 'return'). But with compounding, those new coins grow their OWN little branches and coins! 🤯",
+          text: "Watch what happens. Your money tree grows a few coins (your 'return'). But with compounding, those new coins grow their <b><i>OWN</i></b> little branches and coins! 🤯",
           image: 'https://placehold.co/400x225',
           imageHint: 'compounding chart',
         },

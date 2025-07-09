@@ -6,16 +6,16 @@ export const lessonBudgeting2: Lesson = {
   title: "Where's Your Money Really Going?",
   modules: [
     {
-      title: "The Detective's Toolkit",
+      title: "Become a Money Detective",
       xp: 15,
       steps: [
         {
           type: 'intro',
-          text: "Imagine a crisp <strong>$20</strong> bill lands in your pocket every Friday. After a month, you'd have <strong>$80</strong>! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <em>really</em> goes.",
+          text: "Imagine a crisp <b>$20</b> bill lands in your pocket every Friday. After a month, you'd have <b>$80</b>! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <i>really</i> goes.",
         },
         {
           type: 'concept',
-          text: "Tracking your money is like checking your phone's screen time report. It doesn't judge you; it just shows you the data so <strong>you</strong> can decide if you want to make a change. It's about awareness, not shame.",
+          text: "Tracking your money is like checking your phone's screen time report. It doesn't judge you; it just shows you the data so <b>you</b> can decide if you want to make a change. It's about awareness, not shame.",
         },
         {
           type: 'multiple-choice',
@@ -37,11 +37,11 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Think of <strong>Fixed Expenses</strong> like your school schedule—the same, predictable costs each month (like a phone bill or subscription).",
+          text: "Think of <b>Fixed Expenses</b> like your school schedule—the same, predictable costs each month (like a phone bill or subscription).",
         },
         {
           type: 'concept',
-          text: "<strong>Variable Expenses</strong> are like your weekend plans—they change based on your choices (like eating out or shopping).",
+          text: "<b>Variable Expenses</b> are like your weekend plans—they change based on your choices (like eating out or shopping).",
         },
         {
           type: 'interactive-sort',
@@ -67,7 +67,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'scenario',
-          text: "That <strong>$5</strong> coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <strong>$80</strong> a month that just vanishes!",
+          text: "That <b>$5</b> coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <b>$80</b> a month that just vanishes!",
         },
         {
             type: 'multiple-choice',
@@ -84,7 +84,7 @@ export const lessonBudgeting2: Lesson = {
       ]
     },
     {
-      title: "Your Detective's Toolkit",
+      title: "Find Your Tracking Tool",
       xp: 10,
       steps: [
         {
@@ -95,19 +95,19 @@ export const lessonBudgeting2: Lesson = {
         },
         {
             type: 'concept',
-            text: "<strong>The Automator:</strong> Apps like Mint or Empower connect to your bank and sort your spending for you. It's great for getting a quick, hands-off overview.",
+            text: "<b>The Automator:</b> Apps like Mint or Empower connect to your bank and sort your spending for you. It's great for getting a quick, hands-off overview.",
             image: 'https://placehold.co/400x225',
             imageHint: 'app dashboard',
         },
         {
             type: 'concept',
-            text: "<strong>The Planner:</strong> Apps like YNAB (You Need A Budget) make you give every dollar a job *before* you spend it. This is super powerful for hitting specific goals.",
+            text: "<b>The Planner:</b> Apps like YNAB (You Need A Budget) make you give every dollar a job <i>before</i> you spend it. This is super powerful for hitting specific goals.",
             image: 'https://placehold.co/400x225',
             imageHint: 'budget planner',
         },
         {
             type: 'concept',
-            text: "<strong>The DIY Method:</strong> A simple Google Sheet or notebook gives you total control. It takes more work, but you can customize it exactly how you like.",
+            text: "<b>The DIY Method:</b> A simple Google Sheet or notebook gives you total control. It takes more work, but you can customize it exactly how you like.",
             image: 'https://placehold.co/400x225',
             imageHint: 'spreadsheet chart',
         },
@@ -130,19 +130,19 @@ export const lessonBudgeting2: Lesson = {
         steps: [
             {
                 type: 'scenario',
-                text: "Time for a challenge! Your income this month is <strong>$340</strong> (<strong>$250</strong> paycheck, <strong>$50</strong> gift, <strong>$40</strong> from selling clothes)."
+                text: "Time for a challenge! Your income this month is <b>$340</b> (<b>$250</b> paycheck, <b>$50</b> gift, <b>$40</b> from selling clothes)."
             },
             {
                 type: 'fill-in-the-blank',
-                question: "First, what is the TOTAL of all your expenses this month? <strong>$______</strong>",
+                question: "First, what is the TOTAL of all your expenses this month? <b>$______</b>",
                 correctAnswer: '270',
                 reinforcement: 'Correct! Total expenses are $270.',
-                image: 'https://placehold.co/600x400',
+                image: 'https://placehold.co/600x400/1a1a1a/f8f8f8?text=Expenses%0A-%20Phone%20Bill:%20$50%0A-%20Subscription:%20$15%0A-%20Food:%20$120%0A-%20Shopping:%20$60%0A-%20Movie:%20$25',
                 imageHint: 'expense list',
             },
             {
                 type: 'fill-in-the-blank',
-                question: "You started with <strong>$340</strong> and spent <strong>$270</strong>. How much do you have left over? <strong>$______</strong>",
+                question: "You started with <b>$340</b> and spent <b>$270</b>. How much do you have left over? <b>$______</b>",
                 correctAnswer: '70',
                 reinforcement: "That's right! You have $70 left to save or spend wisely.",
             }
@@ -158,7 +158,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'concept',
-          text: "Your first mission: Think about the <strong>one</strong> expense category you're most curious about, and which tool you might try to track it. That's how real change starts!"
+          text: "Your first mission: Think about the <b>one</b> expense category you're most curious about, and which tool you might try to track it. That's how real change starts!"
         },
         {
           type: 'complete',

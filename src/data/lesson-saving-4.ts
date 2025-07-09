@@ -11,7 +11,7 @@ export const lessonSaving4: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "THE FINAL CHALLENGE! 👑 Time to test your knowledge of the Savings Unit. Let's do this!",
+          text: "<b>THE FINAL CHALLENGE!</b> 👑 Time to test your knowledge of the Savings Unit. Let's do this!",
         },
         {
           type: 'multiple-choice',
@@ -33,13 +33,13 @@ export const lessonSaving4: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "The 'T' in SMART goals stands for ____________.",
+          question: "The 'T' in <b>SMART</b> goals stands for ____________.",
           correctAnswer: 'Time-bound',
           reinforcement: 'Time-bound is correct!',
         },
         {
           type: 'multiple-choice',
-          question: 'Which of these goals is the most Specific?',
+          question: 'Which of these goals is the most <b>Specific</b>?',
           options: [
             { id: 'opt1', text: 'Save for a vacation.' },
             { id: 'opt2', text: 'Save for a trip to Japan.' },
@@ -49,7 +49,7 @@ export const lessonSaving4: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'True or False: A goal is Achievable even if you have no way to get the money for it.',
+          question: 'True or False: A goal is <b>Achievable</b> even if you have no way to get the money for it.',
           options: [
             { id: 'true', text: 'True' },
             { id: 'false', text: 'False' },
@@ -68,7 +68,7 @@ export const lessonSaving4: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'You have $15. Which of these is a Need?',
+          question: 'You have $15. Which of these is a <b>Need</b>?',
           options: [
             { id: 'game', image: 'https://placehold.co/200x200', imageHint: 'video game icon', text: 'Video Game' },
             { id: 'bus', image: 'https://placehold.co/200x200', imageHint: 'bus pass icon', text: 'Bus Pass' },

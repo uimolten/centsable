@@ -1,3 +1,4 @@
+
 import type { Lesson } from '@/types/lesson';
 
 export const lessonInvesting2: Lesson = {
@@ -14,7 +15,7 @@ export const lessonInvesting2: Lesson = {
         },
         {
           type: 'concept',
-          text: 'The rule is simple: to get a higher potential Reward (make more money), you usually have to take a higher Risk.',
+          text: 'The rule is simple: to get a higher potential <b>Reward</b> (make more money), you usually have to take a higher <b>Risk</b>.',
           image: 'https://placehold.co/400x225',
           imageHint: 'risk reward seesaw',
         },
@@ -31,7 +32,7 @@ export const lessonInvesting2: Lesson = {
         },
         {
           type: 'concept',
-          text: "Your Risk Tolerance is how comfortable you are with that risk. Are you a cautious player or a bold hero? There's no wrong answer!",
+          text: "Your <b>Risk Tolerance</b> is how comfortable you are with that risk. Are you a cautious player or a bold hero? There's no wrong answer!",
         },
         {
           type: 'multiple-choice',
@@ -45,7 +46,7 @@ export const lessonInvesting2: Lesson = {
         },
         {
           type: 'concept',
-          text: "Another key factor is your Time Horizon - how long you plan to invest. If you need the money soon, you'd probably take less risk.",
+          text: "Another key factor is your <b>Time Horizon</b> - how long you plan to invest. If you need the money soon, you'd probably take less risk.",
         },
         {
           type: 'complete',

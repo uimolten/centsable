@@ -29,7 +29,7 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'concept',
-          text: "The best goals are like a cheat code for success. They're called SMART goals. Let's learn the code! 🤫",
+          text: "The best goals are like a cheat code for success. They're called <b>SMART</b> goals. Let's learn the code! 🤫",
         },
       ],
     },
@@ -40,11 +40,11 @@ export const lessonSaving2: Lesson = {
         {
           type: 'concept',
           icon: 'search',
-          text: "The 'S' in SMART stands for Specific. You need to know exactly what you're saving for.",
+          text: "The 'S' in SMART stands for <b>Specific</b>. You need to know exactly what you're saving for.",
         },
         {
           type: 'multiple-choice',
-          question: 'Which goal is more Specific?',
+          question: 'Which goal is more <b>Specific</b>?',
           options: [
             { id: 'opt1', text: 'Saving for new shoes.' },
             { id: 'opt2', text: 'Saving for the new Air Jordan 1s.' },
@@ -55,7 +55,7 @@ export const lessonSaving2: Lesson = {
         {
           type: 'concept',
           icon: 'tag',
-          text: "The 'M' is for Measurable. You need a target number. How much does it cost?",
+          text: "The 'M' is for <b>Measurable</b>. You need a target number. How much does it cost?",
         },
         {
           type: 'fill-in-the-blank',
@@ -66,11 +66,11 @@ export const lessonSaving2: Lesson = {
         {
           type: 'concept',
           icon: 'thumbs-up',
-          text: "The 'A' is for Achievable. Is the goal realistic for you right now?",
+          text: "The 'A' is for <b>Achievable</b>. Is the goal realistic for you right now?",
         },
         {
           type: 'multiple-choice',
-          question: 'If you get $20 allowance a week, which goal is more Achievable in one month?',
+          question: 'If you get $20 allowance a week, which goal is more <b>Achievable</b> in one month?',
           options: [
             { id: 'opt1', text: 'Saving for a $5,000 trip.' },
             { id: 'opt2', text: 'Saving for a $70 video game.' },
@@ -81,12 +81,12 @@ export const lessonSaving2: Lesson = {
         {
           type: 'concept',
           icon: 'heart',
-          text: "The 'R' is for Relevant. Does this goal actually matter to YOU?",
+          text: "The 'R' is for <b>Relevant</b>. Does this goal actually matter to YOU?",
         },
         {
           type: 'concept',
           icon: 'calendar',
-          text: "And finally, 'T' is for Time-bound. You need a deadline! When do you want to achieve it?",
+          text: "And finally, 'T' is for <b>Time-bound</b>. You need a deadline! When do you want to achieve it?",
         },
         {
           type: 'tap-the-pairs',
@@ -111,21 +111,21 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'goal-builder',
-          instructions: 'Specific: What do you want to save for? Be exact!',
+          instructions: '<b>Specific:</b> What do you want to save for? Be exact!',
           inputType: 'text',
           placeholder: 'e.g. New Headphones',
           storageKey: 'item',
         },
         {
           type: 'goal-builder',
-          instructions: 'Measurable: Awesome! How much do those cost?',
+          instructions: '<b>Measurable:</b> Awesome! How much do those cost?',
           inputType: 'number',
           placeholder: 'e.g. 150',
           storageKey: 'amount',
         },
         {
           type: 'goal-builder',
-          instructions: 'Time-bound: Great! When do you want to have them by?',
+          instructions: '<b>Time-bound:</b> Great! When do you want to have them by?',
           inputType: 'date',
           dateOptions: [
             { label: '1 Month', value: 'in 1 month' },
@@ -136,7 +136,7 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'goal-summary',
-          textTemplate: 'To save {amount} for {item} {timeframe}.',
+          textTemplate: 'To save ${amount} for {item} {timeframe}.',
         },
       ],
     },
