@@ -1,4 +1,3 @@
-
 import type { Unit } from '@/types/learn';
 import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase } from 'lucide-react';
 
@@ -22,7 +21,7 @@ export const units: Unit[] = [
     unitIcon: PieChart,
     activities: [
       { id: 'b1', title: 'Why Budgeting Matters', type: 'lesson', state: 'active', xp: 10 },
-      { id: 'b2', title: 'Needs vs. Wants', type: 'lesson', state: 'active', xp: 10 },
+      { id: 'b2', title: "Where's Your Money Really Going?", type: 'lesson', state: 'active', xp: 70 },
       { id: 'b3', title: 'Practice: Categorize Expenses', type: 'practice', state: 'active', xp: 15 },
       { id: 'b4', title: 'The 50/30/20 Rule', type: 'lesson', state: 'active', xp: 10 },
       { id: 'b5', title: 'Budgeting Unit Quiz', type: 'quiz', state: 'active', xp: 25 },
