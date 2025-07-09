@@ -45,11 +45,12 @@ export const units: Unit[] = [
     description: "Explore the world of investing and learn how to make your money grow.",
     unitIcon: LineChart,
     activities: [
-      { id: 'i1', title: 'What is Investing?', type: 'lesson', state: 'active', xp: 50 },
-      { id: 'i2', title: 'Risk & Reward', type: 'lesson', state: 'active', xp: 60 },
-      { id: 'i3', title: 'Compound Interest Explained', type: 'lesson', state: 'active', xp: 10 },
-      { id: 'i4', title: 'Practice: Risk Tolerance', type: 'practice', state: 'active', xp: 15 },
-      { id: 'i5', title: 'Investing Unit Quiz', type: 'quiz', state: 'active', xp: 25 },
+      { id: 'i1', title: 'What is Investing? The Power of Compounding', type: 'lesson', state: 'active', xp: 50 },
+      { id: 'i2', title: 'The Rules of the Game: Risk & Reward', type: 'lesson', state: 'active', xp: 60 },
+      { id: 'i3', title: 'Choosing Your Gear: Types of Investments', type: 'lesson', state: 'active', xp: 70 },
+      { id: 'i4', title: "Don't Put All Your Items in One Slot: Diversification", type: 'lesson', state: 'active', xp: 60 },
+      { id: 'i5', title: 'Starting Your Quest: How to Actually Invest', type: 'lesson', state: 'active', xp: 50 },
+      { id: 'i6', title: 'Investing Unit Quiz', type: 'quiz', state: 'active', xp: 25 },
     ],
   },
   {

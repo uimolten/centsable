@@ -14,6 +14,9 @@ import { lessonBudgeting1 } from '@/data/lesson-budgeting-1';
 import { lessonBudgeting2 } from '@/data/lesson-budgeting-2';
 import { lessonInvesting1 } from '@/data/lesson-investing-1';
 import { lessonInvesting2 } from '@/data/lesson-investing-2';
+import { lessonInvesting3 } from '@/data/lesson-investing-3';
+import { lessonInvesting4 } from '@/data/lesson-investing-4';
+import { lessonInvesting5 } from '@/data/lesson-investing-5';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -37,6 +40,9 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'b2') return lessonBudgeting2;
   if (lessonId === 'i1') return lessonInvesting1;
   if (lessonId === 'i2') return lessonInvesting2;
+  if (lessonId === 'i3') return lessonInvesting3;
+  if (lessonId === 'i4') return lessonInvesting4;
+  if (lessonId === 'i5') return lessonInvesting5;
   return null;
 };
 
