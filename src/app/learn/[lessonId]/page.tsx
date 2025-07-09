@@ -20,6 +20,14 @@ import { lessonBudgeting5 } from '@/data/lesson-budgeting-5';
 import { lessonBudgetingPractice1 } from '@/data/lesson-budgeting-practice-1';
 import { lessonBudgetingPractice2 } from '@/data/lesson-budgeting-practice-2';
 import { lessonBudgetingQuiz } from '@/data/lesson-budgeting-quiz';
+import { lessonCredit1 } from '@/data/lesson-credit-1';
+import { lessonCredit2 } from '@/data/lesson-credit-2';
+import { lessonCredit3 } from '@/data/lesson-credit-3';
+import { lessonCredit4 } from '@/data/lesson-credit-4';
+import { lessonCredit5 } from '@/data/lesson-credit-5';
+import { lessonCreditPractice1 } from '@/data/lesson-credit-practice-1';
+import { lessonCreditPractice2 } from '@/data/lesson-credit-practice-2';
+import { lessonCreditQuiz } from '@/data/lesson-credit-quiz';
 import { lessonInvesting1 } from '@/data/lesson-investing-1';
 import { lessonInvesting2 } from '@/data/lesson-investing-2';
 import { lessonInvesting3 } from '@/data/lesson-investing-3';
@@ -58,6 +66,16 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'bp1') return lessonBudgetingPractice1;
   if (lessonId === 'bp2') return lessonBudgetingPractice2;
   if (lessonId === 'bq1') return lessonBudgetingQuiz;
+
+  // Credit
+  if (lessonId === 'c1') return lessonCredit1;
+  if (lessonId === 'c2') return lessonCredit2;
+  if (lessonId === 'cp1') return lessonCreditPractice1;
+  if (lessonId === 'c3') return lessonCredit3;
+  if (lessonId === 'c4') return lessonCredit4;
+  if (lessonId === 'cp2') return lessonCreditPractice2;
+  if (lessonId === 'c5') return lessonCredit5;
+  if (lessonId === 'cq1') return lessonCreditQuiz;
 
   // Investing
   if (lessonId === 'i1') return lessonInvesting1;
