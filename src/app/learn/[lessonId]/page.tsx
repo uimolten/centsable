@@ -112,6 +112,7 @@ export default function LessonPage() {
   const [lives, setLives] = useState(5);
   const [streak, setStreak] = useState(0);
   const [interactiveSortItems, setInteractiveSortItems] = useState<SortItem[]>([]);
+  const [isAwaitingSort, setIsAwaitingSort] = useState(false);
 
   useEffect(() => {
     if (lesson) {
@@ -215,6 +216,7 @@ export default function LessonPage() {
     setUserAnswers([]);
     setTryAgainCounter(0);
     setIncorrectAttempts(0);
+    setIsAwaitingSort(false);
   }, [moduleIndex, stepIndex, lesson]);
 
   const handleLessonComplete = useCallback(() => {
@@ -266,15 +268,14 @@ export default function LessonPage() {
        router.push('/learn');
       return;
     }
+    
+    // Always clear this flag on any action
+    setIsAwaitingSort(false);
 
     if (!currentStep) return;
 
     if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
-      toast({
-        variant: "destructive",
-        title: "Not quite yet!",
-        description: "Please sort all the items into a category before checking your answer.",
-      });
+      setIsAwaitingSort(true);
       return;
     }
     
@@ -413,6 +414,7 @@ export default function LessonPage() {
             currentStep={lastStep}
             onBack={goToPreviousStep}
             isFirstStep={false}
+            isAwaitingSort={isAwaitingSort}
           >
               <LessonComplete 
                 step={lastStep as any} 
@@ -438,6 +440,7 @@ export default function LessonPage() {
       incorrectAttempts={incorrectAttempts}
       onBack={goToPreviousStep}
       isFirstStep={isFirstStep}
+      isAwaitingSort={isAwaitingSort}
     >
       <AnimatePresence mode="wait">
         {renderStepContent(currentStep)}

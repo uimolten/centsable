@@ -11,11 +11,16 @@ interface AnswerFeedbackProps {
   correctAnswerText?: string;
   onBack: () => void;
   isFirstStep: boolean;
+  customMessage?: string;
+  customReinforcement?: string;
 }
 
-export function AnswerFeedback({ isCorrect, onAction, buttonText, isButtonDisabled, correctAnswerText, onBack, isFirstStep }: AnswerFeedbackProps) {
-  const message = isCorrect ? 'Awesome! ✨' : 'Not quite.';
-  const reinforcement = isCorrect ? 'You\'re on a roll!' : correctAnswerText ? `The correct answer is: ${correctAnswerText}` : "Let's review that one.";
+export function AnswerFeedback({ isCorrect, onAction, buttonText, isButtonDisabled, correctAnswerText, onBack, isFirstStep, customMessage, customReinforcement }: AnswerFeedbackProps) {
+  const standardMessage = isCorrect ? 'Awesome! ✨' : 'Not quite.';
+  const message = customMessage ?? standardMessage;
+  
+  const standardReinforcement = isCorrect ? 'You\'re on a roll!' : correctAnswerText ? `The correct answer is: ${correctAnswerText}` : "Let's review that one.";
+  const reinforcement = customReinforcement ?? standardReinforcement;
 
   return (
     <motion.div

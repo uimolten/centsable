@@ -28,6 +28,7 @@ interface LessonContainerProps {
   incorrectAttempts: number;
   onBack: () => void;
   isFirstStep: boolean;
+  isAwaitingSort: boolean;
 }
 
 export function LessonContainer({
@@ -44,6 +45,7 @@ export function LessonContainer({
   incorrectAttempts,
   onBack,
   isFirstStep,
+  isAwaitingSort,
 }: LessonContainerProps) {
   const router = useRouter();
 
@@ -122,7 +124,19 @@ export function LessonContainer({
 
         <footer className="flex-shrink-0 relative h-28">
            <AnimatePresence mode="wait">
-            {hasAnswered && isCorrect !== null ? (
+            {isAwaitingSort ? (
+              <AnswerFeedback
+                key="awaiting-sort"
+                isCorrect={false}
+                onAction={onAction}
+                buttonText="Got It"
+                isButtonDisabled={false}
+                customMessage="Not quite yet!"
+                customReinforcement="Please sort all items into a category before checking your answer."
+                onBack={onBack}
+                isFirstStep={isFirstStep}
+              />
+            ) : hasAnswered && isCorrect !== null ? (
               <AnswerFeedback
                 key="feedback"
                 isCorrect={isCorrect}

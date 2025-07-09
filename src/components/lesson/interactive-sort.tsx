@@ -24,7 +24,7 @@ const DraggableItem = ({ item, canDrag }: DraggableItemProps) => {
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }));
+  }), [canDrag]);
 
   return (
     <motion.div
