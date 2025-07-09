@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import type { FillInTheBlankStep } from '@/types/lesson';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 interface FillInTheBlankProps {
   step: FillInTheBlankStep;
@@ -24,8 +25,20 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="w-full flex flex-col items-center justify-center"
+      className="w-full flex flex-col items-center justify-center gap-6"
     >
+      {step.image && (
+        <div className="flex justify-center">
+            <Image
+                src={step.image}
+                alt={step.text ?? 'Lesson illustration'}
+                width={400}
+                height={225}
+                className="rounded-lg bg-muted object-cover"
+                data-ai-hint={step.imageHint}
+            />
+        </div>
+      )}
       <div className="text-2xl md:text-3xl font-semibold leading-relaxed text-center p-8 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl">
         <span>{parts[0]}</span>
         <Input

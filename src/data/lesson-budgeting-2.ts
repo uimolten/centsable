@@ -37,11 +37,11 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Think of <strong><em>Fixed Expenses</em></strong> like your school schedule—the same, predictable costs each month (like a phone bill or subscription).",
+          text: "Think of <strong>Fixed Expenses</strong> like your school schedule—the same, predictable costs each month (like a phone bill or subscription).",
         },
         {
           type: 'concept',
-          text: "<strong><em>Variable Expenses</em></strong> are like your weekend plans—they change based on your choices (like eating out or shopping).",
+          text: "<strong>Variable Expenses</strong> are like your weekend plans—they change based on your choices (like eating out or shopping).",
         },
         {
           type: 'interactive-sort',
@@ -98,14 +98,12 @@ export const lessonBudgeting2: Lesson = {
                 text: "Time for a challenge! Your income this month is $340 ($250 paycheck, $50 gift, $40 from selling clothes)."
             },
             {
-                type: 'scenario',
-                text: "Your expenses are: $50 phone bill, $90 fast food, $30 bus fare, $60 video game, and $40 on snacks."
-            },
-            {
                 type: 'fill-in-the-blank',
                 question: 'First, what is the TOTAL of all your expenses this month? $______',
                 correctAnswer: '270',
                 reinforcement: 'Correct! Total expenses are $270.',
+                image: 'https://placehold.co/600x400',
+                imageHint: 'expense list',
             },
             {
                 type: 'fill-in-the-blank',

@@ -34,6 +34,8 @@ export interface FillInTheBlankStep extends BaseStep {
   question: string;
   correctAnswer: string;
   reinforcement: string;
+  image?: string;
+  imageHint?: string;
 }
 
 export interface MultipleChoiceOption {

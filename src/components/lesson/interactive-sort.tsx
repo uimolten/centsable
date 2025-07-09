@@ -1,15 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { cn } from '@/lib/utils';
 import type { InteractiveSortStep, SortItem as BaseSortItem } from '@/types/lesson';
-import { shuffle } from 'lodash';
-
-const ItemType = 'SORT_ITEM';
 
 interface SortItem extends BaseSortItem {
     location: 'pool' | 'box1' | 'box2';
@@ -56,6 +52,8 @@ interface DropZoneProps {
   label?: string;
 }
 
+const ItemType = 'SORT_ITEM';
+
 const DropZone = ({ zoneId, onDrop, children, className, label }: DropZoneProps) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemType,
@@ -87,59 +85,24 @@ const DropZone = ({ zoneId, onDrop, children, className, label }: DropZoneProps)
 
 interface InteractiveSortProps {
   step: InteractiveSortStep;
-  onComplete: (isCorrect: boolean) => void;
-  incorrectAttempts: number;
+  items: SortItem[];
+  onItemsChange: (items: SortItem[]) => void;
   hasAnswered: boolean;
   isCorrect: boolean | null;
+  incorrectAttempts: number;
 }
 
-export function InteractiveSort({ step, onComplete, incorrectAttempts, hasAnswered, isCorrect }: InteractiveSortProps) {
-  const [items, setItems] = useState<SortItem[]>([]);
-  const [hintShown, setHintShown] = useState(false);
-
-  useEffect(() => {
-    setItems(shuffle(step.items).map(item => ({...item, location: 'pool'})));
-    setHintShown(false);
-  }, [step]);
-  
+export function InteractiveSort({ step, items, onItemsChange, hasAnswered, isCorrect }: InteractiveSortProps) {
   const isCompleteAndCorrect = hasAnswered && isCorrect === true;
 
   const handleDrop = (droppedItem: { id: string }, targetZoneId: 'pool' | 'box1' | 'box2') => {
     if (isCompleteAndCorrect) return;
-    setItems(prevItems => 
-        prevItems.map(item => 
-            item.id === droppedItem.id ? { ...item, location: targetZoneId } : item
-        )
+    const newItems = items.map(item => 
+        item.id === droppedItem.id ? { ...item, location: targetZoneId } : item
     );
+    onItemsChange(newItems);
   };
   
-  useEffect(() => {
-    if (hasAnswered && !isCorrect) return; // Stop checking if already answered incorrectly
-    if (isCompleteAndCorrect) return;
-
-    const unplacedItems = items.filter(i => i.location === 'pool');
-    if (items.length > 0 && unplacedItems.length === 0) {
-      const isCorrect = items.every(item => item.location === item.correctBox);
-      onComplete(isCorrect);
-    }
-  }, [items, onComplete, hasAnswered, isCorrect, isCompleteAndCorrect, step.items]);
-  
-  useEffect(() => {
-    if (incorrectAttempts >= 3 && !hintShown) {
-      const itemToPlace = items.find(i => i.location === 'pool');
-      if (itemToPlace) {
-        setItems(prevItems =>
-          prevItems.map(item =>
-            item.id === itemToPlace.id
-              ? { ...item, location: item.correctBox }
-              : item
-          )
-        );
-        setHintShown(true);
-      }
-    }
-  }, [incorrectAttempts, hintShown, items]);
-
   return (
     <DndProvider backend={HTML5Backend}>
       <motion.div
@@ -150,16 +113,6 @@ export function InteractiveSort({ step, onComplete, incorrectAttempts, hasAnswer
         transition={{ duration: 0.3 }}
         className="space-y-4 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12 w-full"
       >
-        {hintShown && (
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-2 text-primary text-lg text-center"
-            >
-                Hint: Let's place one item for you.
-            </motion.div>
-        )}
-
         <DropZone zoneId="pool" onDrop={handleDrop} className="bg-background min-h-[100px] justify-center">
             {items.filter(i => i.location === 'pool').map(item => (
                 <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />

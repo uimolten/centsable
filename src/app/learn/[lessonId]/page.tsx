@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { isEqual } from 'lodash';
+import { isEqual, shuffle } from 'lodash';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
@@ -28,8 +28,11 @@ import { InteractiveSort } from '@/components/lesson/interactive-sort';
 import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goal-builder-step';
 import { GoalSummary } from '@/components/lesson/goal-summary';
 
-import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson } from '@/types/lesson';
+import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson, SortItem as BaseSortItem } from '@/types/lesson';
 import { useToast } from '@/hooks/use-toast';
+
+// This is the extended type for the component's state
+type SortItem = BaseSortItem & { location: 'pool' | 'box1' | 'box2' };
 
 const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 's1') return lessonSaving1;
@@ -108,20 +111,28 @@ export default function LessonPage() {
   const [goalData, setGoalData] = useState<Record<string, string | number>>({});
   const [lives, setLives] = useState(5);
   const [streak, setStreak] = useState(0);
-
+  const [interactiveSortItems, setInteractiveSortItems] = useState<SortItem[]>([]);
 
   useEffect(() => {
     if (lesson) {
       setTotalSteps(lesson.modules.reduce((acc, module) => acc + module.steps.length, 0));
     }
   }, [lesson]);
+  
+  const currentModule = lesson?.modules[moduleIndex];
+  const currentStep = currentModule?.steps[stepIndex];
+  
+  // Initialize state for interactive sort when the step becomes active
+  useEffect(() => {
+    if (currentStep?.type === 'interactive-sort') {
+      setInteractiveSortItems(shuffle(currentStep.items).map(item => ({ ...item, location: 'pool' })));
+    }
+  }, [currentStep]);
 
-  if (!lesson) {
-    return <div>Lesson not found!</div>;
+  if (!lesson || !currentStep) {
+    // This handles both lesson not found and lesson finished cases
+    return <div>Lesson not found or has ended! Redirecting...</div>;
   }
-
-  const currentModule = lesson.modules[moduleIndex];
-  const currentStep = currentModule.steps[stepIndex];
   
   const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
@@ -221,13 +232,25 @@ export default function LessonPage() {
         return userAnswers.length === 1 && userAnswers[0] === mcStep.correctAnswer;
       case 'fill-in-the-blank':
         return isAnswerSimilar(userAnswers[0] ?? '', (currentStep as FillInTheBlankStep).correctAnswer);
+      case 'interactive-sort':
+        return interactiveSortItems.every(item => item.location === item.correctBox);
       default:
         return false;
     }
-  }, [currentStep, userAnswers]);
+  }, [currentStep, userAnswers, interactiveSortItems]);
 
   const handleCheck = () => {
     if (hasAnswered) return;
+    
+    // Specific check for interactive-sort being incomplete
+    if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
+      toast({
+        variant: "destructive",
+        title: "Not quite yet!",
+        description: "Please sort all the items into a category before checking your answer.",
+      });
+      return; // Stop the function here
+    }
 
     const correct = checkAnswer();
     
@@ -256,14 +279,17 @@ export default function LessonPage() {
 
     if (!currentStep) return;
 
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'tap-the-pairs'].includes(currentStep.type);
     
-    // Case 1: For steps that just need "Continue"
-    if (isStepWithoutCheck || currentStep.type === 'goal-builder') {
-      if (currentStep.type === 'goal-builder') {
+    if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
-      }
+        goToNextStep();
+        return;
+    }
+
+    // Case 1: For steps that just need "Continue"
+    if (isStepWithoutCheck) {
       goToNextStep();
       return;
     }
@@ -281,7 +307,7 @@ export default function LessonPage() {
       // Allow re-submitting
       setHasAnswered(false);
       setIsCorrect(null);
-      if (currentStep.type !== 'fill-in-the-blank') {
+      if (currentStep.type !== 'fill-in-the-blank' && currentStep.type !== 'interactive-sort') {
           setUserAnswers([]);
       }
       
@@ -294,7 +320,7 @@ export default function LessonPage() {
     // Case 4: This is the first time checking the answer for this step
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -329,31 +355,44 @@ export default function LessonPage() {
 
   const renderStepContent = (step: Step) => {
     const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
-    const stepProps = {
+    let stepProps: any = {
       step: step as any,
-      userAnswers,
-      onSelectAnswer: handleSelectAnswer,
-      hasAnswered,
-      isCorrect,
-      incorrectAttempts,
-      onComplete: handleInteractiveComplete,
-      onAnswerChange: handleSelectAnswer,
-      userAnswer: userAnswers[0] ?? '',
-      goalData,
       onContinue: handleLessonComplete,
     };
-  
+
     switch (step.type) {
-      case 'intro': return <IntroCard key={uniqueKey} {...stepProps} />;
+      case 'multiple-choice':
+        stepProps = { ...stepProps, userAnswers, onSelectAnswer: handleSelectAnswer, hasAnswered, isCorrect, incorrectAttempts };
+        return <MultipleChoice key={uniqueKey} {...stepProps} />;
+      
+      case 'fill-in-the-blank':
+        stepProps = { ...stepProps, userAnswer: userAnswers[0] ?? '', onAnswerChange: handleSelectAnswer, hasAnswered, isCorrect, incorrectAttempts };
+        return <FillInTheBlank key={uniqueKey} {...stepProps} />;
+
+      case 'tap-the-pairs':
+        stepProps = { ...stepProps, onComplete: handleInteractiveComplete, hasAnswered, isCorrect, incorrectAttempts };
+        return <TapThePairs key={uniqueKey} {...stepProps} />;
+
+      case 'interactive-sort':
+        stepProps = { ...stepProps, items: interactiveSortItems, onItemsChange: setInteractiveSortItems, hasAnswered, isCorrect, incorrectAttempts };
+        return <InteractiveSort key={uniqueKey} {...stepProps} />;
+
+      case 'goal-builder':
+        stepProps = { ...stepProps, userAnswer: userAnswers[0] ?? '', onAnswerChange: handleSelectAnswer };
+        return <GoalBuilderComponent key={uniqueKey} {...stepProps} />;
+
+      case 'goal-summary':
+        stepProps = { ...stepProps, goalData };
+        return <GoalSummary key={uniqueKey} {...stepProps} />;
+
+      case 'intro':
       case 'concept':
-      case 'scenario': return <ConceptCard key={uniqueKey} {...stepProps} />;
-      case 'multiple-choice': return <MultipleChoice key={uniqueKey} {...stepProps} />;
-      case 'fill-in-the-blank': return <FillInTheBlank key={uniqueKey} {...stepProps} />;
-      case 'tap-the-pairs': return <TapThePairs key={uniqueKey} {...stepProps} />;
-      case 'interactive-sort': return <InteractiveSort key={uniqueKey} {...stepProps} />;
-      case 'goal-builder': return <GoalBuilderComponent key={uniqueKey} {...stepProps} />;
-      case 'goal-summary': return <GoalSummary key={uniqueKey} {...stepProps} />;
-      case 'complete': return <LessonComplete key={uniqueKey} {...stepProps} onContinue={handleLessonComplete}/>;
+      case 'scenario':
+        return <ConceptCard key={uniqueKey} {...stepProps} />;
+      
+      case 'complete':
+        return <LessonComplete key={uniqueKey} {...stepProps} />;
+        
       default: return <div>Unknown step type</div>;
     }
   };
