@@ -46,8 +46,8 @@ export const units: Unit[] = [
     description: "Explore the world of investing and learn how to make your money grow.",
     unitIcon: LineChart,
     activities: [
-      { id: 'i1', title: 'Introduction to Investing', type: 'lesson', state: 'locked', xp: 10 },
-      { id: 'i2', title: 'Stocks, Bonds, and Funds', type: 'lesson', state: 'locked', xp: 10 },
+      { id: 'i1', title: 'What is Investing?', type: 'lesson', state: 'locked', xp: 50 },
+      { id: 'i2', title: 'Risk & Reward', type: 'lesson', state: 'locked', xp: 60 },
       { id: 'i3', title: 'Compound Interest Explained', type: 'lesson', state: 'locked', xp: 10 },
       { id: 'i4', title: 'Practice: Risk Tolerance', type: 'practice', state: 'locked', xp: 15 },
       { id: 'i5', title: 'Investing Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
