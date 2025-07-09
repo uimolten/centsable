@@ -6,12 +6,12 @@ export const lessonCredit2: Lesson = {
   title: 'Building & Managing Good Credit',
   modules: [
     {
-      title: 'Your First Credit Card',
+      title: 'Your First Card',
       xp: 20,
       steps: [
         {
           type: 'intro',
-          text: "Time to learn how to build and manage good credit. It's easier than you think!",
+          text: "Let's build on what we've learned! It's time to talk about how to start building credit and manage it wisely. It's easier than you think!",
         },
         {
           type: 'scenario',
@@ -19,25 +19,25 @@ export const lessonCredit2: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'The bank gives you a credit limit of $1,000. What’s a smart monthly spending goal to set for yourself?',
+          question: 'The bank gives you a credit limit of $1,000. To build good credit, what’s a smart monthly spending amount to aim for?',
           options: [
-            { id: 'opt1', text: 'Spend up to $1,000' },
-            { id: 'opt2', text: 'Spend around $300' },
-            { id: 'opt3', text: 'Spend more than $1,000' },
-            { id: 'opt4', text: 'Don\'t use the card at all' },
+            { id: 'opt1', text: 'Spend the full $1,000 to show you use it.' },
+            { id: 'opt2', text: 'Spend less than $300.' },
+            { id: 'opt3', text: 'Spend more than $1,000 by asking for an increase.' },
+            { id: 'opt4', text: "Don't use the card at all." },
           ],
           correctAnswer: 'opt2',
-          reinforcement: "Smart choice! Keeping your spending low compared to your limit is a key part of building good credit.",
+          reinforcement: "Smart choice! Keeping your spending low compared to your limit is a key part of building good credit. We'll learn why next!",
         },
       ],
     },
     {
-      title: 'Key Credit Terms',
+      title: 'Key Terms Explained',
       xp: 30,
       steps: [
         {
           type: 'concept',
-          text: "Let's define some key terms you'll see on credit card offers. First up: <b>APR</b>, or Annual Percentage Rate. This is the interest you'll pay on any money you haven't paid back after the due date.",
+          text: "Let's define some key terms you'll see on credit card offers. First up: <b>APR</b>, or *Annual Percentage Rate*. This is the interest you'll pay on any money you haven't paid back after the due date.",
         },
         {
           type: 'concept',
@@ -49,20 +49,20 @@ export const lessonCredit2: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "If your credit limit is $1,000, you should try to keep your balance below $<b>______</b> to have good credit utilization.",
+          question: "If your credit limit is $1,000, you should try to keep your balance below $<b>_____</b> to have good credit utilization.",
           correctAnswer: '300',
         },
         {
           type: 'multiple-choice',
-          question: 'Which of these habits do you think is the hardest for most people?',
+          question: 'Which of these are common habits that can hurt your credit score? (Select all that apply)',
           options: [
-            { id: 'opt1', text: 'Paying bills on time' },
-            { id: 'opt2', text: 'Keeping spending under 30% of the limit' },
-            { id: 'opt3', text: 'Not applying for too many new cards' },
-            { id: 'opt4', text: 'Understanding the terms' },
+            { id: 'opt1', text: 'Paying bills late or missing them completely.' },
+            { id: 'opt2', text: 'Keeping a high credit utilization (using more than 30% of your limit).' },
+            { id: 'opt3', text: 'Only paying the minimum amount due each month.' },
+            { id: 'opt4', text: 'Applying for several new credit cards in a short period.' },
           ],
           correctAnswer: ['opt1', 'opt2', 'opt3', 'opt4'],
-          reinforcement: "It can be any of them! The key is to be aware of all these habits.",
+          reinforcement: "You're exactly right! All of these can damage a credit score. Avoiding them is key to building good credit.",
         },
       ],
     },
@@ -113,7 +113,7 @@ export const lessonCredit2: Lesson = {
             { id: 'opt1', text: 'It goes up ✅' },
             { id: 'opt2', text: 'It goes down ❌' },
             { id: 'opt3', text: 'It stays the same' },
-            { id: 'opt4', text: 'The stores give you free stuff'}
+            { id: 'opt4', 'text': 'The stores give you free stuff'}
           ],
           correctAnswer: 'opt2',
           reinforcement: 'Correct. Opening many new accounts in a short time can temporarily lower your score.',
