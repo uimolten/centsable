@@ -5,6 +5,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { isEqual, shuffle } from 'lodash';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
@@ -97,7 +99,12 @@ export default function LessonPage() {
   const router = useRouter();
   const { toast } = useToast();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
-  const lesson = getLessonData(lessonId);
+  
+  // Use a state for the lesson to avoid re-calculating
+  const [lesson, setLesson] = useState<Lesson | null>(null);
+  useEffect(() => {
+    setLesson(getLessonData(lessonId));
+  }, [lessonId]);
 
   const [moduleIndex, setModuleIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
@@ -130,8 +137,7 @@ export default function LessonPage() {
     }
   }, [currentStep]);
 
-  if (!lesson || !currentStep) {
-    // This handles both lesson not found and lesson finished cases
+  if (!lesson) {
     return <div>Lesson not found or has ended! Redirecting...</div>;
   }
   
@@ -141,7 +147,7 @@ export default function LessonPage() {
     const isCompleteAndCorrect = hasAnswered && isCorrect === true;
     if (isCompleteAndCorrect) return;
 
-    if (currentStep.type === 'multiple-choice') {
+    if (currentStep?.type === 'multiple-choice') {
       const step = currentStep as MultipleChoiceStep;
       const isMultiSelect = Array.isArray(step.correctAnswer);
       
@@ -177,13 +183,12 @@ export default function LessonPage() {
   const goToNextStep = useCallback(() => {
      if(!hasAnswered) setCompletedSteps(prev => prev + 1);
 
-      if (stepIndex < currentModule.steps.length - 1) {
+      if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
-      } else if (moduleIndex < lesson.modules.length - 1) {
+      } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
         setModuleIndex(moduleIndex + 1);
         setStepIndex(0);
       } else {
-        // This was the last step of the last module
         setStepIndex(stepIndex + 1); 
       }
       
@@ -195,14 +200,13 @@ export default function LessonPage() {
   }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, hasAnswered]);
 
   const goToPreviousStep = useCallback(() => {
-    // Don't go back if we are at the very beginning
     if (moduleIndex === 0 && stepIndex === 0) return;
 
-    setCompletedSteps(prev => Math.max(0, prev - 1)); // Decrement progress
+    setCompletedSteps(prev => Math.max(0, prev - 1));
 
     if (stepIndex > 0) {
       setStepIndex(stepIndex - 1);
-    } else { // at the beginning of a module, go to previous module
+    } else {
       const prevModuleIndex = moduleIndex - 1;
       setModuleIndex(prevModuleIndex);
       if (lesson) {
@@ -210,7 +214,6 @@ export default function LessonPage() {
       }
     }
 
-    // Reset state for the step we are going back to
     setHasAnswered(false);
     setIsCorrect(null);
     setUserAnswers([]);
@@ -223,8 +226,8 @@ export default function LessonPage() {
     router.push(`/learn?completed=${lessonId}`);
   }, [lessonId, router]);
 
-  // Pure function to check the current answer
   const checkAnswer = useCallback(() => {
+    if (!currentStep) return false;
     switch (currentStep.type) {
       case 'multiple-choice':
         const mcStep = currentStep as MultipleChoiceStep;
@@ -269,7 +272,10 @@ export default function LessonPage() {
       return;
     }
     
-    if (!currentStep) return;
+    if (!currentStep) {
+        handleLessonComplete();
+        return;
+    }
 
     if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
       setIsAwaitingSort(true);
@@ -285,23 +291,19 @@ export default function LessonPage() {
         return;
     }
 
-    // Case 1: For steps that just need "Continue"
     if (isStepWithoutCheck) {
       goToNextStep();
       return;
     }
     
-    // Case 2: Answer has been checked and is correct
     if (hasAnswered && isCorrect) {
       goToNextStep();
       return;
     }
     
-    // Case 3: Answer has been checked and is incorrect ("Try Again" logic)
     if (hasAnswered && isCorrect === false) {
       setIncorrectAttempts(prev => prev + 1);
       
-      // Allow re-submitting
       setHasAnswered(false);
       setIsCorrect(null);
       if (currentStep.type !== 'fill-in-the-blank' && currentStep.type !== 'interactive-sort') {
@@ -314,29 +316,37 @@ export default function LessonPage() {
       return;
     }
     
-    // Case 4: This is the first time checking the answer for this step
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
-        if (!currentStep) return;
-
-        const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank' || currentStep.type === 'goal-builder') && (userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === ''));
-        if (isAnswerEmpty) return;
-        
         event.preventDefault(); 
+        
+        if (!currentStep) {
+          handleLessonComplete();
+          return;
+        }
+
+        const isInputBasedStep = ['multiple-choice', 'fill-in-the-blank', 'goal-builder'].includes(currentStep.type);
+        const isAnswerEmpty = userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
+
+        if (isInputBasedStep && isAnswerEmpty) {
+          return;
+        }
+        
         handleFooterAction();
       }
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [handleFooterAction, currentStep, userAnswers, hasAnswered, isCorrect]);
+  }, [handleFooterAction, currentStep, userAnswers, handleLessonComplete]);
 
 
-  const getInstructionText = (step: Step): string => {
+  const getInstructionText = (step?: Step): string => {
+    if (!step) return "Congratulations!";
     switch (step.type) {
       case 'fill-in-the-blank':
         return 'Complete the sentence:';
@@ -394,56 +404,36 @@ export default function LessonPage() {
     }
   };
   
-  // Handle case where lesson is finished
-  if (!currentStep) {
-      const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0];
-      return (
-          <LessonContainer
-            progress={100}
-            onAction={handleLessonComplete}
-            instructionText="Congratulations!"
-            lives={lives}
-            streak={streak}
-            incorrectAttempts={incorrectAttempts}
-            isCorrect={null}
-            hasAnswered={false}
-            userAnswers={[]}
-            currentStep={lastStep}
-            onBack={goToPreviousStep}
-            isFirstStep={false}
-            isAwaitingSort={isAwaitingSort}
-            onDismissSortWarning={() => setIsAwaitingSort(false)}
-          >
-              <LessonComplete 
-                step={lastStep as any} 
-                onContinue={handleLessonComplete} 
-              />
-          </LessonContainer>
-      );
-  }
-  
+  const lastStepOfLesson = lesson.modules.slice(-1)[0].steps.slice(-1)[0];
   const isFirstStep = moduleIndex === 0 && stepIndex === 0;
 
   return (
-    <LessonContainer
-      progress={progress}
-      onAction={handleFooterAction}
-      currentStep={currentStep}
-      isCorrect={isCorrect}
-      hasAnswered={hasAnswered}
-      userAnswers={userAnswers}
-      instructionText={getInstructionText(currentStep)}
-      lives={lives}
-      streak={streak}
-      incorrectAttempts={incorrectAttempts}
-      onBack={goToPreviousStep}
-      isFirstStep={isFirstStep}
-      isAwaitingSort={isAwaitingSort}
-      onDismissSortWarning={() => setIsAwaitingSort(false)}
-    >
-      <AnimatePresence mode="wait">
-        {renderStepContent(currentStep)}
-      </AnimatePresence>
-    </LessonContainer>
+    <DndProvider backend={HTML5Backend}>
+      <LessonContainer
+        progress={progress}
+        onAction={handleFooterAction}
+        currentStep={currentStep ?? lastStepOfLesson}
+        isCorrect={isCorrect}
+        hasAnswered={hasAnswered}
+        userAnswers={userAnswers}
+        instructionText={getInstructionText(currentStep)}
+        lives={lives}
+        streak={streak}
+        incorrectAttempts={incorrectAttempts}
+        onBack={goToPreviousStep}
+        isFirstStep={isFirstStep}
+        isAwaitingSort={isAwaitingSort}
+        onDismissSortWarning={() => setIsAwaitingSort(false)}
+      >
+        <AnimatePresence mode="wait">
+          {currentStep ? renderStepContent(currentStep) : (
+            <LessonComplete 
+              step={lastStepOfLesson as any} 
+              onContinue={handleLessonComplete} 
+            />
+          )}
+        </AnimatePresence>
+      </LessonContainer>
+    </DndProvider>
   );
 }

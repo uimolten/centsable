@@ -104,7 +104,6 @@ export function InteractiveSort({ step, items, onItemsChange, hasAnswered, isCor
   };
   
   return (
-    <DndProvider backend={HTML5Backend}>
       <motion.div
         key="interactive-sort"
         initial={{ opacity: 0, y: 20 }}
@@ -132,6 +131,5 @@ export function InteractiveSort({ step, items, onItemsChange, hasAnswered, isCor
           </DropZone>
         </div>
       </motion.div>
-    </DndProvider>
   );
 }
