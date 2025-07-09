@@ -52,11 +52,11 @@ const getLessonData = (lessonId: string): Lesson | null => {
   // Budgeting
   if (lessonId === 'b1') return lessonBudgeting1;
   if (lessonId === 'b2') return lessonBudgeting2;
-  if (lessonId === 'bp1') return lessonBudgetingPractice1;
   if (lessonId === 'b3') return lessonBudgeting3;
-  if (lessonId === 'bp2') return lessonBudgetingPractice2;
   if (lessonId === 'b4') return lessonBudgeting4;
   if (lessonId === 'b5') return lessonBudgeting5;
+  if (lessonId === 'bp1') return lessonBudgetingPractice1;
+  if (lessonId === 'bp2') return lessonBudgetingPractice2;
   if (lessonId === 'bq1') return lessonBudgetingQuiz;
 
   // Investing
@@ -138,15 +138,16 @@ export default function LessonPage() {
   const currentStep = currentModule?.steps[stepIndex];
 
   useEffect(() => {
-    setLesson(getLessonData(lessonId));
-  }, [lessonId]);
-
-  useEffect(() => {
-    if (lesson) {
-      setTotalSteps(lesson.modules.reduce((acc, module) => acc + module.steps.length, 0));
+    const loadedLesson = getLessonData(lessonId);
+    if (loadedLesson) {
+      setLesson(loadedLesson);
+      setTotalSteps(loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0));
+    } else {
+      // Handle lesson not found, maybe redirect
+      router.push('/learn');
     }
-  }, [lesson]);
-
+  }, [lessonId, router]);
+  
   // Derived state for progress to ensure accuracy
   useEffect(() => {
     if (!lesson) return;
@@ -264,6 +265,12 @@ export default function LessonPage() {
         handleLessonComplete();
         return;
     }
+
+    // Special handling for the 'complete' step to prevent double rendering.
+    if (currentStep.type === 'complete') {
+      handleLessonComplete();
+      return;
+    }
     
     if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
       setIsSortIncomplete(true);
@@ -271,7 +278,7 @@ export default function LessonPage() {
       return;
     }
     
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'goal-summary'].includes(currentStep.type);
     
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
