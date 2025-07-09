@@ -248,6 +248,8 @@ export default function LessonPage() {
       return;
     }
 
+    if (!currentStep) return;
+
     const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
     
     // Case 1: For steps that just need "Continue"
@@ -270,20 +272,15 @@ export default function LessonPage() {
     if (hasAnswered && isCorrect === false) {
       setIncorrectAttempts(prev => prev + 1);
       
-      if (currentStep.type === 'fill-in-the-blank') {
-          // Allow re-submitting for fill-in-the-blank
-          setHasAnswered(false);
-          setIsCorrect(null);
-          handleCheck(); // Re-check the current answer
-      } else {
-        // Reset for non-text-input questions
-        setHasAnswered(false);
-        setIsCorrect(null);
-        setUserAnswers([]);
-        // TapThePairs and InteractiveSort need a key change to fully reset internal state
-        if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
-            setTryAgainCounter(count => count + 1);
-        }
+      // Allow re-submitting
+      setHasAnswered(false);
+      setIsCorrect(null);
+      if (currentStep.type !== 'fill-in-the-blank') {
+          setUserAnswers([]);
+      }
+      
+      if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
+          setTryAgainCounter(count => count + 1);
       }
       return;
     }
@@ -296,10 +293,7 @@ export default function LessonPage() {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
-        if (hasAnswered && isCorrect === false && currentStep.type === 'fill-in-the-blank') {
-            handleFooterAction(); // Allow enter to re-submit fill-in-the-blank
-            return;
-        }
+        if (!currentStep) return;
 
         const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank' || currentStep.type === 'goal-builder') && (userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === ''));
         if (isAnswerEmpty) return;
@@ -384,6 +378,8 @@ export default function LessonPage() {
       );
   }
   
+  const isFirstStep = moduleIndex === 0 && stepIndex === 0;
+
   return (
     <LessonContainer
       progress={progress}
@@ -397,7 +393,7 @@ export default function LessonPage() {
       streak={streak}
       incorrectAttempts={incorrectAttempts}
       onBack={goToPreviousStep}
-      isFirstStep={moduleIndex === 0 && stepIndex === 0}
+      isFirstStep={isFirstStep}
     >
       <AnimatePresence mode="wait">
         {renderStepContent(currentStep)}

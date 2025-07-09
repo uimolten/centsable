@@ -87,9 +87,6 @@ export function LessonContainer({
             <Button variant="ghost" size="icon" onClick={() => router.push('/learn')}>
               <X className="h-7 w-7" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onBack} disabled={isFirstStep}>
-              <ChevronLeft className="h-7 w-7" />
-            </Button>
             <div className="relative flex-grow h-4 rounded-full bg-muted/30">
                <div className="absolute inset-0 h-full w-full overflow-hidden rounded-full">
                 <div
@@ -133,6 +130,8 @@ export function LessonContainer({
                 buttonText={getButtonText()}
                 isButtonDisabled={isButtonDisabled()}
                 correctAnswerText={incorrectAttempts >= 3 ? getCorrectAnswerText() : undefined}
+                onBack={onBack}
+                isFirstStep={isFirstStep}
               />
             ) : (
               <motion.div
@@ -141,12 +140,21 @@ export function LessonContainer({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="container mx-auto p-4 flex justify-center h-full items-center"
+                className="container mx-auto p-4 flex justify-center items-center gap-4 h-full"
               >
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="text-lg font-bold"
+                  onClick={onBack}
+                  disabled={isFirstStep}
+                >
+                  Back
+                </Button>
                 <Button
                   size="lg"
                   className={cn(
-                    "text-lg font-bold w-full max-w-sm shadow-lg active:scale-95 transition-transform",
+                    "text-lg font-bold min-w-[200px] shadow-lg active:scale-95 transition-transform",
                     getButtonText() === 'Continue' && "shadow-glow",
                     getButtonText() === 'Try Again' && "bg-amber-500 hover:bg-amber-600"
                   )}
