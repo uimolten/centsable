@@ -3,7 +3,7 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonBudgetingPractice1: Lesson = {
   id: 'bp1',
-  title: 'Practice: The 50/30/20 Rule',
+  title: 'Practice: Tracking Your Money',
   modules: [
     {
       title: 'Practice Dojo',
@@ -11,50 +11,58 @@ export const lessonBudgetingPractice1: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Welcome to the practice dojo! 🥋 Let's drill the 50/30/20 rule until it's second nature.",
+          text: "Welcome to the practice dojo! 🥋 Let's drill the basics of tracking your money.",
         },
         {
           type: 'multiple-choice',
-          question: "You get a job that pays <b>$1,000</b> a month. Using the 50/30/20 rule, how much should go to your <b>Needs</b>?",
+          question: "Money you get from your part-time job is an example of...",
           options: [
-            { id: 'opt1', text: '$200' },
-            { id: 'opt2', text: '$300' },
-            { id: 'opt3', text: '$500' },
-            { id: 'opt4', text: '$1000' },
+            { id: 'opt1', text: 'An expense' },
+            { id: 'opt2', text: 'A need' },
+            { id: 'opt3', text: 'Income' },
+            { id: 'opt4', text: 'A want' },
           ],
           correctAnswer: 'opt3',
-          reinforcement: 'Correct! 50% of $1,000 is $500.',
+          reinforcement: 'Correct! Income is any money coming in.',
         },
         {
-            type: 'multiple-choice',
-            question: "From that same <b>$1,000</b> paycheck, how much is your budget for <b>Wants</b>?",
-            options: [
-              { id: 'opt1', text: '$200' },
-              { id: 'opt2', text: '$300' },
-              { id: 'opt3', text: '$500' },
-              { id: 'opt4', text: '$100' },
-            ],
-            correctAnswer: 'opt2',
-            reinforcement: 'You got it! 30% of $1,000 is $300.',
+          type: 'multiple-choice',
+          question: "Your monthly phone bill is a...",
+          options: [
+            { id: 'opt1', text: 'Fixed Expense' },
+            { id: 'opt2', text: 'Variable Expense' },
+            { id: 'opt3', text: 'Spending Leak' },
+            { id: 'opt4', text: 'Want' },
+          ],
+          correctAnswer: 'opt1',
+          reinforcement: 'You got it! It stays the same every month.',
         },
         {
           type: 'interactive-sort',
-          instructions: 'Sort these expenses into the correct budget category.',
+          instructions: 'Sort these common teen expenses.',
           box1Label: 'Needs',
           box2Label: 'Wants',
           items: [
             { id: 'item-1', text: 'Weekly groceries', correctBox: 'box1' },
             { id: 'item-2', text: 'Spotify Premium', correctBox: 'box2' },
-            { id: 'item-3', text: 'Your share of the phone bill', correctBox: 'box1' },
+            { id: 'item-3', text: 'Gas for the car to get to school', correctBox: 'box1' },
             { id: 'item-4', text: 'Going to the movies', correctBox: 'box2' },
-            { id: 'item-5', text: 'Gas for the car to get to school', correctBox: 'box1' },
-            { id: 'item-6', text: 'New shoes you saw at the mall', correctBox: 'box2' },
           ],
+        },
+        {
+          type: 'scenario',
+          text: 'You buy a <b>$4</b> energy drink three times a week. How much is this "spending leak" costing you per month (assuming 4 weeks)?'
+        },
+        {
+          type: 'fill-in-the-blank',
+          question: 'Your weekly cost is <b>$12</b>. Your monthly cost is $______.',
+          correctAnswer: '48',
+          reinforcement: "Exactly! Small leaks can drain your wallet fast.",
         },
         {
           type: 'complete',
           title: 'PRACTICE COMPLETE!',
-          text: 'Your 50/30/20 skills are sharp. Well done!',
+          text: 'Your money tracking skills are sharp. Well done!',
           rewards: {
             xp: 40,
             coins: 5,

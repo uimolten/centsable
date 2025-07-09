@@ -7,7 +7,7 @@ export const lessonBudgeting1: Lesson = {
   modules: [
     {
       title: 'What Even Is a Budget?',
-      xp: 10,
+      xp: 25,
       steps: [
         {
           type: 'intro',
@@ -15,7 +15,7 @@ export const lessonBudgeting1: Lesson = {
         },
         {
           type: 'concept',
-          text: "A budget is just a plan for your money. Think of it like your phone's battery saver mode—it helps you make sure your money lasts for the things that matter most.",
+          text: "A <b>Budget</b> is just a plan for your money. Think of it like your phone's battery saver mode—it helps you make sure your money lasts for what truly matters.",
         },
         {
           type: 'multiple-choice',
@@ -27,60 +27,56 @@ export const lessonBudgeting1: Lesson = {
             { id: 'opt4', text: 'Make you feel guilty about spending.' },
           ],
           correctAnswer: 'opt2',
-          reinforcement: 'Exactly! It’s not about restriction, it’s about control.',
+          reinforcement: 'Exactly! It’s not about restriction, it’s about giving you control.',
         },
       ],
     },
     {
-      title: 'Why Bother?',
-      xp: 15,
+      title: 'The Core Components',
+      xp: 25,
       steps: [
         {
           type: 'concept',
-          text: "So, why bother? A budget helps you avoid that <b><i>where did my money go?!</i></b> feeling.",
+          text: "Every budget has two core parts. First up is <b>Income</b>: any money coming IN (from a job, allowance, gifts, etc.). 💸",
         },
         {
           type: 'concept',
-          text: 'It reduces money stress and helps you save for awesome stuff you actually care about, like concert tickets, new tech, or even a car. 🚗',
+          text: "The second part is <b>Expenses</b>: any money going OUT (on food, games, clothes, bills, etc.). 🛍️",
         },
         {
-          type: 'fill-in-the-blank',
-          question: 'A budget helps you reach your financial _____.',
-          correctAnswer: 'goals',
-          reinforcement: 'You got it! A budget is your roadmap to your goals.',
-        },
-      ],
-    },
-    {
-      title: 'Money In, Money Out',
-      xp: 15,
-      steps: [
-        {
-          type: 'concept',
-          text: "Let's learn two key terms. <b>INCOME</b> is any money coming IN. 💸",
+            type: 'tap-the-pairs',
+            instructions: 'Match the term to its meaning.',
+            pairs: [
+              { term: 'Income', definition: 'Money you get' },
+              { term: 'Expense', definition: 'Money you spend' },
+            ]
         },
         {
           type: 'concept',
-          text: '<b>EXPENSES</b> are any money going OUT. 🛍️',
+          text: "Now for the secret to making it all work: understanding the difference between <b>Needs</b> and <b>Wants</b>.",
         },
         {
-            type: 'fill-in-the-blank',
-            question: 'Money you get from your job or allowance is called _____.',
-            correctAnswer: 'income',
-            reinforcement: 'Exactly!'
+          type: 'concept',
+          text: "A <b>Need</b> is something you absolutely must have to live, like food or a bus pass to get to school. A <b>Want</b> is something that’s fun to have, but you'll be okay without it, like a new video game or fancy coffee.",
         },
         {
-            type: 'fill-in-the-blank',
-            question: 'The money you spend on movie tickets is an _____.',
-            correctAnswer: 'expense',
-            reinforcement: 'You got it!'
+          type: 'interactive-sort',
+          instructions: 'Sort these items into the correct category.',
+          box1Label: 'Needs',
+          box2Label: 'Wants',
+          items: [
+            { id: 'item-1', text: 'Lunch money for school', correctBox: 'box1' },
+            { id: 'item-2', text: 'New hoodie', correctBox: 'box2' },
+            { id: 'item-3', text: 'Your share of the phone bill', correctBox: 'box1' },
+            { id: 'item-4', text: 'Tickets to a concert', correctBox: 'box2' },
+          ],
         },
         {
           type: 'complete',
           title: 'LESSON COMPLETE!',
-          text: "You've learned the 'why' behind budgeting. You're ready to start taking control of your money!",
+          text: "You've learned the 'why' behind budgeting. You're ready to take control!",
           rewards: {
-            xp: 40,
+            xp: 50,
             coins: 5,
           },
         },

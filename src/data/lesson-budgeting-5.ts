@@ -3,37 +3,33 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonBudgeting5: Lesson = {
   id: 'b5',
-  title: 'Connecting Budgets to Goals',
+  title: 'Budgeting for Goals',
   modules: [
     {
       title: 'Dream Big, Plan Smart',
-      xp: 15,
+      xp: 20,
       steps: [
         {
           type: 'intro',
-          text: "Let's talk about the real reason we budget: to turn dreams into reality. What's one big thing you'd save for if you could?",
+          text: "Let's talk about the real reason we budget: to turn dreams into reality. 🚀 A budget is the rocket fuel for your goals.",
         },
         {
           type: 'multiple-choice',
-          question: 'What’s ONE thing you’d save for if money wasn’t a problem? Pick your goal:',
+          question: 'What’s ONE big thing you’d save for if you could?',
           options: [
-            { id: 'opt1', text: 'New phone 📱' },
+            { id: 'opt1', text: 'A new phone 📱' },
             { id: 'opt2', text: 'Concert tickets 🎸' },
-            { id: 'opt3', text: 'First car 🚗' },
-            { id: 'opt4', text: 'College laptop 💻' },
+            { id: 'opt3', text: 'A first car 🚗' },
+            { id: 'opt4', text: 'A gaming PC 💻' },
           ],
           correctAnswer: ['opt1', 'opt2', 'opt3', 'opt4'],
-          reinforcement: "That's an awesome goal! Now, let's figure out how a budget can get you there.",
-        },
-        {
-          type: 'concept',
-          text: 'Your budget isn’t just for tracking—it’s your rocket fuel for goals. 🚀 Without a budget, goals stay dreams. With a budget, dreams become deadlines.',
+          reinforcement: "That's an awesome goal! Now, let’s figure out how a budget can get you there.",
         },
       ],
     },
     {
-      title: 'Making Goals SMART',
-      xp: 20,
+      title: 'SMART Goals & Time Horizons',
+      xp: 30,
       steps: [
         {
           type: 'concept',
@@ -51,18 +47,8 @@ export const lessonBudgeting5: Lesson = {
           ],
         },
         {
-          type: 'scenario',
-          text: '<b>Example:</b><br>❌ <b>Bad goal:</b> “Save for college.”<br>✅ <b>SMART Goal:</b> “Save $1,000 for a college laptop in 10 months by setting aside $100/month.”',
-        },
-      ],
-    },
-    {
-      title: 'Your Time Horizon',
-      xp: 15,
-      steps: [
-        {
           type: 'concept',
-          text: "Not all goals take the same time. Let's look at the difference.",
+          text: "Goals also have different time frames. A <b>Short-Term Goal</b> is usually under a year (like saving for a new phone). A <b>Long-Term Goal</b> takes over a year (like saving for a car).",
         },
         {
           type: 'interactive-sort',
@@ -71,20 +57,20 @@ export const lessonBudgeting5: Lesson = {
           box2Label: 'Long-Term (1+ years)',
           items: [
             { id: 'item-1', text: 'New phone', correctBox: 'box1' },
-            { id: 'item-2', text: 'Trip with friends', correctBox: 'box1' },
+            { id: 'item-2', text: 'Summer trip with friends', correctBox: 'box1' },
             { id: 'item-3', text: 'Car down payment', correctBox: 'box2' },
-            { id: 'item-4', text: 'College fund', correctBox: 'box2' },
+            { id: 'item-4', text: 'Saving for college', correctBox: 'box2' },
           ],
         },
       ],
     },
     {
-      title: 'The Magic of Saving Early',
-      xp: 10,
+      title: 'The Magic of Compound Interest',
+      xp: 30,
       steps: [
         {
           type: 'concept',
-          text: 'Here’s where saving gets awesome. The earlier you start, the less you have to save. Why? <b>Compound interest!</b>',
+          text: 'Here’s where saving for long-term goals gets awesome. The earlier you start, the less you have to save. Why? <b>Compound Interest!</b>',
         },
         {
           type: 'concept',
@@ -94,48 +80,14 @@ export const lessonBudgeting5: Lesson = {
         },
         {
           type: 'scenario',
-          text: "<b>Alex</b> starts saving $50/month at age 18. By 30, they’ll have over $10,000! <b>Jamie</b> waits until 25. By 30, they’ll only have around $3,500. Starting early is a superpower!",
+          text: "<b>Alex</b> starts saving <b>$50/month</b> at age 18. By 30, they’ll have over <b>$10,000</b>! <b>Jamie</b> waits until 25. By 30, they’ll only have around <b>$3,500</b>. Starting early is a superpower!",
           image: 'https://placehold.co/400x225',
           imageHint: 'bar chart comparison',
         },
-      ],
-    },
-    {
-      title: 'Your Savings Plan',
-      xp: 15,
-      steps: [
-        {
-          type: 'scenario',
-          text: 'Time to plan! You want a new laptop that costs <b>$1,200</b>. You want to buy it in 8 months.',
-        },
         {
           type: 'fill-in-the-blank',
-          question: 'To get your $1,200 laptop in 8 months, you need to save $______ each month.',
-          correctAnswer: '150',
-          reinforcement: "Exactly! $1200 divided by 8 months is $150 per month. That's your target!",
-        },
-        {
-          type: 'goal-builder',
-          instructions: 'What could you cut from your "Wants" category to save that much faster?',
-          inputType: 'text',
-          placeholder: 'e.g., Fewer coffees, pack lunch...',
-          storageKey: 'cut_wants',
-        },
-      ],
-    },
-    {
-      title: 'Wrap-Up',
-      xp: 5,
-      steps: [
-        {
-          type: 'tap-the-pairs',
-          instructions: 'Final vocab check! Match the term to its definition.',
-          pairs: [
-            { term: 'SMART Goal', definition: 'A goal that’s Specific, Measurable, Achievable, Relevant, Timed.' },
-            { term: 'Short-Term Goal', definition: 'Goal achievable in less than 1 year.' },
-            { term: 'Long-Term Goal', definition: 'Goal that takes more than 1 year to reach.' },
-            { term: 'Compound Interest', definition: 'When your savings earn interest, and that interest earns more.' },
-          ],
+          question: "When your savings earn their own interest, it's called __________ interest.",
+          correctAnswer: 'compound',
         },
         {
           type: 'complete',
