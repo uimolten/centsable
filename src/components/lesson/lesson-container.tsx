@@ -4,7 +4,7 @@
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Check, X, Heart, Flame } from 'lucide-react';
+import { Check, X, Heart, Flame, ChevronLeft } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Step } from '@/types/lesson';
@@ -26,6 +26,8 @@ interface LessonContainerProps {
   lives: number;
   streak: number;
   incorrectAttempts: number;
+  onBack: () => void;
+  isFirstStep: boolean;
 }
 
 export function LessonContainer({
@@ -40,10 +42,13 @@ export function LessonContainer({
   lives,
   streak,
   incorrectAttempts,
+  onBack,
+  isFirstStep,
 }: LessonContainerProps) {
   const router = useRouter();
 
   const getButtonText = () => {
+    if (!currentStep) return "Continue";
     const stepType = currentStep.type;
     const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'goal-builder'].includes(stepType);
     
@@ -54,13 +59,14 @@ export function LessonContainer({
   
   const isButtonDisabled = () => {
     const buttonText = getButtonText();
-    if (buttonText === 'Check' || (buttonText === 'Continue' && currentStep.type === 'goal-builder')) {
+    if (buttonText === 'Check' || (buttonText === 'Continue' && currentStep?.type === 'goal-builder')) {
         return userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
     }
     return false;
   }
   
   const getCorrectAnswerText = () => {
+    if (!currentStep) return undefined;
     if (currentStep.type === 'multiple-choice') {
       const correctIds = Array.isArray(currentStep.correctAnswer) ? currentStep.correctAnswer : [currentStep.correctAnswer];
       return currentStep.options.filter(o => correctIds.includes(o.id)).map(o => o.text).join(', ');
@@ -77,9 +83,12 @@ export function LessonContainer({
 
       <div className="relative z-10 flex flex-col h-full">
         <header className="flex-shrink-0 p-4">
-          <div className="container mx-auto flex items-center gap-4">
+          <div className="container mx-auto flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => router.push('/learn')}>
               <X className="h-7 w-7" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onBack} disabled={isFirstStep}>
+              <ChevronLeft className="h-7 w-7" />
             </Button>
             <div className="relative flex-grow h-4 rounded-full bg-muted/30">
                <div className="absolute inset-0 h-full w-full overflow-hidden rounded-full">

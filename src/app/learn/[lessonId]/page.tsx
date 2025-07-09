@@ -176,6 +176,30 @@ export default function LessonPage() {
       setIncorrectAttempts(0);
   }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, hasAnswered]);
 
+  const goToPreviousStep = useCallback(() => {
+    // Don't go back if we are at the very beginning
+    if (moduleIndex === 0 && stepIndex === 0) return;
+
+    setCompletedSteps(prev => Math.max(0, prev - 1)); // Decrement progress
+
+    if (stepIndex > 0) {
+      setStepIndex(stepIndex - 1);
+    } else { // at the beginning of a module, go to previous module
+      const prevModuleIndex = moduleIndex - 1;
+      setModuleIndex(prevModuleIndex);
+      if (lesson) {
+        setStepIndex(lesson.modules[prevModuleIndex].steps.length - 1);
+      }
+    }
+
+    // Reset state for the step we are going back to
+    setHasAnswered(false);
+    setIsCorrect(null);
+    setUserAnswers([]);
+    setTryAgainCounter(0);
+    setIncorrectAttempts(0);
+  }, [moduleIndex, stepIndex, lesson]);
+
   const handleLessonComplete = useCallback(() => {
     router.push(`/learn?completed=${lessonId}`);
   }, [lessonId, router]);
@@ -247,12 +271,10 @@ export default function LessonPage() {
       setIncorrectAttempts(prev => prev + 1);
       
       if (currentStep.type === 'fill-in-the-blank') {
-          // Re-check fill-in-the-blank without resetting the whole UI
-          const correct = checkAnswer();
-          setIsCorrect(correct);
-          if (correct) {
-              setStreak(prev => prev + 1);
-          }
+          // Allow re-submitting for fill-in-the-blank
+          setHasAnswered(false);
+          setIsCorrect(null);
+          handleCheck(); // Re-check the current answer
       } else {
         // Reset for non-text-input questions
         setHasAnswered(false);
@@ -269,11 +291,16 @@ export default function LessonPage() {
     // Case 4: This is the first time checking the answer for this step
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, checkAnswer]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
+        if (hasAnswered && isCorrect === false && currentStep.type === 'fill-in-the-blank') {
+            handleFooterAction(); // Allow enter to re-submit fill-in-the-blank
+            return;
+        }
+
         const isAnswerEmpty = (currentStep.type === 'multiple-choice' || currentStep.type === 'fill-in-the-blank' || currentStep.type === 'goal-builder') && (userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === ''));
         if (isAnswerEmpty) return;
         
@@ -283,7 +310,7 @@ export default function LessonPage() {
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [handleFooterAction, currentStep, userAnswers]);
+  }, [handleFooterAction, currentStep, userAnswers, hasAnswered, isCorrect]);
 
 
   const getInstructionText = (step: Step): string => {
@@ -332,7 +359,7 @@ export default function LessonPage() {
   };
   
   // Handle case where lesson is finished
-  if (stepIndex >= currentModule.steps.length) {
+  if (!currentStep) {
       const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0];
       return (
           <LessonContainer
@@ -346,6 +373,8 @@ export default function LessonPage() {
             hasAnswered={false}
             userAnswers={[]}
             currentStep={lastStep}
+            onBack={goToPreviousStep}
+            isFirstStep={false}
           >
               <LessonComplete 
                 step={lastStep as any} 
@@ -367,6 +396,8 @@ export default function LessonPage() {
       lives={lives}
       streak={streak}
       incorrectAttempts={incorrectAttempts}
+      onBack={goToPreviousStep}
+      isFirstStep={moduleIndex === 0 && stepIndex === 0}
     >
       <AnimatePresence mode="wait">
         {renderStepContent(currentStep)}
