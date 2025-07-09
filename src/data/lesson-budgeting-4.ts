@@ -14,12 +14,24 @@ export const lessonBudgeting4: Lesson = {
           text: 'You have a perfect budget plan... but then life happens. This lesson is about how to stick to your budget when things get messy.',
         },
         {
-          type: 'concept',
-          text: "A <b>Budget Buster</b> is any unexpected expense that smashes your plan if you're not ready. But don't worry, a strong budget doesn't break—it bends.",
+            type: 'multiple-choice',
+            question: "Which of these is a common *Budget Buster* that can wreck a financial plan?",
+            options: [
+                { id: 'opt1', text: '🍔 Random snack runs' },
+                { id: 'opt2', text: '🎉 FOMO when friends invite you out' },
+                { id: 'opt3', text: '📱 Surprise expenses like a broken phone' },
+                { id: 'opt4', text: 'All of the above' },
+            ],
+            correctAnswer: 'opt4',
+            reinforcement: "Correct—life doesn’t warn you before dropping a surprise expense or tempting you with wants. Today we’ll learn how to make your budget flexible enough to handle it all."
         },
         {
           type: 'concept',
-          text: "How do you fight a Budget Buster? With your 🛟 <b>Emergency Fund</b>! This is exactly what that special savings we set up in the last lesson is for.",
+          text: "Budgets break when you don’t prepare for surprises—like your headphones breaking or friends convincing you to go out *AGAIN* this weekend. These are called *Budget Busters*: unexpected expenses that smash your plan if you’re not ready.",
+        },
+        {
+            type: 'concept',
+            text: "*Jargon Highlight: Budget Buster* = Surprise cost that wasn’t in your plan (e.g., car repair, vet bill, lost phone). But don’t worry. A strong budget doesn’t break—it bends."
         },
       ],
     },
@@ -29,20 +41,20 @@ export const lessonBudgeting4: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'The secret is a <b>Flexible Budget</b>. It’s a plan that can adjust when your income changes or unexpected expenses pop up.',
+          text: "Here’s the secret: a budget is a living thing—it grows and shifts with you. A *Flexible Budget* adjusts when your income drops or expenses rise."
         },
         {
           type: 'concept',
-          text: "Instead of giving up, you tweak your categories. Remember how we sorted <b>Needs</b> and <b>Wants</b>? When money gets tight, your 'Wants' category is the first place to look for cuts.",
+          text: "Instead of giving up, you tweak your categories. When money gets tight, you should: <br>✅ Cut back on *Wants* first. <br>✅ Protect your *Needs*. <br>✅ Keep *Savings* a priority, even if smaller.",
         },
         {
           type: 'multiple-choice',
-          question: 'If you suddenly needed to cut $50 from your budget, which category should you pull from first?',
+          question: "According to the principles of flexible budgeting, which category should you typically reduce first when money gets tight?",
           options: [
             { id: 'opt1', text: '🎉 Wants' },
             { id: 'opt2', text: '🍽️ Needs' },
             { id: 'opt3', text: '💾 Savings' },
-            { id: 'opt4', text: 'It is impossible' },
+            { id: 'opt4', text: 'None, you should give up' },
           ],
           correctAnswer: 'opt1',
           reinforcement: 'Exactly! Your Wants are the most flexible part of your budget. You always want to protect your Needs.',
@@ -55,23 +67,23 @@ export const lessonBudgeting4: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'Surprises aren’t the only issue. Watch out for <b>Overspending Traps</b>: situations where you accidentally blow past your budget because you weren’t paying attention.',
+          text: 'Surprises aren’t the only issue. Watch out for *Overspending Traps*: situations where you accidentally blow past your budget because you weren’t paying attention.',
         },
         {
           type: 'concept',
-          text: "A great strategy to avoid this is setting a <b>Spending Cap</b>. This is a hard limit for a category (e.g., '$100 for eating out this month'). Another is the <b>24-Hour Rule</b>: for any big, non-essential purchase, wait a day before buying. You'll be surprised how often you decide you don't need it!",
+          text: "Common traps include too many food deliveries, late-night online shopping, or peer pressure. A great strategy to avoid this is setting a *Spending Cap* for a category (e.g., '$100 for eating out this month'). Another is the *24-Hour Rule*: for any big, non-essential purchase, wait a day before buying.",
         },
         {
           type: 'multiple-choice',
-          question: 'Which of these is an example of an Overspending Trap?',
+          question: 'Which of these are recommended strategies for avoiding overspending traps?',
           options: [
-            { id: 'opt1', text: 'Paying your phone bill.' },
-            { id: 'opt2', text: 'Putting money in savings.' },
-            { id: 'opt3', text: 'Late-night online shopping sprees.' },
-            { id: 'opt4', text: 'An unexpected car repair.' },
+            { id: 'opt1', text: 'Setting a spending cap on "Wants"' },
+            { id: 'opt2', text: 'Tracking your spending weekly' },
+            { id: 'opt3', text: 'Using the 24-hour rule for big purchases' },
+            { id: 'opt4', text: 'All of the above' },
           ],
-          correctAnswer: 'opt3',
-          reinforcement: "You got it. That's a classic trap where small purchases can add up fast!",
+          correctAnswer: 'opt4',
+          reinforcement: "You got it. All of these are great tactics to keep your spending in check!",
         },
         {
           type: 'complete',

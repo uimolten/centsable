@@ -14,16 +14,24 @@ export const lessonCredit2: Lesson = {
           text: "Let's build on what we've learned! It's time to talk about how to start building credit and manage it wisely. It's easier than you think!",
         },
         {
-          type: 'scenario',
-          text: "Imagine you’re 18 and get your first credit card. The bank gives you a <b>credit limit</b>—the maximum amount of money you can borrow.",
+          type: 'multiple-choice',
+          question: 'You just got your first credit card. For a starter card, what is a likely credit limit a bank would give you?',
+          options: [
+            { id: 'opt1', text: '<b>$500</b>' },
+            { id: 'opt2', text: '<b>$1,000</b>' },
+            { id: 'opt3', text: '<b>$5,000</b>' },
+            { id: 'opt4', text: '<b>$10,000</b>' },
+          ],
+          correctAnswer: ['opt1', 'opt2'],
+          reinforcement: "Correct! Limits for first-time cardholders are usually on the lower side, around <b>$500</b> to <b>$1,000</b>. What really matters is how you manage it.",
         },
         {
           type: 'multiple-choice',
-          question: 'The bank gives you a credit limit of $1,000. To build good credit, what’s a smart monthly spending amount to aim for?',
+          question: 'The bank gives you a credit limit of <b>$1,000</b>. To build good credit, what’s a smart monthly spending amount to aim for?',
           options: [
-            { id: 'opt1', text: 'Spend the full $1,000 to show you use it.' },
-            { id: 'opt2', text: 'Spend less than $300.' },
-            { id: 'opt3', text: 'Spend more than $1,000 by asking for an increase.' },
+            { id: 'opt1', text: 'Spend the full <b>$1,000</b> to show you use it.' },
+            { id: 'opt2', text: 'Spend less than <b>$300</b>.' },
+            { id: 'opt3', text: 'Spend more than <b>$1,000</b> by asking for an increase.' },
             { id: 'opt4', text: "Don't use the card at all." },
           ],
           correctAnswer: 'opt2',
@@ -37,19 +45,19 @@ export const lessonCredit2: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Let's define some key terms you'll see on credit card offers. First up: <b>APR</b>, or *Annual Percentage Rate*. This is the interest you'll pay on any money you haven't paid back after the due date.",
+          text: "Let's define some key terms you'll see on credit card offers. First up: *APR*, or *Annual Percentage Rate*. This is the interest you'll pay on any money you haven't paid back after the due date.",
         },
         {
           type: 'concept',
-          text: "The <b>Grace Period</b> is the time between the end of a billing cycle and your payment due date. If you pay your full balance during this period, you won't be charged any interest!",
+          text: "The *Grace Period* is the time between the end of a billing cycle and your payment due date. If you pay your full balance during this period, you won't be charged any interest!",
         },
         {
           type: 'concept',
-          text: "Your <b>Credit Limit</b> is the total amount you can borrow. And <b>Credit Utilization</b> is the percentage of your limit you're currently using. Lenders like to see this below 30%!",
+          text: "Your *Credit Limit* is the total amount you can borrow. And *Credit Utilization* is the percentage of your limit you're currently using. Lenders like to see this below 30%!",
         },
         {
           type: 'fill-in-the-blank',
-          question: "If your credit limit is $1,000, you should try to keep your balance below $<b>_____</b> to have good credit utilization.",
+          question: "If your credit limit is <b>$1,000</b>, you should try to keep your balance below <b>$_____</b> to have good credit utilization.",
           correctAnswer: '300',
         },
         {
