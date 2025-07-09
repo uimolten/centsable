@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -19,31 +20,7 @@ export default function LearnPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    const completedActivityId = searchParams.get('completed');
-    if (completedActivityId) {
-      handleCompleteActivity(completedActivityId);
-      // Remove the query param from the URL without reloading the page
-      router.replace('/learn', { scroll: false });
-    }
-  }, [searchParams]);
-  
-  const handleSelectActivity = (activity: Activity) => {
-    if (activity.state !== 'locked') {
-      setSelectedActivity(activity);
-    }
-  };
-
-  const handleStartActivity = (activity: Activity) => {
-    if (activity.type === 'lesson' || activity.type === 'practice' || activity.type === 'quiz') {
-      router.push(`/learn/${activity.id}`);
-    } else {
-      console.log("Starting non-lesson activity:", activity.title);
-      handleCompleteActivity(activity.id);
-    }
-  };
-
-  const handleCompleteActivity = (activityId: string) => {
+  const handleCompleteActivity = useCallback((activityId: string) => {
     // Mark current as completed
     const newUnits = units.map(unit => ({
       ...unit,
@@ -77,7 +54,31 @@ export default function LearnPage() {
       setSelectedActivity(null);
       setUnits(newUnits);
     }
-  }
+  }, [units, isDesktop]);
+
+  useEffect(() => {
+    const completedActivityId = searchParams.get('completed');
+    if (completedActivityId) {
+      handleCompleteActivity(completedActivityId);
+      // Remove the query param from the URL without reloading the page
+      router.replace('/learn', { scroll: false });
+    }
+  }, [searchParams, handleCompleteActivity, router]);
+  
+  const handleSelectActivity = (activity: Activity) => {
+    if (activity.state !== 'locked') {
+      setSelectedActivity(activity);
+    }
+  };
+
+  const handleStartActivity = (activity: Activity) => {
+    if (activity.type === 'lesson' || activity.type === 'practice' || activity.type === 'quiz') {
+      router.push(`/learn/${activity.id}`);
+    } else {
+      console.log("Starting non-lesson activity:", activity.title);
+      handleCompleteActivity(activity.id);
+    }
+  };
 
   const findUnitForActivity = (activity: Activity | null): Unit | undefined => {
     if (!activity) return undefined;
