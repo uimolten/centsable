@@ -7,11 +7,11 @@ export const lessonBudgeting2: Lesson = {
   modules: [
     {
       title: "The Detective's Toolkit",
-      xp: 20,
+      xp: 15,
       steps: [
         {
           type: 'intro',
-          text: "Imagine a crisp $20 bill lands in your pocket every Friday. After a month, you'd have $80! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <strong>really</strong> goes.",
+          text: "Imagine a crisp <strong>$20</strong> bill lands in your pocket every Friday. After a month, you'd have <strong>$80</strong>! Small amounts add up fast—for saving AND spending. Today, we're financial detectives finding where your money <em>really</em> goes.",
         },
         {
           type: 'concept',
@@ -33,7 +33,7 @@ export const lessonBudgeting2: Lesson = {
     },
     {
       title: 'Fixed vs. Variable: The Clues',
-      xp: 25,
+      xp: 15,
       steps: [
         {
           type: 'concept',
@@ -58,8 +58,8 @@ export const lessonBudgeting2: Lesson = {
       ],
     },
     {
-      title: 'Spending Leaks & Your Toolkit',
-      xp: 15,
+      title: 'Spending Leaks',
+      xp: 10,
       steps: [
         {
           type: 'concept',
@@ -67,13 +67,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'scenario',
-          text: "That $5 coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's $80 a month that just vanishes!",
-        },
-        {
-          type: 'concept',
-          text: "Luckily, you have tools! Apps like Mint automate tracking. YNAB helps you tell every dollar where to go <strong>before</strong> you spend it. And Google Sheets lets you build your own system.",
-          image: 'https://placehold.co/400x225',
-          imageHint: 'apps phone',
+          text: "That <strong>$5</strong> coffee or energy drink doesn't seem like much, right? But buy one 4 times a week, and that's <strong>$80</strong> a month that just vanishes!",
         },
         {
             type: 'multiple-choice',
@@ -90,16 +84,57 @@ export const lessonBudgeting2: Lesson = {
       ]
     },
     {
+      title: "Your Detective's Toolkit",
+      xp: 10,
+      steps: [
+        {
+            type: 'concept',
+            text: "Luckily, you have tools! Finding the right one makes tracking way easier and helps you crush those savings goals.",
+            image: 'https://placehold.co/400x225',
+            imageHint: 'tools kit',
+        },
+        {
+            type: 'concept',
+            text: "<strong>The Automator:</strong> Apps like Mint or Empower connect to your bank and sort your spending for you. It's great for getting a quick, hands-off overview.",
+            image: 'https://placehold.co/400x225',
+            imageHint: 'app dashboard',
+        },
+        {
+            type: 'concept',
+            text: "<strong>The Planner:</strong> Apps like YNAB (You Need A Budget) make you give every dollar a job *before* you spend it. This is super powerful for hitting specific goals.",
+            image: 'https://placehold.co/400x225',
+            imageHint: 'budget planner',
+        },
+        {
+            type: 'concept',
+            text: "<strong>The DIY Method:</strong> A simple Google Sheet or notebook gives you total control. It takes more work, but you can customize it exactly how you like.",
+            image: 'https://placehold.co/400x225',
+            imageHint: 'spreadsheet chart',
+        },
+        {
+            type: 'multiple-choice',
+            question: 'The most effective budgeting tool is...',
+            options: [
+                { id: 'opt1', text: 'The most popular one.' },
+                { id: 'opt2', text: 'The one with the most features.' },
+                { id: 'opt3', text: 'The one you will actually use.' },
+            ],
+            correctAnswer: 'opt3',
+            reinforcement: 'Exactly! Consistency is what matters most.',
+        }
+      ]
+    },
+    {
         title: 'The Money Tracker Challenge',
-        xp: 30,
+        xp: 15,
         steps: [
             {
                 type: 'scenario',
-                text: "Time for a challenge! Your income this month is $340 ($250 paycheck, $50 gift, $40 from selling clothes)."
+                text: "Time for a challenge! Your income this month is <strong>$340</strong> (<strong>$250</strong> paycheck, <strong>$50</strong> gift, <strong>$40</strong> from selling clothes)."
             },
             {
                 type: 'fill-in-the-blank',
-                question: 'First, what is the TOTAL of all your expenses this month? $______',
+                question: "First, what is the TOTAL of all your expenses this month? <strong>$______</strong>",
                 correctAnswer: '270',
                 reinforcement: 'Correct! Total expenses are $270.',
                 image: 'https://placehold.co/600x400',
@@ -107,15 +142,15 @@ export const lessonBudgeting2: Lesson = {
             },
             {
                 type: 'fill-in-the-blank',
-                question: 'You started with $340 and spent $270. How much do you have left over? $______',
+                question: "You started with <strong>$340</strong> and spent <strong>$270</strong>. How much do you have left over? <strong>$______</strong>",
                 correctAnswer: '70',
                 reinforcement: "That's right! You have $70 left to save or spend wisely.",
             }
         ]
     },
     {
-      title: 'Mission Complete',
-      xp: 10,
+      title: 'Your First Mission',
+      xp: 5,
       steps: [
         {
           type: 'concept',
@@ -123,7 +158,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'concept',
-          text: "Think about the <strong>one</strong> expense category you're most curious about tracking for yourself. That's your first mission!"
+          text: "Your first mission: Think about the <strong>one</strong> expense category you're most curious about, and which tool you might try to track it. That's how real change starts!"
         },
         {
           type: 'complete',
