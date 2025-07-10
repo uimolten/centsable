@@ -1,22 +1,22 @@
+
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { minigames, Minigame } from '@/data/minigames-data';
-import { units as allUnits, Unit } from '@/data/learn-data';
+import { units as allUnits, Unit, DEV_MODE_UNLOCK_ALL } from '@/data/learn-data';
 import { isUnitCompleted } from '@/lib/lesson-utils';
 import { Lock, Gamepad2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export default function MinigamesPage() {
-  const [units, setUnits] = useState<Unit[]>(allUnits);
-
   // In a real app, you might get this from a user's progress state
   // For now, we use the static data which can be modified for testing
   const completedUnitIds = new Set(
-    units.filter(unit => isUnitCompleted(unit)).map(unit => unit.id)
+    allUnits.filter(unit => isUnitCompleted(unit)).map(unit => unit.id)
   );
 
   return (
@@ -44,8 +44,8 @@ export default function MinigamesPage() {
           }}
         >
           {minigames.map((game, index) => {
-            const isUnlocked = completedUnitIds.has(game.requiredUnitId);
-            const requiredUnit = units.find(u => u.id === game.requiredUnitId);
+            const isUnlocked = DEV_MODE_UNLOCK_ALL || completedUnitIds.has(game.requiredUnitId);
+            const requiredUnit = allUnits.find(u => u.id === game.requiredUnitId);
 
             return (
               <motion.div
@@ -77,9 +77,11 @@ export default function MinigamesPage() {
                   </CardHeader>
                   <CardContent className="flex-grow flex flex-col justify-end">
                     {isUnlocked ? (
-                       <Button className="w-full shadow-lg">
-                         <Gamepad2 className="mr-2 h-4 w-4" />
-                         Play Now
+                       <Button asChild className="w-full shadow-lg">
+                         <Link href={`/minigames/${game.id}`}>
+                           <Gamepad2 className="mr-2 h-4 w-4" />
+                           Play Now
+                         </Link>
                        </Button>
                     ) : (
                       <div className="text-center text-sm text-muted-foreground p-3 rounded-md bg-background/30">
