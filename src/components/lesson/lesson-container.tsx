@@ -111,13 +111,13 @@ export function LessonContainer({
           </div>
         </header>
 
-        <main className="flex-grow flex flex-col items-center justify-between overflow-y-auto p-4 w-full">
+        <main className="flex-grow flex flex-col items-center justify-center overflow-y-auto p-4 w-full space-y-8">
           <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
               <SpeechBubble text={instructionText} />
               <Mascot isHappy={isCorrect} isSad={isCorrect === false} />
           </div>
 
-          <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center my-4">
+          <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center">
               {children}
           </div>
         </main>
