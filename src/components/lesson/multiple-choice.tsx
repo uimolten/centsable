@@ -50,7 +50,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
         </div>
       );
     }
-    return option.text;
+    return <span dangerouslySetInnerHTML={{ __html: option.text || '' }} />;
   };
 
   return (
@@ -60,7 +60,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4 w-full"
+      className="space-y-2 w-full"
     >
       <div className={cn(
         "grid grid-cols-1 gap-3",
