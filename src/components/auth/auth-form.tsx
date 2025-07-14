@@ -67,6 +67,8 @@ export function AuthForm() {
         return 'Invalid email or password. Please try again.';
       case 'auth/popup-closed-by-user':
         return 'Sign-in popup was closed before completing. Please try again.';
+      case 'auth/unauthorized-domain':
+        return 'This domain is not authorized for authentication. Please add it to the Firebase console.';
       default:
         return error.message || 'An unexpected error occurred. Please try again.';
     }
