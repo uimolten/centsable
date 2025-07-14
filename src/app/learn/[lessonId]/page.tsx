@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -39,7 +40,6 @@ import { lessonTaxes1 } from '@/data/lesson-taxes-1';
 import { lessonTaxes2 } from '@/data/lesson-taxes-2';
 import { lessonTaxes3 } from '@/data/lesson-taxes-3';
 import { lessonTaxes4 } from '@/data/lesson-taxes-4';
-import { lessonTaxes5 } from '@/data/lesson-taxes-5';
 import { lessonTaxesPractice1 } from '@/data/lesson-taxes-practice-1';
 import { lessonTaxesPractice2 } from '@/data/lesson-taxes-practice-2';
 import { lessonTaxesQuiz } from '@/data/lesson-taxes-quiz';
@@ -97,11 +97,10 @@ const getLessonData = (lessonId: string): Lesson | null => {
   // Taxes
   if (lessonId === 't1') return lessonTaxes1;
   if (lessonId === 't2') return lessonTaxes2;
-  if (lessonId === 'tp1') return lessonTaxesPractice1;
   if (lessonId === 't3') return lessonTaxes3;
   if (lessonId === 't4') return lessonTaxes4;
+  if (lessonId === 'tp1') return lessonTaxesPractice1;
   if (lessonId === 'tp2') return lessonTaxesPractice2;
-  if (lessonId === 't5') return lessonTaxes5;
   if (lessonId === 'tq1') return lessonTaxesQuiz;
 
   return null;

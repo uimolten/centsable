@@ -3,45 +3,71 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonTaxes2: Lesson = {
   id: 't2',
-  title: 'Understanding Paychecks & Withholding',
+  title: 'Decoding Your Paycheck',
   modules: [
     {
-      title: 'Pay Stub Mystery',
-      xp: 8,
+      title: 'Gross vs. Net Income',
+      xp: 4,
       steps: [
         {
           type: 'intro',
-          text: "You’re paid $500 but your check says $430. Why? Let's solve the pay stub mystery.",
+          text: "Let's revisit your $150 paycheck that shrank to $128 after taxes. This brings up two very important terms: Gross Income and Net Income.",
+        },
+        {
+          type: 'fill-in-the-blank',
+          question: "Your <b>Gross Income</b> was the total you earned, which was $____.",
+          correctAnswer: '150',
+        },
+        {
+          type: 'fill-in-the-blank',
+          question: "Your <b>Net Income</b>, or take-home pay, was the amount after taxes, which was $____.",
+          correctAnswer: '128',
         },
         {
           type: 'concept',
-          text: "The difference is because taxes were withheld before you even saw your money. This is called **tax withholding**.",
+          text: "The process of your employer taking out taxes before you get paid is called <b>tax withholding</b>.",
         },
         {
           type: 'concept',
-          text: "Let's define two key terms. <b>Gross Income</b> is your total pay before any taxes are taken out. <b>Net Income</b> is your take-home pay after taxes are deducted.",
-        },
-        {
-          type: 'tap-the-pairs',
-          instructions: 'Match the term to its definition!',
-          pairs: [
-            { term: 'Gross Income', definition: 'Total pay before taxes' },
-            { term: 'Net Income', definition: 'Take-home pay after taxes' },
-            { term: 'Withholding', definition: 'Taxes taken out by an employer' },
-          ],
-        },
-        {
-          type: 'concept',
-          text: "Let's look at a sample pay stub. You'll see sections for Earnings, Deductions (federal tax, state tax, payroll taxes), and your final Net Pay.",
+          text: "Here's what a typical pay stub looks like. Let's break down the key parts.",
           image: "https://placehold.co/400x225",
-          imageHint: 'paycheck stub'
+          imageHint: 'paycheck stub example',
+        },
+      ],
+    },
+    {
+      title: 'The W-4 Form',
+      xp: 4,
+      steps: [
+        {
+          type: 'concept',
+          text: "How does your employer know how much to withhold? You tell them! When you start a job, you fill out a <b>Form W-4</b>.",
+        },
+        {
+          type: 'concept',
+          text: "On the W-4, you can claim dependents (people you financially support) or indicate other income to make your withholding more accurate.",
+        },
+        {
+          type: 'scenario',
+          text: "Let's do a simulation. You start a job and fill out your W-4 as 'Single' with no dependents. Your net pay is $128.",
+        },
+        {
+          type: 'multiple-choice',
+          question: "Now, imagine you have a child. You update your W-4 to claim one dependent. What do you think will happen to your net pay?",
+          options: [
+            { id: 'opt1', text: 'It will go up.' },
+            { id: 'opt2', text: 'It will go down.' },
+            { id: 'opt3', text: 'It will stay the same.' },
+          ],
+          correctAnswer: 'opt1',
+          reinforcement: "Correct! Claiming dependents reduces your withholding because the government knows you have higher expenses, so you get more money in each paycheck.",
         },
         {
             type: 'goal-builder',
-            instructions: 'Why do you think taxes are taken out automatically instead of leaving it up to you?',
+            instructions: 'Would you prefer to have more money withheld (and likely get a refund), or less withheld (and have more cash now)? Why?',
             inputType: 'text',
-            placeholder: 'e.g., To make sure they get paid',
-            storageKey: 'withholdingReason',
+            placeholder: 'e.g., I want more cash now to help with my budget.',
+            storageKey: 'w4Preference',
         },
         {
           type: 'complete',
@@ -49,7 +75,7 @@ export const lessonTaxes2: Lesson = {
           text: "You've cracked the code of your paycheck!",
           rewards: {
             xp: 8,
-            coins: 5,
+            coins: 10,
           },
         },
       ],

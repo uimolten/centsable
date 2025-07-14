@@ -3,52 +3,43 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonTaxesPractice2: Lesson = {
   id: 'tp2',
-  title: 'Practice: Credits vs. Deductions',
+  title: 'Practice: Mini Tax Return',
   modules: [
     {
-      title: 'Practice Dojo',
+      title: 'Practice Dojo: Tax Time!',
       xp: 15,
       steps: [
         {
           type: 'intro',
-          text: "Time for more practice! Let's sharpen your knowledge of tax forms and savings.",
-        },
-        {
-          type: 'multiple-choice',
-          question: "Which form do you receive from your employer that summarizes your annual earnings and withholdings?",
-          options: [
-            { id: 'opt1', text: '1040' },
-            { id: 'opt2', text: 'W-2' },
-            { id: 'opt3', text: 'W-4' },
-            { id: 'opt4', text: 'Form 1099' },
-          ],
-          correctAnswer: 'opt2',
-          reinforcement: 'Correct! The W-2 is the summary of your year.',
-        },
-        {
-          type: 'multiple-choice',
-          question: "Which is more valuable to you as a taxpayer?",
-          options: [
-            { id: 'opt1', text: 'A $500 Tax Credit' },
-            { id: 'opt2', text: 'A $500 Tax Deduction' },
-          ],
-          correctAnswer: 'opt1',
-          reinforcement: "You got it! Credits reduce your tax bill dollar-for-dollar.",
+          text: "Let's put it all together. Here is a sample W-2 for a student named Alex who worked a summer job. Use it to complete this mini tax return.",
         },
         {
           type: 'scenario',
-          text: "You owe $800 in taxes. You qualify for a $300 tax credit and a $1,000 tax deduction. Your tax rate is 10%.",
+          text: "<b>Alex's W-2 Information:</b> <br> • Box 1 (Wages): <b>$3,500</b> <br> • Box 2 (Federal income tax withheld): <b>$150</b>",
         },
         {
-          type: 'fill-in-the-blank',
-          question: 'The $1,000 deduction saves you $100. The $300 credit saves you $300. In total, you save $______ on your taxes.',
-          correctAnswer: '400',
-          reinforcement: "Excellent work! Your new tax bill would be $400.",
+          type: 'concept',
+          text: "First, we calculate Alex's tax bill. Since Alex's income is less than the standard deduction ($14,600), their taxable income is $0. Therefore, their final tax bill is <b>$0</b>.",
+        },
+        {
+          type: 'multiple-choice',
+          question: 'Alex owed $0 in taxes, but had $150 withheld from their paychecks. What is the result?',
+          options: [
+            { id: 'opt1', text: 'Alex owes more money.' },
+            { id: 'opt2', text: 'Alex gets a refund of $150.' },
+            { id: 'opt3', text: 'Alex breaks even.' },
+          ],
+          correctAnswer: 'opt2',
+          reinforcement: "Exactly! This is why it's so important for students to file taxes, even if they don't earn much. You can get your withheld money back!",
+        },
+        {
+          type: 'concept',
+          text: 'This is a simplified example. In reality, you can easily file for free using IRS Free File or VITA programs.',
         },
         {
           type: 'complete',
           title: 'PRACTICE COMPLETE!',
-          text: 'You handled those scenarios like a pro. Awesome work!',
+          text: 'You successfully filed a mini tax return! Great job.',
           rewards: {
             xp: 15,
             coins: 5,

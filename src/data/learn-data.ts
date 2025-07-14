@@ -2,7 +2,7 @@
 import type { Unit } from '@/types/learn';
 import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase } from 'lucide-react';
 
-// Set this to `false` before deploying to production to enable sequential unlocking.
+// Set this to `true` before deploying to production to enable sequential unlocking.
 export const DEV_MODE_UNLOCK_ALL = true;
 
 const rawUnitsData: Unit[] = [
@@ -70,13 +70,12 @@ const rawUnitsData: Unit[] = [
     description: "Demystify taxes and understand your responsibilities as a taxpayer.",
     unitIcon: Landmark,
     activities: [
-      { id: 't1', title: 'Why Taxes Matter', type: 'lesson', state: 'locked', xp: 8 },
-      { id: 't2', title: 'Understanding Paychecks & Withholding', type: 'lesson', state: 'locked', xp: 8 },
-      { id: 'tp1', title: 'Practice: Reading a Pay Stub', type: 'practice', state: 'locked', xp: 15 },
-      { id: 't3', title: 'Filing Taxes', type: 'lesson', state: 'locked', xp: 10 },
-      { id: 't4', title: 'Tax Credits, Deductions & Refunds', type: 'lesson', state: 'locked', xp: 7 },
-      { id: 'tp2', title: 'Practice: Credits vs. Deductions', type: 'practice', state: 'locked', xp: 15 },
-      { id: 't5', title: 'Taxes & Your Future', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 't1', title: 'Taxes 101: What They Are & Why We Have Them', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 't2', title: 'Decoding Your Paycheck', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'tp1', title: 'Practice: Paycheck Detective', type: 'practice', state: 'locked', xp: 15 },
+      { id: 't3', title: 'How to File Your Taxes', type: 'lesson', state: 'locked', xp: 10 },
+      { id: 't4', title: 'Lowering Your Tax Bill & Future Taxes', type: 'lesson', state: 'locked', xp: 10 },
+      { id: 'tp2', title: 'Practice: Mini Tax Return', type: 'practice', state: 'locked', xp: 15 },
       { id: 'tq1', title: 'Taxes Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
     ],
   },

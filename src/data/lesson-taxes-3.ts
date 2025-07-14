@@ -3,56 +3,78 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonTaxes3: Lesson = {
   id: 't3',
-  title: 'Filing Taxes',
+  title: 'How to File Your Taxes',
   modules: [
     {
-      title: 'Why File?',
-      xp: 10,
+      title: 'Tax Season Explained',
+      xp: 5,
       steps: [
         {
           type: 'intro',
-          text: "Let's talk about actually *filing* your taxes. Have you or your parents ever seen a W-2 or 1040 form?",
-        },
-        {
-          type: 'concept',
-          text: "You file taxes to report your income to the government and figure out if you paid the right amount. If too much was withheld, you get a **REFUND**! If too little was withheld, you owe more.",
+          text: "So your employer withholds taxes all year. But how does the government know if it was the right amount? That's where filing your taxes comes in.",
         },
         {
           type: 'multiple-choice',
-          question: 'If you get a tax refund, it means...',
+          question: 'Your friend brags about getting a $500 tax refund. What does this actually mean?',
           options: [
-            { id: 'opt1', text: 'You got free money from the government.' },
-            { id: 'opt2', text: 'You paid too much in taxes during the year.' },
-            { id: 'opt3', text: 'You didn\'t pay enough taxes.' },
-            { id: 'opt4', text: 'You won the tax lottery.' },
+            { id: 'opt1', text: 'They earned an extra $500 from the government.' },
+            { id: 'opt2', text: 'It was a lottery prize for filing taxes.' },
+            { id: 'opt3', text: 'They overpaid their taxes during the year, and the IRS is returning their own money.' },
           ],
-          correctAnswer: 'opt2',
-          reinforcement: "Correct! It's your own money being returned to you.",
+          correctAnswer: 'opt3',
         },
         {
           type: 'concept',
-          text: "There are a few key forms you'll encounter when you start working.",
+          text: "Filing taxes is like settling up your tab with the government. You compare what you SHOULD have paid with what you DID pay through withholding.",
         },
+        {
+          type: 'concept',
+          text: "If <b>Taxes Withheld > Final Tax Bill</b>, you get a <b>Tax Refund</b>. 💵 <br> If <b>Taxes Withheld < Final Tax Bill</b>, you have <b>Taxes Owed</b>. 💸",
+        },
+        {
+          type: 'concept',
+          text: "Let's look at the key forms in the tax timeline.",
+          image: "https://placehold.co/400x225",
+          imageHint: 'tax timeline calendar',
+        },
+      ],
+    },
+    {
+      title: 'Key Tax Forms',
+      xp: 5,
+      steps: [
         {
           type: 'interactive-sort',
           instructions: 'Match the tax form to its purpose.',
-          box1Label: 'Form',
-          box2Label: 'Purpose',
+          box1Label: 'Form Name',
+          box2Label: 'Its Purpose',
           items: [
-            { id: 'item-1', text: 'W-4', correctBox: 'box1' },
-            { id: 'item-2', text: 'Tells your employer how much to withhold', correctBox: 'box2' },
-            { id: 'item-3', text: 'W-2', correctBox: 'box1' },
-            { id: 'item-4', text: 'Summary of earnings & taxes withheld from one job', correctBox: 'box2' },
-            { id: 'item-5', text: '1040', correctBox: 'box1' },
-            { id: 'item-6', text: 'The main tax return form to file with the IRS', correctBox: 'box2' },
+            { id: 'item-1', text: 'Form W-4', correctBox: 'box1' },
+            { id: 'item-2', text: 'You fill this out when you start a job to determine withholding.', correctBox: 'box2' },
+            { id: 'item-3',text: 'Form W-2', correctBox: 'box1' },
+            { id: 'item-4', text: 'Your employer sends this to you in January. It summarizes your total earnings and taxes paid for the year.', correctBox: 'box2' },
+            { id: 'item-5', text: 'Form 1040', correctBox: 'box1' },
+            { id: 'item-6', text: 'This is the main form you use to file your actual tax return with the IRS.', correctBox: 'box2' },
           ],
         },
         {
+          type: 'multiple-choice',
+          question: 'In most years, what is the deadline to file your taxes?',
+          options: [
+            { id: 'opt1', text: 'January 1st' },
+            { id: 'opt2', text: 'April 15th' },
+            { id: 'opt3', text: 'December 31st' },
+            { id: 'opt4', text: 'July 4th' },
+          ],
+          correctAnswer: 'opt2',
+          reinforcement: "That's right! Tax Day is famously on or around April 15th.",
+        },
+        {
             type: 'goal-builder',
-            instructions: 'Would you rather get a big refund or break even at tax time? Why?',
+            instructions: 'Why is it important to keep your W-2 form in a safe place, even after you’ve filed your taxes?',
             inputType: 'text',
-            placeholder: 'e.g., A big refund feels like a bonus!',
-            storageKey: 'refundPreference',
+            placeholder: 'e.g., As proof of income or in case of an audit.',
+            storageKey: 'w2Importance',
         },
         {
           type: 'complete',
@@ -60,7 +82,7 @@ export const lessonTaxes3: Lesson = {
           text: 'You understand the basics of filing taxes. Amazing!',
           rewards: {
             xp: 10,
-            coins: 10,
+            coins: 15,
           },
         },
       ],
