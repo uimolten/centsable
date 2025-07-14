@@ -23,8 +23,8 @@ export const lessonInvesting2: Lesson = {
           type: 'multiple-choice',
           question: 'Which video game difficulty setting is like a high-risk investment?',
           options: [
-            { id: 'easy', text: 'Easy Mode' },
             { id: 'story', text: 'Story Mode' },
+            { id: 'easy', text: 'Easy Mode' },
             { id: 'normal', text: 'Normal Mode' },
             { id: 'nightmare', text: 'Nightmare Mode' },
           ],

@@ -19,7 +19,7 @@ export const lessonTaxesPractice2: Lesson = {
         },
         {
           type: 'concept',
-          text: "First, we calculate Alex's tax bill. Since Alex's income is less than the standard deduction ($14,600), their taxable income is $0. Therefore, their final tax bill is <b>$0</b>.",
+          text: "First, we calculate Alex's tax bill. Since Alex's income is less than the standard deduction ($14,600 for 2025), their taxable income is $0. Therefore, their final tax bill is <b>$0</b>.",
         },
         {
           type: 'multiple-choice',
@@ -28,13 +28,14 @@ export const lessonTaxesPractice2: Lesson = {
             { id: 'opt1', text: 'Alex owes more money.' },
             { id: 'opt2', text: 'Alex gets a refund of $150.' },
             { id: 'opt3', text: 'Alex breaks even.' },
+            { id: 'opt4', text: 'The money is lost.' },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Exactly! This is why it's so important for students to file taxes, even if they don't earn much. You can get your withheld money back!",
         },
         {
           type: 'concept',
-          text: 'This is a simplified example. In reality, you can easily file for free using IRS Free File or VITA programs.',
+          text: 'This is a simplified example. In reality, you can easily file for free using IRS Free File or VITA (Volunteer Income Tax Assistance) programs.',
         },
         {
           type: 'complete',

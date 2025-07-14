@@ -19,6 +19,8 @@ export const lessonTaxes4: Lesson = {
           options: [
             { id: 'opt1', text: 'A $1,000 tax credit.' },
             { id: 'opt2', text: 'A $1,000 tax deduction.' },
+            { id: 'opt3', text: 'They are the same.' },
+            { id: 'opt4', text: 'Neither saves you money.' },
           ],
           correctAnswer: 'opt1',
           reinforcement: 'Correct! A tax credit is always more powerful.',
