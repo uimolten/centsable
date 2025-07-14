@@ -51,9 +51,9 @@ export function RightSidebar({ activity, unit, onStart }: RightSidebarProps) {
             className="w-full text-lg font-semibold shadow-glow" 
             size="lg"
             onClick={() => onStart(activity)}
-            disabled={activity.state !== 'active'}
+            disabled={activity.state === 'locked'}
           >
-            {activity.state === 'completed' ? 'Completed' : `Start ${activityTypeLabel}`}
+            {activity.state === 'completed' ? 'Review Lesson' : `Start ${activityTypeLabel}`}
           </Button>
         </div>
       </div>
