@@ -7,7 +7,7 @@ export const lessonBudgeting1: Lesson = {
   modules: [
     {
       title: 'What is a Budget?',
-      xp: 25,
+      xp: 3,
       steps: [
         {
           type: 'intro',
@@ -41,7 +41,7 @@ export const lessonBudgeting1: Lesson = {
     },
     {
       title: 'Needs vs. Wants',
-      xp: 25,
+      xp: 2,
       steps: [
         {
           type: 'concept',
@@ -68,7 +68,7 @@ export const lessonBudgeting1: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've learned the 'why' behind budgeting. You're ready to take control!",
           rewards: {
-            xp: 50,
+            xp: 5,
             coins: 5,
           },
         },

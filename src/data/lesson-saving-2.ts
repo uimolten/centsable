@@ -7,7 +7,7 @@ export const lessonSaving2: Lesson = {
   modules: [
     {
       title: 'From "I Wish" to "I Will"',
-      xp: 10,
+      xp: 2,
       steps: [
         {
           type: 'intro',
@@ -37,7 +37,7 @@ export const lessonSaving2: Lesson = {
     },
     {
       title: 'Unlocking the SMART Code',
-      xp: 20,
+      xp: 4,
       steps: [
         {
           type: 'concept',
@@ -109,7 +109,7 @@ export const lessonSaving2: Lesson = {
     },
     {
       title: 'Build Your Own Quest',
-      xp: 20,
+      xp: 2,
       steps: [
         {
           type: 'intro',
@@ -148,7 +148,7 @@ export const lessonSaving2: Lesson = {
     },
     {
       title: 'The Final Challenge',
-      xp: 25,
+      xp: 2,
       steps: [
         {
           type: 'scenario',
@@ -175,7 +175,7 @@ export const lessonSaving2: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You've mastered 'Creating a Savings Goal'.",
           rewards: {
-            xp: 75,
+            xp: 10,
             coins: 10,
           },
         },

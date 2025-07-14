@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
@@ -5,10 +6,11 @@ import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/a
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
+import { UserData } from '@/types/user';
 
 interface AuthContextType {
   user: User | null;
-  isAdmin: boolean;
+  userData: UserData | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -17,7 +19,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,18 +29,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const userDocRef = doc(db, 'users', user.uid);
             const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists() && userDoc.data().role === 'admin') {
-              setIsAdmin(true);
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                 setUserData({
+                  uid: user.uid,
+                  email: data.email,
+                  displayName: data.displayName || user.displayName,
+                  photoURL: data.photoURL || user.photoURL,
+                  role: data.role,
+                  xp: data.xp ?? 0,
+                  level: data.level ?? 1,
+                  cents: data.cents ?? 0,
+                  streak: data.streak ?? 0,
+                  lessonsCompleted: data.lessonsCompleted ?? 0,
+                  achievements: data.achievements ?? [],
+                  createdAt: data.createdAt,
+                });
             } else {
-              setIsAdmin(false);
+                setUserData(null);
             }
         } catch (error) {
-            console.error("Error fetching user role:", error);
-            setIsAdmin(false);
+            console.error("Error fetching user data:", error);
+            setUserData(null);
         }
       } else {
         setUser(null);
-        setIsAdmin(false);
+        setUserData(null);
       }
       setLoading(false);
     });
@@ -51,16 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, signOut }}>
-      {loading ? (
-        <div className="w-full h-screen flex items-center justify-center bg-background">
-          <div className="flex flex-col items-center gap-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-          </div>
-        </div>
-      ) : children}
+    <AuthContext.Provider value={{ user, userData, loading, signOut }}>
+      {children}
     </AuthContext.Provider>
   );
 }

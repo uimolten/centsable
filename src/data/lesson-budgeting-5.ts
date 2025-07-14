@@ -7,7 +7,7 @@ export const lessonBudgeting5: Lesson = {
   modules: [
     {
       title: 'Dream Big, Plan Smart',
-      xp: 20,
+      xp: 2,
       steps: [
         {
           type: 'intro',
@@ -29,7 +29,7 @@ export const lessonBudgeting5: Lesson = {
     },
     {
       title: 'SMART Goals & Time Horizons',
-      xp: 30,
+      xp: 4,
       steps: [
         {
           type: 'concept',
@@ -65,7 +65,7 @@ export const lessonBudgeting5: Lesson = {
     },
     {
       title: 'The Magic of Saving Early',
-      xp: 30,
+      xp: 4,
       steps: [
         {
           type: 'concept',
@@ -93,7 +93,7 @@ export const lessonBudgeting5: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You know how to connect your budget to your biggest dreams. You're ready to build your future!",
           rewards: {
-            xp: 80,
+            xp: 10,
             coins: 15,
           },
         },

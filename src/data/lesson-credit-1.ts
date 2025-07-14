@@ -7,7 +7,7 @@ export const lessonCredit1: Lesson = {
   modules: [
     {
       title: 'Welcome to Credit Essentials',
-      xp: 20,
+      xp: 2,
       steps: [
         {
           type: 'intro',
@@ -33,7 +33,7 @@ export const lessonCredit1: Lesson = {
     },
     {
       title: 'What is Credit?',
-      xp: 20,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -63,7 +63,7 @@ export const lessonCredit1: Lesson = {
     },
     {
       title: 'Your Financial Gradebook',
-      xp: 20,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -96,7 +96,7 @@ export const lessonCredit1: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've learned the basics of credit. Now you're ready to build a great financial reputation!",
           rewards: {
-            xp: 60,
+            xp: 8,
             coins: 5,
           },
         },

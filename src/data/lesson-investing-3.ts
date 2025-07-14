@@ -7,7 +7,7 @@ export const lessonInvesting3: Lesson = {
   modules: [
     {
       title: 'Gear Up!',
-      xp: 70,
+      xp: 8,
       steps: [
         {
           type: 'intro',
@@ -64,7 +64,7 @@ export const lessonInvesting3: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You've geared up with investment knowledge!",
           rewards: {
-            xp: 70,
+            xp: 8,
             coins: 10,
           },
         },

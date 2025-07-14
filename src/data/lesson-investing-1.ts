@@ -7,7 +7,7 @@ export const lessonInvesting1: Lesson = {
   modules: [
     {
       title: 'The Power of Compounding',
-      xp: 50,
+      xp: 5,
       steps: [
         {
           type: 'intro',
@@ -56,7 +56,7 @@ export const lessonInvesting1: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You've learned about the power of compounding!",
           rewards: {
-            xp: 50,
+            xp: 5,
             coins: 5,
           },
         },

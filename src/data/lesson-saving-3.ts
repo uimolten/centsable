@@ -7,7 +7,7 @@ export const lessonSaving3: Lesson = {
   modules: [
     {
       title: 'Practice Dojo',
-      xp: 40,
+      xp: 15,
       steps: [
         {
           type: 'intro',
@@ -68,7 +68,7 @@ export const lessonSaving3: Lesson = {
           title: 'PRACTICE COMPLETE!',
           text: 'Your goal-setting skills have leveled up.',
           rewards: {
-            xp: 40,
+            xp: 15,
             coins: 0,
           },
         },

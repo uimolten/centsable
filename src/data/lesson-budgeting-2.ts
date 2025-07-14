@@ -7,7 +7,7 @@ export const lessonBudgeting2: Lesson = {
   modules: [
     {
       title: "Become a Money Detective",
-      xp: 20,
+      xp: 2,
       steps: [
         {
           type: 'intro',
@@ -25,7 +25,7 @@ export const lessonBudgeting2: Lesson = {
     },
     {
       title: 'Fixed vs. Variable Expenses',
-      xp: 20,
+      xp: 2,
       steps: [
         {
           type: 'concept',
@@ -51,7 +51,7 @@ export const lessonBudgeting2: Lesson = {
     },
     {
       title: "Your Detective's Toolkit",
-      xp: 20,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -82,7 +82,7 @@ export const lessonBudgeting2: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've uncovered the secrets of your spending. You're ready to take control!",
           rewards: {
-            xp: 60,
+            xp: 7,
             coins: 10,
           },
         },

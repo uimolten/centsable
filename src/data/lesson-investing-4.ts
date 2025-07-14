@@ -7,7 +7,7 @@ export const lessonInvesting4: Lesson = {
   modules: [
     {
       title: 'Balanced Inventory',
-      xp: 60,
+      xp: 7,
       steps: [
         {
           type: 'intro',
@@ -48,7 +48,7 @@ export const lessonInvesting4: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You've learned how to build a balanced inventory!",
           rewards: {
-            xp: 60,
+            xp: 7,
             coins: 10,
           },
         },

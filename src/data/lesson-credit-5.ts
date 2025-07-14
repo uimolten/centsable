@@ -7,7 +7,7 @@ export const lessonCredit5: Lesson = {
   modules: [
     {
       title: 'Red Flag or Green Light?',
-      xp: 25,
+      xp: 4,
       steps: [
         {
           type: 'intro',
@@ -37,7 +37,7 @@ export const lessonCredit5: Lesson = {
     },
     {
       title: 'Protecting Yourself',
-      xp: 30,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -62,7 +62,7 @@ export const lessonCredit5: Lesson = {
     },
     {
       title: 'Credit and Your Future',
-      xp: 25,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -77,7 +77,7 @@ export const lessonCredit5: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've learned how to make smart credit choices and protect yourself. You're ready for the final quiz!",
           rewards: {
-            xp: 80,
+            xp: 10,
             coins: 15,
           },
         },

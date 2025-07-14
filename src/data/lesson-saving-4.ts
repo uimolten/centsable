@@ -7,7 +7,7 @@ export const lessonSaving4: Lesson = {
   modules: [
     {
       title: 'Final Challenge',
-      xp: 100,
+      xp: 25,
       steps: [
         {
           type: 'intro',
@@ -96,7 +96,7 @@ export const lessonSaving4: Lesson = {
           title: 'UNIT COMPLETE!',
           text: "You're officially a Savings Master! 🏆",
           rewards: {
-            xp: 100,
+            xp: 25,
             coins: 25,
           },
         },

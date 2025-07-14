@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -16,7 +17,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { LayoutDashboard, LogOut, User as UserIcon } from 'lucide-react';
 
 export function UserNav() {
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, userData, signOut } = useAuth();
+  const isAdmin = userData?.role === 'admin';
 
   if (!user) return null;
 
@@ -39,7 +41,7 @@ export function UserNav() {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{user.displayName ?? 'Welcome'}</p>
+              <p className="text-sm font-medium leading-none">{userData?.displayName ?? 'Welcome'}</p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.email}
               </p>

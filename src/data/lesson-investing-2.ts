@@ -7,7 +7,7 @@ export const lessonInvesting2: Lesson = {
   modules: [
     {
       title: 'Risk & Reward',
-      xp: 60,
+      xp: 7,
       steps: [
         {
           type: 'intro',
@@ -54,7 +54,7 @@ export const lessonInvesting2: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You've learned the rules of Risk & Reward.",
           rewards: {
-            xp: 60,
+            xp: 7,
             coins: 10,
           },
         },

@@ -7,7 +7,7 @@ export const lessonCreditQuiz: Lesson = {
   modules: [
     {
       title: 'Final Challenge',
-      xp: 100,
+      xp: 25,
       steps: [
         {
           type: 'intro',
@@ -88,7 +88,7 @@ export const lessonCreditQuiz: Lesson = {
           title: 'CREDIT UNIT COMPLETE!',
           text: "You're officially a Credit Master! 🏆 You have the knowledge to build a strong financial future.",
           rewards: {
-            xp: 100,
+            xp: 25,
             coins: 25,
           },
         },

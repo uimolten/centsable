@@ -7,7 +7,7 @@ export const lessonSaving1: Lesson = {
   modules: [
     {
       title: 'What is Saving?',
-      xp: 10,
+      xp: 4,
       steps: [
         {
           type: 'intro',
@@ -39,7 +39,7 @@ export const lessonSaving1: Lesson = {
     },
     {
       title: 'Why Save?',
-      xp: 15,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -83,7 +83,7 @@ export const lessonSaving1: Lesson = {
     },
     {
       title: 'Wants vs. Needs',
-      xp: 15,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -123,8 +123,8 @@ export const lessonSaving1: Lesson = {
       ],
     },
     {
-      title: 'Your First Quest',
-      xp: 20,
+      title: 'The Final Challenge',
+      xp: 0, // No XP for this module, it is a summary
       steps: [
         {
           type: 'scenario',
@@ -166,7 +166,7 @@ export const lessonSaving1: Lesson = {
           title: "QUEST COMPLETE!",
           text: "You've mastered 'The Importance of Saving'.",
           rewards: {
-            xp: 60,
+            xp: 10,
             coins: 5,
           },
         },

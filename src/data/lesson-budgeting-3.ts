@@ -7,7 +7,7 @@ export const lessonBudgeting3: Lesson = {
   modules: [
     {
       title: 'The 50/30/20 Rule',
-      xp: 25,
+      xp: 3,
       steps: [
         {
           type: 'intro',
@@ -47,7 +47,7 @@ export const lessonBudgeting3: Lesson = {
     },
     {
       title: 'Pay Yourself First',
-      xp: 25,
+      xp: 2,
       steps: [
         {
           type: 'concept',
@@ -73,7 +73,7 @@ export const lessonBudgeting3: Lesson = {
     },
     {
       title: 'The Emergency Fund',
-      xp: 20,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -100,7 +100,7 @@ export const lessonBudgeting3: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've learned a powerful and simple way to build your first budget!",
           rewards: {
-            xp: 70,
+            xp: 8,
             coins: 10,
           },
         },

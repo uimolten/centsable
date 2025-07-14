@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -18,10 +22,13 @@ const DailyQuest = ({ icon: Icon, title, progress, max, reward: RewardIcon }: { 
 );
 
 export function LeftSidebar() {
+  const { userData } = useAuth();
+  
+  // In a real app, this might come from a configuration or be more dynamic
   const quests = [
-    { icon: Zap, title: 'Earn 10 XP', progress: 0, max: 10, reward: Gem },
-    { icon: Timer, title: 'Spend 5 minutes learning', progress: 0, max: 5, reward: Gem },
-    { icon: Gem, title: 'Earn 15 Combo Bonus XP', progress: 0, max: 15, reward: Gem },
+    { icon: Zap, title: 'Earn 10 XP today', progress: userData?.xp ?? 0, max: 10, reward: Gem },
+    { icon: Timer, title: 'Maintain your streak', progress: userData?.streak ?? 0, max: 5, reward: Gem },
+    { icon: Gem, title: 'Complete a lesson', progress: userData?.lessonsCompleted ?? 0, max: 1, reward: Gem },
   ];
 
   return (

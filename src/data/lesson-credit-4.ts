@@ -7,7 +7,7 @@ export const lessonCredit4: Lesson = {
   modules: [
     {
       title: 'The Minimum Payment Trap',
-      xp: 35,
+      xp: 4,
       steps: [
         {
           type: 'intro',
@@ -37,7 +37,7 @@ export const lessonCredit4: Lesson = {
     },
     {
       title: 'How Interest Grows',
-      xp: 35,
+      xp: 4,
       steps: [
         {
           type: 'concept',
@@ -70,7 +70,7 @@ export const lessonCredit4: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've learned how to see the true cost of borrowing. You're ready to make smart debt decisions!",
           rewards: {
-            xp: 70,
+            xp: 8,
             coins: 10,
           },
         },

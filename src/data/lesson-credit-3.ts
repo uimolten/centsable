@@ -7,7 +7,7 @@ export const lessonCredit3: Lesson = {
   modules: [
     {
       title: 'What’s In Your Credit Report?',
-      xp: 30,
+      xp: 4,
       steps: [
         {
           type: 'intro',
@@ -45,7 +45,7 @@ export const lessonCredit3: Lesson = {
     },
     {
       title: 'How Your Score is Calculated',
-      xp: 40,
+      xp: 4,
       steps: [
         {
           type: 'concept',
@@ -87,7 +87,7 @@ export const lessonCredit3: Lesson = {
           title: 'LESSON COMPLETE!',
           text: "You've demystified credit reports and scores. Knowledge is power!",
           rewards: {
-            xp: 70,
+            xp: 8,
             coins: 10,
           },
         },

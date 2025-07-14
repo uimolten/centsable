@@ -7,7 +7,7 @@ export const lessonCredit2: Lesson = {
   modules: [
     {
       title: 'Your First Card',
-      xp: 20,
+      xp: 3,
       steps: [
         {
           type: 'intro',
@@ -41,7 +41,7 @@ export const lessonCredit2: Lesson = {
     },
     {
       title: 'Key Terms Explained',
-      xp: 30,
+      xp: 4,
       steps: [
         {
           type: 'concept',
@@ -76,7 +76,7 @@ export const lessonCredit2: Lesson = {
     },
     {
       title: 'Credit Habits Simulator',
-      xp: 25,
+      xp: 3,
       steps: [
         {
           type: 'scenario',
@@ -131,7 +131,7 @@ export const lessonCredit2: Lesson = {
           title: 'LESSON COMPLETE!',
           text: 'You now know the core habits for building and maintaining excellent credit. Great job!',
           rewards: {
-            xp: 75,
+            xp: 10,
             coins: 10,
           },
         },

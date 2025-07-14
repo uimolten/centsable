@@ -7,7 +7,7 @@ export const lessonBudgeting4: Lesson = {
   modules: [
     {
       title: 'What Breaks Budgets?',
-      xp: 20,
+      xp: 2,
       steps: [
         {
           type: 'intro',
@@ -37,7 +37,7 @@ export const lessonBudgeting4: Lesson = {
     },
     {
       title: 'Flexible Budgets',
-      xp: 25,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -63,7 +63,7 @@ export const lessonBudgeting4: Lesson = {
     },
     {
       title: 'Overspending Traps',
-      xp: 25,
+      xp: 3,
       steps: [
         {
           type: 'concept',
@@ -90,7 +90,7 @@ export const lessonBudgeting4: Lesson = {
           title: 'LESSON COMPLETE!',
           text: 'You now have the skills to build a budget that bends, but never breaks. Awesome work!',
           rewards: {
-            xp: 70,
+            xp: 8,
             coins: 10,
           },
         },

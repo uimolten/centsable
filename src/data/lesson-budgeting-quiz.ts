@@ -7,7 +7,7 @@ export const lessonBudgetingQuiz: Lesson = {
   modules: [
     {
       title: 'Final Challenge',
-      xp: 100,
+      xp: 25,
       steps: [
         {
           type: 'intro',
@@ -88,7 +88,7 @@ export const lessonBudgetingQuiz: Lesson = {
           title: 'UNIT COMPLETE!',
           text: "You're officially a Budgeting Master! 🏆",
           rewards: {
-            xp: 100,
+            xp: 25,
             coins: 25,
           },
         },
