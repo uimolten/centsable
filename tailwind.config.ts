@@ -75,6 +75,12 @@ export default {
         'glow': '0 0 20px hsl(var(--primary) / 0.5)',
         'glow-lg': '0 0 30px hsl(var(--primary) / 0.6)',
       },
+      backgroundImage: {
+        'grid-white/[0.05]': `linear-gradient(to right, transparent 1px, hsl(var(--background)) 1px), linear-gradient(to bottom, transparent 1px, hsl(var(--background)) 1px), linear-gradient(to right, hsl(var(--border) / 0.1) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border) / 0.1) 1px, transparent 1px)`,
+      },
+      backgroundSize: {
+        'grid-white/[0.05]': '50px 50px, 50px 50px, 25px 25px, 25px 25px',
+      },
       keyframes: {
         'accordion-down': {
           from: {
