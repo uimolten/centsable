@@ -61,10 +61,6 @@ export function AuthForm() {
 
   const getAuthErrorMessage = (error: any) => {
     switch (error.code) {
-      case 'auth/invalid-api-key':
-      case 'auth/invalid-project-id':
-      case 'auth/configuration-not-found':
-        return `Firebase config error. Check your .env.local file and restart the development server.`;
       case 'auth/email-already-in-use':
         return 'This email is already registered. Please try logging in.';
       case 'auth/invalid-credential':
@@ -80,7 +76,8 @@ export function AuthForm() {
     toast({
       variant: "destructive",
       title: "Firebase Not Configured",
-      description: "Please add your Firebase credentials to your .env.local file and restart the server.",
+      description: "Please add your Firebase credentials to the .env.local file and restart the server.",
+      duration: 10000,
     });
   }
 
