@@ -3,7 +3,7 @@ export function GridBackground({ children }: { children: React.ReactNode }) {
       <div className="w-full bg-background text-foreground relative flex flex-col items-center justify-center">
         {/* Topography SVG background pattern */}
         <div 
-            className="absolute inset-0 w-full h-full bg-primary"
+            className="absolute inset-0 w-full h-full bg-primary opacity-20"
             style={{
               maskImage: 'url(/images/topography.svg)',
               maskRepeat: 'repeat',
@@ -13,10 +13,10 @@ export function GridBackground({ children }: { children: React.ReactNode }) {
               WebkitMaskSize: 'auto',
             }}
         />
-        {/* Radial gradient to fade out the pattern towards the center */}
+        {/* Radial gradient to make the pattern transparent in the center */}
         <div className="absolute inset-0 bg-background" style={{
-            maskImage: 'radial-gradient(ellipse at center, transparent 30%, black 80%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, transparent 30%, black 80%)',
+            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
         }}></div>
 
         {/* Glowing aura elements */}
