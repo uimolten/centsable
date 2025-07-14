@@ -12,7 +12,7 @@ const rawUnitsData: Unit[] = [
     description: "Learn the fundamentals of saving money and building a secure financial future.",
     unitIcon: PiggyBank,
     activities: [
-      { id: 's1', title: 'The Importance of Saving', type: 'lesson', state: 'active', xp: 5 },
+      { id: 's1', title: 'The Importance of Saving', type: 'lesson', state: 'active', xp: 10 },
       { id: 's2', title: 'Creating a Savings Goal', type: 'lesson', state: 'locked', xp: 10 },
       { id: 's3', title: 'Practice: Savings Goals', type: 'practice', state: 'locked', xp: 15 },
       { id: 's4', title: 'Saving Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },

@@ -32,7 +32,7 @@ export const lessonTaxesPractice1: Lesson = {
               { id: 'opt1', text: 'A refund' },
               { id: 'opt2', text: 'A deduction' },
               { id: 'opt3', text: 'Withholding' },
-              { id: 'opt4', 'text': 'Revenue'}
+              { id: 'opt4', text: 'Revenue'}
             ],
             correctAnswer: 'opt3',
             reinforcement: "That's right! It's withheld to pay your taxes for you.",
