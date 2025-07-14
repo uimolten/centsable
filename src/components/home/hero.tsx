@@ -18,7 +18,7 @@ export function Hero() {
 
   return (
     <GridBackground>
-      <section className="relative w-full pt-28 pb-20 md:pt-32 md:pb-24 text-center overflow-hidden">
+      <section className="relative w-full pt-20 pb-20 md:pt-24 md:pb-24 text-center overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,16 +50,17 @@ export function Hero() {
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1.0, ease: 'easeInOut', delay: 0.2 }}
-            className="relative z-10 mt-20 container mx-auto px-4"
+            className="relative z-10 mt-16 container mx-auto px-4"
           >
             <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-xl border-2 border-border/10 bg-card/50 shadow-2xl shadow-primary/10">
                 <Image
-                  src="https://placehold.co/1200x750"
+                  src="/images/app-screenshot.png"
                   alt="Centsable Application Screenshot"
                   data-ai-hint="app screenshot"
                   layout="fill"
                   objectFit="cover"
                   className="rounded-lg"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent"></div>
             </div>
