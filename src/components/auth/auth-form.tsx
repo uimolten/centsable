@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -5,7 +6,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db, firebaseConfig } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -62,6 +63,7 @@ export function AuthForm() {
     switch (error.code) {
       case 'auth/invalid-api-key':
       case 'auth/invalid-project-id':
+      case 'auth/configuration-not-found':
         return `Firebase config error. Check your .env.local file and restart the development server.`;
       case 'auth/email-already-in-use':
         return 'This email is already registered. Please try logging in.';
@@ -212,3 +214,5 @@ export function AuthForm() {
     </Card>
   );
 }
+
+    
