@@ -13,5 +13,6 @@ export interface UserData {
   streak: number;
   lessonsCompleted: number;
   achievements: string[];
+  completedLessons: string[];
   createdAt: Timestamp;
 }

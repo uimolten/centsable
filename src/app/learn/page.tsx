@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 
 import { LeftSidebar } from '@/components/learn/left-sidebar';
 import { LearningPathway } from '@/components/learn/learning-pathway';
@@ -12,61 +13,60 @@ import { RightSidebar } from '@/components/learn/right-sidebar';
 import { units as initialUnitsData, Unit, Activity } from '@/data/learn-data';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LearnPage() {
-  const [units, setUnits] = useState<Unit[]>(initialUnitsData);
+  const [units, setUnits] = useState<Unit[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { userData, loading: authLoading } = useAuth();
 
-  const handleCompleteActivity = useCallback((activityId: string) => {
-    setUnits(currentUnits => {
-      // Mark current as completed
-      const newUnits = currentUnits.map(unit => ({
-        ...unit,
-        activities: unit.activities.map(act => 
-          act.id === activityId ? { ...act, state: 'completed' as const } : act
-        )
-      }));
-
-      // Find and unlock the next one
-      let nextActivityFound = false;
-      for (const unit of newUnits) {
-        for (const act of unit.activities) {
-          if (nextActivityFound && act.state === 'locked') {
-            act.state = 'active';
-            if (isDesktop) {
-              setSelectedActivity(act);
-            } else {
-              setSelectedActivity(null);
-            }
-            // Return the updated units and stop searching
-            return newUnits;
-          }
-          if (act.id === activityId) {
-            nextActivityFound = true;
-          }
+  const updateUserProgress = useCallback(() => {
+    if (authLoading) return;
+    
+    const completedLessons = userData?.completedLessons || [];
+    
+    const newUnits = initialUnitsData.map(unit => ({
+      ...unit,
+      activities: unit.activities.map(act => ({
+        ...act,
+        state: completedLessons.includes(act.id) ? 'completed' : 'locked'
+      }))
+    }));
+    
+    // Unlock the next activity
+    let nextActivityUnlocked = false;
+    for (const unit of newUnits) {
+      for (const act of unit.activities) {
+        if (!nextActivityUnlocked && act.state === 'locked') {
+          act.state = 'active';
+          nextActivityUnlocked = true;
         }
       }
-      
-      // If we reached the end
-      if(nextActivityFound) {
-        setSelectedActivity(null);
-      }
+    }
 
-      return newUnits;
-    });
-  }, [isDesktop]);
+    // Always ensure the very first activity is active if no progress is made
+    if (!completedLessons.length && newUnits.length > 0 && newUnits[0].activities.length > 0) {
+      newUnits[0].activities[0].state = 'active';
+    }
 
+    setUnits(newUnits);
+  }, [userData, authLoading]);
+
+  useEffect(() => {
+    updateUserProgress();
+  }, [updateUserProgress]);
+  
   useEffect(() => {
     const completedActivityId = searchParams.get('completed');
     if (completedActivityId) {
-      handleCompleteActivity(completedActivityId);
+      updateUserProgress();
       // Remove the query param from the URL without reloading the page
       router.replace('/learn', { scroll: false });
     }
-  }, [searchParams, handleCompleteActivity, router]);
+  }, [searchParams, updateUserProgress, router]);
   
   const handleSelectActivity = (activity: Activity) => {
     if (activity.state !== 'locked') {
@@ -79,7 +79,6 @@ export default function LearnPage() {
       router.push(`/learn/${activity.id}`);
     } else {
       console.log("Starting non-lesson activity:", activity.title);
-      handleCompleteActivity(activity.id);
     }
   };
 
@@ -89,6 +88,25 @@ export default function LearnPage() {
   };
   
   const activityTypeLabel = selectedActivity ? selectedActivity.type.charAt(0).toUpperCase() + selectedActivity.type.slice(1) : '';
+
+  if (authLoading || units.length === 0) {
+      return (
+        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="hidden lg:block lg:col-span-3 sticky top-24">
+                     <Skeleton className="h-48 w-full" />
+                </div>
+                <div className="col-span-1 lg:col-span-6 space-y-8">
+                     <Skeleton className="h-32 w-full" />
+                     <Skeleton className="h-64 w-full" />
+                </div>
+                 <div className="hidden lg:block lg:col-span-3 sticky top-24">
+                     <Skeleton className="h-48 w-full" />
+                </div>
+            </div>
+        </div>
+      );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">

@@ -7,6 +7,8 @@ import { AnimatePresence } from 'framer-motion';
 import { isEqual, shuffle } from 'lodash';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useAuth } from '@/hooks/use-auth';
+import { saveProgress } from '@/ai/flows/save-progress-flow';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
@@ -52,7 +54,7 @@ import { InteractiveSort } from '@/components/lesson/interactive-sort';
 import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goal-builder-step';
 import { GoalSummary } from '@/components/lesson/goal-summary';
 
-import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson, SortItem as BaseSortItem } from '@/types/lesson';
+import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson, SortItem as BaseSortItem, CompleteStep } from '@/types/lesson';
 import { useToast } from '@/hooks/use-toast';
 
 // This is the extended type for the component's state
@@ -151,6 +153,7 @@ const isAnswerSimilar = (userAnswer: string, correctAnswer: string): boolean => 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, refreshUserData } = useAuth();
   const { toast } = useToast();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
   
@@ -203,9 +206,42 @@ export default function LessonPage() {
     }
   }, [currentStep]);
 
-  const handleLessonComplete = useCallback(() => {
-    router.push(`/learn?completed=${lessonId}`);
-  }, [lessonId, router]);
+  const handleLessonComplete = useCallback(async () => {
+    if (!user || !lessonId || !currentStep || currentStep.type !== 'complete') {
+        router.push(`/learn?completed=${lessonId}`);
+        return;
+    }
+    
+    const { rewards } = currentStep as CompleteStep;
+
+    try {
+        const result = await saveProgress({
+            userId: user.uid,
+            lessonId: lessonId,
+            xpGained: rewards.xp,
+            centsGained: rewards.coins,
+        });
+
+        if (result.success) {
+            await refreshUserData?.(); // Refresh user data to get new XP/Cents
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Error Saving Progress',
+                description: result.message || 'Could not save your progress, but you can continue.',
+            });
+        }
+    } catch (error) {
+        console.error('Failed to save progress', error);
+        toast({
+            variant: 'destructive',
+            title: 'Error Saving Progress',
+            description: 'Could not save your progress, but you can continue.',
+        });
+    } finally {
+        router.push(`/learn?completed=${lessonId}`);
+    }
+  }, [lessonId, router, user, currentStep, refreshUserData, toast]);
   
   const goToNextStep = useCallback(() => {
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
@@ -283,7 +319,7 @@ export default function LessonPage() {
     }
   }, [checkAnswer, hasAnswered]);
 
-  const handleFooterAction = useCallback(() => {
+  const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
       toast({
         variant: "destructive",
@@ -298,13 +334,13 @@ export default function LessonPage() {
     if (!currentStep) {
         // This makes sure the progress bar hits 100%
         setCompletedSteps(totalSteps);
-        handleLessonComplete();
+        await handleLessonComplete();
         return;
     }
 
     // Special handling for the 'complete' step to prevent double rendering.
     if (currentStep.type === 'complete') {
-      handleLessonComplete();
+      await handleLessonComplete();
       return;
     }
     

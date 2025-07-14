@@ -12,3 +12,18 @@ export const UpdateUsernameOutputSchema = z.object({
   message: z.string().optional().describe('An optional message, usually for errors.'),
 });
 export type UpdateUsernameOutput = z.infer<typeof UpdateUsernameOutputSchema>;
+
+
+export const SaveProgressInputSchema = z.object({
+    userId: z.string(),
+    lessonId: z.string(),
+    xpGained: z.number(),
+    centsGained: z.number(),
+});
+export type SaveProgressInput = z.infer<typeof SaveProgressInputSchema>;
+
+export const SaveProgressOutputSchema = z.object({
+    success: z.boolean(),
+    message: z.string().optional(),
+});
+export type SaveProgressOutput = z.infer<typeof SaveProgressOutputSchema>;

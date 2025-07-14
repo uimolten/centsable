@@ -15,48 +15,26 @@ import { db } from "@/lib/firebase";
 import { UserData } from "@/types/user";
 
 export default function ProfilePage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, userData: authUserData, loading: authLoading, refreshUserData } = useAuth();
   const router = useRouter();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(authUserData);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push('/auth');
-      } else {
-        const fetchUserData = async () => {
-          setLoading(true);
-          const userDocRef = doc(db, "users", user.uid);
-          const userDoc = await getDoc(userDocRef);
-          if (userDoc.exists()) {
-            const data = userDoc.data();
-            setUserData({
-              uid: user.uid,
-              email: data.email,
-              displayName: data.displayName || user.displayName,
-              photoURL: data.photoURL || user.photoURL,
-              role: data.role,
-              xp: data.xp ?? 0,
-              level: data.level ?? 1,
-              cents: data.cents ?? 0,
-              streak: data.streak ?? 0,
-              lessonsCompleted: data.lessonsCompleted ?? 0,
-              achievements: data.achievements ?? [],
-              createdAt: data.createdAt,
-            });
-          }
-          setLoading(false);
-        };
-        fetchUserData();
-      }
+    if (!authLoading && !user) {
+      router.push('/auth');
     }
   }, [user, authLoading, router]);
 
-  const handleUpdateUser = (newUserData: Partial<UserData>) => {
-    if (userData) {
-      setUserData(prev => ({...prev!, ...newUserData}));
+  useEffect(() => {
+    setUserData(authUserData);
+    if(authUserData) {
+        setLoading(false);
     }
+  }, [authUserData]);
+
+  const handleUpdateUser = async () => {
+    await refreshUserData?.();
   };
   
   if (authLoading || loading || !user || !userData) {

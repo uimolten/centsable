@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { Logo } from '../logo';
 
 interface ProfileHeaderProps {
   user: UserData;
-  onUpdateUser: (newUserData: Partial<UserData>) => void;
+  onUpdateUser: () => Promise<void>;
   levelXP: number;
 }
 
@@ -24,6 +24,10 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
   const [displayName, setDisplayName] = useState(user.displayName ?? '');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setDisplayName(user.displayName ?? '');
+  }, [user.displayName]);
 
   const handleSave = async () => {
     if (displayName.trim().length < 3) {
@@ -45,7 +49,7 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
       const result = await updateUsername({ userId: user.uid, newUsername: displayName });
 
       if (result.success) {
-        onUpdateUser({ displayName });
+        await onUpdateUser();
         toast({ title: "Username updated successfully!" });
         setIsEditing(false);
       } else {
