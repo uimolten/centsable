@@ -51,7 +51,7 @@ export function Hero() {
               data-ai-hint={slideImages[currentSlide].hint}
               layout="fill"
               objectFit="cover"
-              className="opacity-20"
+              className="opacity-30"
               priority={currentSlide === 0}
             />
           </motion.div>
