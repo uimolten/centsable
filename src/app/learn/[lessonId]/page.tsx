@@ -33,6 +33,14 @@ import { lessonInvesting2 } from '@/data/lesson-investing-2';
 import { lessonInvesting3 } from '@/data/lesson-investing-3';
 import { lessonInvesting4 } from '@/data/lesson-investing-4';
 import { lessonInvesting5 } from '@/data/lesson-investing-5';
+import { lessonTaxes1 } from '@/data/lesson-taxes-1';
+import { lessonTaxes2 } from '@/data/lesson-taxes-2';
+import { lessonTaxes3 } from '@/data/lesson-taxes-3';
+import { lessonTaxes4 } from '@/data/lesson-taxes-4';
+import { lessonTaxes5 } from '@/data/lesson-taxes-5';
+import { lessonTaxesPractice1 } from '@/data/lesson-taxes-practice-1';
+import { lessonTaxesPractice2 } from '@/data/lesson-taxes-practice-2';
+import { lessonTaxesQuiz } from '@/data/lesson-taxes-quiz';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -83,6 +91,16 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'i3') return lessonInvesting3;
   if (lessonId === 'i4') return lessonInvesting4;
   if (lessonId === 'i5') return lessonInvesting5;
+
+  // Taxes
+  if (lessonId === 't1') return lessonTaxes1;
+  if (lessonId === 't2') return lessonTaxes2;
+  if (lessonId === 'tp1') return lessonTaxesPractice1;
+  if (lessonId === 't3') return lessonTaxes3;
+  if (lessonId === 't4') return lessonTaxes4;
+  if (lessonId === 'tp2') return lessonTaxesPractice2;
+  if (lessonId === 't5') return lessonTaxes5;
+  if (lessonId === 'tq1') return lessonTaxesQuiz;
 
   return null;
 };

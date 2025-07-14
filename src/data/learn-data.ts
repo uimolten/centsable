@@ -12,7 +12,7 @@ const rawUnitsData: Unit[] = [
     description: "Learn the fundamentals of saving money and building a secure financial future.",
     unitIcon: PiggyBank,
     activities: [
-      { id: 's1', title: 'The Importance of Saving', type: 'lesson', state: 'active', xp: 10 },
+      { id: 's1', title: 'The Importance of Saving', type: 'lesson', state: 'active', xp: 5 },
       { id: 's2', title: 'Creating a Savings Goal', type: 'lesson', state: 'locked', xp: 10 },
       { id: 's3', title: 'Practice: Savings Goals', type: 'practice', state: 'locked', xp: 15 },
       { id: 's4', title: 'Saving Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
@@ -70,12 +70,17 @@ const rawUnitsData: Unit[] = [
     description: "Demystify taxes and understand your responsibilities as a taxpayer.",
     unitIcon: Landmark,
     activities: [
-      { id: 't1', title: 'Why We Pay Taxes', type: 'lesson', state: 'locked', xp: 5 },
-      { id: 't2', title: 'Understanding Your Paycheck', type: 'lesson', state: 'locked', xp: 5 },
-      { id: 't3', title: 'Taxes Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
+      { id: 't1', title: 'Why Taxes Matter', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 't2', title: 'Understanding Paychecks & Withholding', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'tp1', title: 'Practice: Reading a Pay Stub', type: 'practice', state: 'locked', xp: 15 },
+      { id: 't3', title: 'Filing Taxes', type: 'lesson', state: 'locked', xp: 10 },
+      { id: 't4', title: 'Tax Credits, Deductions & Refunds', type: 'lesson', state: 'locked', xp: 7 },
+      { id: 'tp2', title: 'Practice: Credits vs. Deductions', type: 'practice', state: 'locked', xp: 15 },
+      { id: 't5', title: 'Taxes & Your Future', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'tq1', title: 'Taxes Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
     ],
   },
-    {
+  {
     id: 'unit-6',
     title: 'Retirement Planning',
     description: "It's never too early to start! Learn the basics of planning for retirement.",
