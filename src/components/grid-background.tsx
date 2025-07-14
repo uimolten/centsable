@@ -15,8 +15,8 @@ export function GridBackground({ children }: { children: React.ReactNode }) {
         />
         {/* Radial gradient to make the pattern transparent in the center */}
         <div className="absolute inset-0 bg-background" style={{
-            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
+            maskImage: 'radial-gradient(ellipse at center, black 60%, transparent 80%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, black 60%, transparent 80%)',
         }}></div>
 
         {/* Glowing aura elements */}
