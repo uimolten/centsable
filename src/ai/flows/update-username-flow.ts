@@ -4,26 +4,14 @@
  * @fileOverview A server-side flow for securely updating a user's display name.
  * 
  * - updateUsername - A function that validates a new username for profanity and updates it in Firestore.
- * - UpdateUsernameInput - The input type for the updateUsername function.
- * - UpdateUsernameOutput - The return type for the updateUsername function.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { UpdateUsernameInputSchema, UpdateUsernameOutputSchema, type UpdateUsernameInput, type UpdateUsernameOutput } from '@/types/actions';
 
-export const UpdateUsernameInputSchema = z.object({
-  userId: z.string().describe('The UID of the user to update.'),
-  newUsername: z.string().min(3).max(20).describe('The desired new username.'),
-});
-export type UpdateUsernameInput = z.infer<typeof UpdateUsernameInputSchema>;
-
-export const UpdateUsernameOutputSchema = z.object({
-  success: z.boolean().describe('Whether the update was successful.'),
-  message: z.string().optional().describe('An optional message, usually for errors.'),
-});
-export type UpdateUsernameOutput = z.infer<typeof UpdateUsernameOutputSchema>;
 
 // This is a simple placeholder for a real profanity filter.
 // In a production app, you would use a dedicated library or API.
