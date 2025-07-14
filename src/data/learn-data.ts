@@ -106,11 +106,13 @@ const rawUnitsData: Unit[] = [
 export const units: Unit[] = rawUnitsData.map((unit, unitIndex) => ({
     ...unit,
     activities: unit.activities.map((activity, activityIndex) => {
-        const isFirstActivityOfAll = unitIndex === 0 && activityIndex === 0;
-        
-        // In dev mode, all activities are active. In prod, only the very first one is.
-        const state = DEV_MODE_UNLOCK_ALL ? 'active' : (isFirstActivityOfAll ? 'active' : 'locked');
-        
-        return { ...activity, state };
+      if (DEV_MODE_UNLOCK_ALL) {
+        return { ...activity, state: 'active' };
+      }
+      
+      const isFirstActivityOfAll = unitIndex === 0 && activityIndex === 0;
+      const state = isFirstActivityOfAll ? 'active' : 'locked';
+      
+      return { ...activity, state };
     })
 }));
