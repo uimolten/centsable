@@ -10,13 +10,13 @@ import { useAuth } from '@/hooks/use-auth';
 import { LeftSidebar } from '@/components/learn/left-sidebar';
 import { LearningPathway } from '@/components/learn/learning-pathway';
 import { RightSidebar } from '@/components/learn/right-sidebar';
-import { units as initialUnitsData, Unit, Activity } from '@/data/learn-data';
+import { units as initialUnitsData, Unit, Activity, DEV_MODE_UNLOCK_ALL } from '@/data/learn-data';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LearnPage() {
-  const [units, setUnits] = useState<Unit[]>([]);
+  const [units, setUnits] = useState<Unit[]>(initialUnitsData);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const router = useRouter();
@@ -24,7 +24,11 @@ export default function LearnPage() {
   const { userData, loading: authLoading } = useAuth();
 
   const updateUserProgress = useCallback(() => {
-    if (authLoading) return;
+    if (authLoading || DEV_MODE_UNLOCK_ALL) {
+        // If in dev mode, we use the default unlocked state from learn-data.ts
+        setUnits(initialUnitsData);
+        return;
+    };
     
     const completedLessons = userData?.completedLessons || [];
     
