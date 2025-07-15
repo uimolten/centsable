@@ -3,6 +3,7 @@
 
 import { useParams } from 'next/navigation';
 import { SavingsSorterGame } from '@/components/minigames/savings-sorter-game';
+import { BudgetBustersGame } from '@/components/minigames/budget-busters-game';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -15,9 +16,8 @@ export default function MinigamePage() {
     switch (gameId) {
       case 'savings-sorter':
         return <SavingsSorterGame />;
-      // Future games will be added here
-      // case 'budget-busters':
-      //   return <BudgetBustersGame />;
+      case 'budget-busters':
+        return <BudgetBustersGame />;
       default:
         return (
           <div className="text-center">
@@ -30,7 +30,7 @@ export default function MinigamePage() {
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-4xl">
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
         </Button>
