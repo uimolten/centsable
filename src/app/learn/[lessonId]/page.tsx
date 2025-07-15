@@ -10,6 +10,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAuth } from '@/hooks/use-auth';
 import { saveProgress } from '@/ai/flows/save-progress-flow';
+import { playCorrectSound } from '@/lib/audio-utils';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
@@ -310,6 +311,7 @@ export default function LessonPage() {
     setIsCorrect(correct);
 
     if (correct) {
+      playCorrectSound();
       setStreak(prev => prev + 1);
     } else {
       setIncorrectAttempts(prev => prev + 1);
@@ -447,6 +449,7 @@ export default function LessonPage() {
     setHasAnswered(true);
     setIsCorrect(correct);
     if (correct) {
+      playCorrectSound();
       setStreak(prev => prev + 1);
     } else {
       setIncorrectAttempts(prev => prev + 1);
