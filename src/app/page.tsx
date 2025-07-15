@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Hero } from '@/components/home/hero';
@@ -32,7 +33,7 @@ export default function Home() {
                         enableTilt={true}
                         enableMagnetism={true}
                         clickEffect={true}
-                        spotlightRadius={300}
+                        spotlightRadius={150}
                         particleCount={12}
                         glowColor="var(--primary-hsl-raw)"
                     />
