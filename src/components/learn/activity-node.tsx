@@ -1,3 +1,4 @@
+
 import type { Activity, ActivityState } from '@/types/learn';
 import { cn } from '@/lib/utils';
 import { BookOpen, Check, Trophy, Lock, CheckCircle2 } from 'lucide-react';

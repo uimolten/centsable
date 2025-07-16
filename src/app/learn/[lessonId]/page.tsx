@@ -164,6 +164,8 @@ export default function LessonPage() {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [totalSteps, setTotalSteps] = useState(0);
+  const [interactiveStepsCount, setInteractiveStepsCount] = useState(0);
+  const [totalIncorrectAttempts, setTotalIncorrectAttempts] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(0);
   const [tryAgainCounter, setTryAgainCounter] = useState(0);
   const [incorrectAttempts, setIncorrectAttempts] = useState(0);
@@ -180,7 +182,21 @@ export default function LessonPage() {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
       setLesson(loadedLesson);
-      setTotalSteps(loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0));
+      const steps = loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0);
+      setTotalSteps(steps);
+      
+      const interactiveSteps = loadedLesson.modules.flatMap(m => m.steps).filter(s => ['multiple-choice', 'fill-in-the-blank', 'interactive-sort', 'tap-the-pairs'].includes(s.type)).length;
+      setInteractiveStepsCount(interactiveSteps);
+
+      // Set lives based on lesson length
+      if (steps > 10) {
+        setLives(5);
+      } else if (steps > 5) {
+        setLives(3);
+      } else {
+        setLives(2);
+      }
+
     } else {
       // Handle lesson not found, maybe redirect
       router.push('/learn');
@@ -214,11 +230,16 @@ export default function LessonPage() {
     
     const { rewards } = currentStep as CompleteStep;
 
+    // Calculate accuracy for bonus XP
+    const accuracy = interactiveStepsCount > 0 ? 1 - (totalIncorrectAttempts / interactiveStepsCount) : 1;
+    const bonusXp = accuracy >= 0.9 ? 5 : 0;
+    const totalXp = rewards.xp + bonusXp;
+
     try {
         const result = await saveProgress({
             userId: user.uid,
             lessonId: lessonId,
-            xpGained: rewards.xp,
+            xpGained: totalXp,
             centsGained: rewards.coins,
         });
 
@@ -241,7 +262,7 @@ export default function LessonPage() {
     } finally {
         router.push(`/learn?completed=${lessonId}`);
     }
-  }, [lessonId, router, user, currentStep, refreshUserData, toast]);
+  }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
   
   const goToNextStep = useCallback(() => {
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
@@ -314,11 +335,15 @@ export default function LessonPage() {
       playCorrectSound();
       setStreak(prev => prev + 1);
     } else {
-      setIncorrectAttempts(prev => prev + 1);
+      const newIncorrectAttempts = incorrectAttempts + 1;
+      setIncorrectAttempts(newIncorrectAttempts);
+      if (newIncorrectAttempts === 1) { // Only count the first mistake per step
+          setTotalIncorrectAttempts(prev => prev + 1);
+      }
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts]);
 
   const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
@@ -371,7 +396,12 @@ export default function LessonPage() {
     }
     
     if (hasAnswered && isCorrect === false) {
-      setIncorrectAttempts(prev => prev + 1);
+      const newIncorrectAttempts = incorrectAttempts + 1;
+      setIncorrectAttempts(newIncorrectAttempts);
+
+      if (newIncorrectAttempts === 1) { // Only count the first mistake per step
+          setTotalIncorrectAttempts(prev => prev + 1);
+      }
       
       setHasAnswered(false);
       setIsCorrect(null);
@@ -388,7 +418,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -452,7 +482,11 @@ export default function LessonPage() {
       playCorrectSound();
       setStreak(prev => prev + 1);
     } else {
-      setIncorrectAttempts(prev => prev + 1);
+      const newIncorrectAttempts = incorrectAttempts + 1;
+      setIncorrectAttempts(newIncorrectAttempts);
+      if(newIncorrectAttempts === 1) { // Only count the first mistake per step
+          setTotalIncorrectAttempts(prev => prev + 1);
+      }
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
