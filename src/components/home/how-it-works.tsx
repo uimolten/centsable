@@ -2,6 +2,7 @@
 
 import { BookOpen, Gamepad2, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
+import BlurText from '../ui/blur-text';
 
 export function HowItWorks() {
   const steps = [
@@ -46,10 +47,18 @@ export function HowItWorks() {
         className="container mx-auto px-4 sm:px-6 lg:px-8"
       >
         <motion.div variants={itemVariants} className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-black font-headline">A Simple Path to Mastery</h2>
-          <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Learn, play, and master your finances in three easy steps.
-          </p>
+          <BlurText
+            text="A Simple Path to Mastery"
+            delay={50}
+            animateBy="words"
+            className="text-4xl md:text-5xl font-black font-headline"
+          />
+           <BlurText
+            text="Learn, play, and master your finances in three easy steps."
+            delay={50}
+            animateBy="words"
+            className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground"
+          />
         </motion.div>
         <motion.div
           variants={containerVariants}

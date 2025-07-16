@@ -6,6 +6,7 @@ import { HowItWorks } from '@/components/home/how-it-works';
 import { Cta } from '@/components/home/cta';
 import { MagicBento } from '@/components/home/magic-bento';
 import { motion } from 'framer-motion';
+import BlurText from '@/components/ui/blur-text';
 
 export default function Home() {
   return (
@@ -20,10 +21,18 @@ export default function Home() {
                 className="container mx-auto px-4 sm:px-6 lg:px-8"
             >
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl md:text-5xl font-black font-headline">Everything You Need to Get Centsable</h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                        A new way to learn finance. Engaging, effective, and actually fun.
-                    </p>
+                     <BlurText
+                        text="Everything You Need to Get Centsable"
+                        delay={50}
+                        animateBy="words"
+                        className="text-4xl md:text-5xl font-black font-headline"
+                      />
+                     <BlurText
+                        text="A new way to learn finance. Engaging, effective, and actually fun."
+                        delay={50}
+                        animateBy="words"
+                        className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground"
+                      />
                 </div>
                 <div className="flex justify-center">
                     <MagicBento 

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { GridBackground } from '../grid-background';
+import BlurText from '../ui/blur-text';
 
 export function Hero() {
   const { user, loading } = useAuth();
@@ -25,12 +26,27 @@ export function Hero() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="relative z-10 container mx-auto px-4"
         >
-          <h1 className="text-5xl md:text-7xl font-black text-foreground font-headline">
-            Your Adventure in <br/><span className="bg-gradient-to-r from-primary to-green-400 text-transparent bg-clip-text">Financial Mastery</span>
-          </h1>
-          <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground">
-            Learn budgeting, investing, and more through fun games and interactive challenges. Stop guessing, start growing.
-          </p>
+          <div className="text-5xl md:text-7xl font-black text-foreground font-headline">
+            <BlurText
+              text="Your Adventure in"
+              delay={50}
+              animateBy="words"
+            />
+             <BlurText
+              text="Financial Mastery"
+              delay={50}
+              animateBy="words"
+              className="bg-gradient-to-r from-primary to-green-400 text-transparent bg-clip-text"
+            />
+          </div>
+          
+           <BlurText
+              text="Learn budgeting, investing, and more through fun games and interactive challenges. Stop guessing, start growing."
+              delay={50}
+              animateBy="words"
+              className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground"
+            />
+
           <div className="mt-8 flex justify-center px-4 sm:px-0">
             <Button 
               size="lg" 
