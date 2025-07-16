@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -32,12 +33,9 @@ export function Hero() {
               delay={50}
               animateBy="words"
             />
-             <BlurText
-              text="Financial Mastery"
-              delay={50}
-              animateBy="words"
-              className="animated-gradient"
-            />
+             <div className="animated-gradient">
+                Financial Mastery
+             </div>
           </div>
           
            <BlurText

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion, Transition } from 'framer-motion';
@@ -50,7 +51,7 @@ const BlurText: React.FC<BlurTextProps> = ({
 }) => {
   const elements = useMemo(() => (animateBy === 'words' ? text.split(' ') : text.split('')), [text, animateBy]);
   const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLParagraphElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const currentRef = ref.current;
