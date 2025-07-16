@@ -36,7 +36,7 @@ export function Hero() {
               text="Financial Mastery"
               delay={50}
               animateBy="words"
-              className="bg-gradient-to-r from-primary to-green-400 text-transparent bg-clip-text"
+              className="animated-gradient"
             />
           </div>
           
