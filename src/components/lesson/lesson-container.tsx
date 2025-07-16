@@ -8,7 +8,6 @@ import { Check, X, Heart, Flame, ChevronLeft } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Step } from '@/types/lesson';
-import { GridBackground } from '@/components/grid-background';
 import { Mascot } from './mascot';
 import { SpeechBubble } from './speech-bubble';
 import { AnswerFeedback } from './answer-feedback';
@@ -81,7 +80,28 @@ export function LessonContainer({
 
   return (
     <div className="relative flex flex-col h-screen bg-background overflow-hidden font-body">
-      <GridBackground>
+       {/* Topography SVG background pattern */}
+        <div 
+            className="absolute inset-0 w-full h-full bg-primary opacity-15"
+            style={{
+              maskImage: 'url(/images/topography.svg)',
+              maskRepeat: 'repeat',
+              maskSize: 'auto',
+              WebkitMaskImage: 'url(/images/topography.svg)',
+              WebkitMaskRepeat: 'repeat',
+              WebkitMaskSize: 'auto',
+            }}
+        />
+        {/* Radial gradient to make the pattern transparent in the center */}
+        <div className="absolute inset-0 bg-background" style={{
+            maskImage: 'radial-gradient(ellipse at center, black 60%, transparent 95%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, black 60%, transparent 95%)',
+        }}></div>
+
+        {/* Glowing aura elements */}
+        <div className="absolute top-0 left-1/4 h-96 w-96 bg-primary/10 blur-[150px] rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-0 right-1/4 h-80 w-80 bg-primary/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+
         <div className="relative z-10 flex flex-col h-full">
           <header className="flex-shrink-0 p-4">
             <div className="container mx-auto flex items-center gap-2">
@@ -170,7 +190,6 @@ export function LessonContainer({
             </AnimatePresence>
           </footer>
         </div>
-      </GridBackground>
     </div>
   );
 }
