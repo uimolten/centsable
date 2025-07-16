@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -79,7 +80,7 @@ export function LessonContainer({
   }
 
   return (
-    <div className="relative flex flex-col h-screen bg-background overflow-hidden font-body">
+    <div className="relative flex flex-col h-screen overflow-hidden font-body">
        {/* Topography SVG background pattern */}
         <div 
             className="absolute inset-0 w-full h-full bg-primary opacity-15"
@@ -94,8 +95,8 @@ export function LessonContainer({
         />
         {/* Radial gradient to make the pattern transparent in the center */}
         <div className="absolute inset-0 bg-background" style={{
-            maskImage: 'radial-gradient(ellipse at center, black 60%, transparent 95%)',
-            WebkitMaskImage: 'radial-gradient(ellipse at center, black 60%, transparent 95%)',
+            maskImage: 'radial-gradient(ellipse at center, transparent 60%, black 95%)',
+            WebkitMaskImage: 'radial-gradient(ellipse at center, transparent 60%, black 95%)',
         }}></div>
 
         {/* Glowing aura elements */}

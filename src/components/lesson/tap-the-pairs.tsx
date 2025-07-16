@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -98,7 +99,7 @@ export function TapThePairs({ step, onComplete, incorrectAttempts, hasAnswered, 
       transition={{ duration: 0.3 }}
       className="space-y-6 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12 w-full"
     >
-      {hintShown && (
+      {hintShown && !isCompleteAndCorrect && (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -117,7 +118,7 @@ export function TapThePairs({ step, onComplete, incorrectAttempts, hasAnswered, 
             className={cn(
               "text-lg h-auto py-4 min-h-[80px] whitespace-normal transition-all duration-300",
               selectedItem?.id === item.id && "bg-accent ring-2 ring-primary",
-              (isCompleteAndCorrect || matchedPairs.includes(item.pairId)) && "opacity-50 !bg-green-500/30 border-green-500 cursor-not-allowed"
+              (isCompleteAndCorrect && matchedPairs.includes(item.pairId)) && "opacity-50 !bg-green-500/30 border-green-500 cursor-not-allowed"
             )}
             onClick={() => handleItemClick(item)}
             disabled={isCompleteAndCorrect || matchedPairs.includes(item.pairId)}

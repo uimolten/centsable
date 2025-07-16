@@ -1,4 +1,5 @@
 
+
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import type { FillInTheBlankStep } from '@/types/lesson';
@@ -48,7 +49,7 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
           className={cn(
             "inline-block w-48 text-2xl font-bold text-center mx-2 bg-background/70 border-b-2 border-border/50 h-12 rounded-none p-0 focus-visible:ring-0 focus:border-primary",
             hasAnswered && "border-2",
-            hasAnswered && isCorrect === true && "border-green-500 bg-green-500/10",
+            isCorrect === true && "border-green-500 bg-green-500/10",
             hasAnswered && isCorrect === false && "border-destructive bg-red-500/10 animate-shake"
           )}
           autoFocus

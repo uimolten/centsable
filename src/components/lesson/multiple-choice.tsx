@@ -1,4 +1,5 @@
 
+
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -84,7 +85,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
                 option.image ? "flex-col p-4 h-full" : "justify-center",
                 isSelected && "bg-accent border-primary",
                 hasAnswered && isSelected && isCorrect === false && "bg-destructive/50 border-destructive text-destructive-foreground animate-shake",
-                hasAnswered && isTheCorrectAnswer && "bg-green-500/50 border-green-500 text-foreground",
+                hasAnswered && isCorrect === true && isTheCorrectAnswer && "bg-green-500/50 border-green-500 text-foreground",
                 isEliminated && "opacity-50 bg-muted/30 border-muted-foreground/10 cursor-not-allowed"
               )}
               onClick={() => onSelectAnswer(option.id)}
