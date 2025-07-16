@@ -147,25 +147,33 @@ export default function LearnPage() {
        {!isDesktop && (
         <Sheet open={!!selectedActivity} onOpenChange={(open) => !open && setSelectedActivity(null)}>
             <SheetContent side="right" className="w-full max-w-md p-0 flex flex-col bg-card/80 backdrop-blur-lg border-border/20">
-                {selectedActivity && (
-                    <>
-                        <SheetHeader className="p-6 pb-4 border-b border-border/10">
-                           <SheetTitle className="text-2xl font-bold">{selectedActivity.title}</SheetTitle>
-                           <SheetDescription>
-                            Unit: {findUnitForActivity(selectedActivity)?.title} &bull; Type: {activityTypeLabel}
-                           </SheetDescription>
-                        </SheetHeader>
-                        <ScrollArea className="flex-grow">
-                           <div className="p-6">
-                                <RightSidebar
-                                  activity={selectedActivity}
-                                  unit={findUnitForActivity(selectedActivity)}
-                                  onStart={handleStartActivity}
-                                />
-                           </div>
-                        </ScrollArea>
-                    </>
-                )}
+                <AnimatePresence>
+                    {selectedActivity && (
+                        <motion.div
+                            key={selectedActivity.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex flex-col h-full"
+                        >
+                            <SheetHeader className="p-6 pb-4 border-b border-border/10">
+                               <SheetTitle className="text-2xl font-bold">{selectedActivity.title}</SheetTitle>
+                               <SheetDescription>
+                                Unit: {findUnitForActivity(selectedActivity)?.title} &bull; Type: {activityTypeLabel}
+                               </SheetDescription>
+                            </SheetHeader>
+                            <ScrollArea className="flex-grow">
+                               <div className="p-6">
+                                    <RightSidebar
+                                      activity={selectedActivity}
+                                      unit={findUnitForActivity(selectedActivity)}
+                                      onStart={handleStartActivity}
+                                    />
+                               </div>
+                            </ScrollArea>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </SheetContent>
         </Sheet>
        )}
