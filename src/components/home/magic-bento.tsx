@@ -40,7 +40,7 @@ const MOBILE_BREAKPOINT = 768;
 const cardData: BentoCardProps[] = [
   {
     title: "Interactive Learning",
-    description: "Go from basics to advanced topics with modules that feel like a story, not a textbook.",
+    description: "Go from basics to advanced topics with story-like modules.",
     label: "Learn",
     image: "https://placehold.co/800x600",
     imageHint: "lesson screen",
@@ -54,7 +54,7 @@ const cardData: BentoCardProps[] = [
   },
   {
     title: "Track Your Progress",
-    description: "Watch your confidence grow with detailed progress tracking and achievements.",
+    description: "Watch your confidence grow with detailed progress tracking.",
     label: "Grow",
     image: "https://placehold.co/800x600",
     imageHint: "dashboard chart",
@@ -65,13 +65,6 @@ const cardData: BentoCardProps[] = [
     label: "Challenge",
     image: "https://placehold.co/800x600",
     imageHint: "quiz interface",
-  },
-  {
-    title: "Personalized Goals",
-    description: "Set and track custom savings goals, from a new phone to a first car.",
-    label: "Achieve",
-    image: "https://placehold.co/800x600",
-    imageHint: "goal setting",
   },
   {
     title: "Earn Rewards",
