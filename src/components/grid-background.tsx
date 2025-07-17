@@ -1,6 +1,8 @@
-export function GridBackground({ children }: { children: React.ReactNode }) {
+import { cn } from "@/lib/utils";
+
+export function GridBackground({ children, className }: { children: React.ReactNode, className?: string }) {
     return (
-      <div className="w-full bg-background text-foreground relative flex flex-col items-center justify-center">
+      <div className={cn("w-full bg-background text-foreground relative flex flex-col items-center justify-center", className)}>
         {/* Topography SVG background pattern */}
         <div 
             className="absolute inset-0 w-full h-full bg-primary opacity-15"
@@ -23,9 +25,7 @@ export function GridBackground({ children }: { children: React.ReactNode }) {
         <div className="absolute top-0 left-1/4 h-96 w-96 bg-primary/10 blur-[150px] rounded-full -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute top-0 right-1/4 h-80 w-80 bg-primary/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
 
-        <div className="relative z-10 w-full">
-            {children}
-        </div>
+        {children}
       </div>
     );
   }
