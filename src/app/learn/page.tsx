@@ -43,31 +43,14 @@ export default function LearnPage() {
     
     const completedLessons = userData.completedLessons || [];
     
+    // Set all lessons to active, and mark completed ones.
     const newUnits = initialUnitsData.map(unit => ({
       ...unit,
       activities: unit.activities.map(act => ({
         ...act,
-        state: completedLessons.includes(act.id) ? 'completed' : 'locked'
+        state: completedLessons.includes(act.id) ? 'completed' : 'active'
       }))
     }));
-    
-    let firstLockedFound = false;
-    for (const unit of newUnits) {
-      for (const act of unit.activities) {
-        if (act.state === 'locked' && !firstLockedFound) {
-          act.state = 'active';
-          firstLockedFound = true;
-          break;
-        }
-      }
-      if(firstLockedFound) break;
-    }
-    
-    // If no lessons completed, the first activity should be active
-    if (completedLessons.length === 0 && newUnits.length > 0 && newUnits[0].activities.length > 0) {
-        newUnits[0].activities[0].state = 'active';
-    }
-
 
     return newUnits;
   }, [userData, authLoading]);
