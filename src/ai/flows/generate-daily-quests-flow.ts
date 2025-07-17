@@ -7,9 +7,9 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { collection, doc, getDocs, writeBatch, Timestamp, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, writeBatch, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { GenerateDailyQuestsInputSchema, GenerateDailyQuestsOutputSchema, type GenerateDailyQuestsInput, type GenerateDailyQuestsOutput, type Quest, type QuestId } from '@/types/quests';
+import { GenerateDailyQuestsInputSchema, GenerateDailyQuestsOutputSchema, type GenerateDailyQuestsInput, type GenerateDailyQuestsOutput, type Quest } from '@/types/quests';
 
 const ALL_QUESTS: Quest[] = [
   { id: 'quiz_whiz', descriptionTemplate: 'Answer [X] quiz questions correctly.', actionType: 'answer_quiz_question_correctly', targetRange: [3, 5], reward: { xp: 20, cents: 5 } },

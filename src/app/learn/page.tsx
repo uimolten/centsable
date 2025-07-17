@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -16,19 +16,19 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LearnPage() {
-  const [units, setUnits] = useState<Unit[]>(initialUnitsData);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { userData, loading: authLoading } = useAuth();
+  const { userData, loading: authLoading, refreshUserData } = useAuth();
 
-  const updateUserProgress = useCallback(() => {
-    if (authLoading || DEV_MODE_UNLOCK_ALL) {
-        // If in dev mode, we use the default unlocked state from learn-data.ts
-        setUnits(initialUnitsData);
-        return;
-    };
+  const units = useMemo(() => {
+    if (authLoading) {
+      return []; // Return empty or skeleton data while loading
+    }
+    if (DEV_MODE_UNLOCK_ALL) {
+      return initialUnitsData;
+    }
     
     const completedLessons = userData?.completedLessons || [];
     
@@ -40,7 +40,6 @@ export default function LearnPage() {
       }))
     }));
     
-    // Unlock the next activity
     let nextActivityUnlocked = false;
     for (const unit of newUnits) {
       for (const act of unit.activities) {
@@ -51,26 +50,20 @@ export default function LearnPage() {
       }
     }
 
-    // Always ensure the very first activity is active if no progress is made
     if (!completedLessons.length && newUnits.length > 0 && newUnits[0].activities.length > 0) {
       newUnits[0].activities[0].state = 'active';
     }
 
-    setUnits(newUnits);
+    return newUnits;
   }, [userData, authLoading]);
 
   useEffect(() => {
-    updateUserProgress();
-  }, [updateUserProgress]);
-  
-  useEffect(() => {
     const completedActivityId = searchParams.get('completed');
     if (completedActivityId) {
-      updateUserProgress();
-      // Remove the query param from the URL without reloading the page
+      refreshUserData?.();
       router.replace('/learn', { scroll: false });
     }
-  }, [searchParams, updateUserProgress, router]);
+  }, [searchParams, refreshUserData, router]);
   
   const handleSelectActivity = (activity: Activity) => {
     if (activity.state !== 'locked') {
@@ -147,6 +140,9 @@ export default function LearnPage() {
        {!isDesktop && (
         <Sheet open={!!selectedActivity} onOpenChange={(open) => !open && setSelectedActivity(null)}>
             <SheetContent side="right" className="w-full max-w-md p-0 flex flex-col bg-card/80 backdrop-blur-lg border-border/20">
+              <SheetHeader className="p-6 pb-4 border-b border-border/10">
+                <SheetTitle className="sr-only">Activity Details</SheetTitle>
+              </SheetHeader>
               {selectedActivity && (
                 <AnimatePresence>
                     <motion.div

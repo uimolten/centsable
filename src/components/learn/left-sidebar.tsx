@@ -1,17 +1,18 @@
 
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Gem, Coins, CheckCircle2, Award } from 'lucide-react';
+import { Gem, Coins, CheckCircle2, Award, Loader2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { QuestIcon } from './quest-icon';
 import { generateDailyQuests } from '@/ai/flows/generate-daily-quests-flow';
+import { DailyQuest } from '@/types/quests';
 
-const QuestItem = ({ quest }: { quest: any }) => {
+const QuestItem = ({ quest }: { quest: DailyQuest }) => {
   const progressPercentage = quest.targetAmount > 0 ? (quest.currentProgress / quest.targetAmount) * 100 : 0;
   
   if (quest.isCompleted) {
@@ -58,17 +59,43 @@ const QuestItem = ({ quest }: { quest: any }) => {
 
 
 export function LeftSidebar() {
-  const { user, dailyQuests, loading, refreshUserData } = useAuth();
+  const { user, userData, dailyQuests, loading: authLoading, refreshUserData } = useAuth();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const loading = authLoading || isGenerating;
 
   useEffect(() => {
     const handleGenerateQuests = async () => {
-        if (!loading && user && dailyQuests?.length === 0) {
-            await generateDailyQuests({ userId: user.uid });
-            await refreshUserData?.(); // Refresh to get the new quests
+        if (!authLoading && user && userData) {
+            const now = new Date();
+            const lastGeneratedDate = userData.lastQuestGenerated?.toDate();
+            let shouldGenerate = !lastGeneratedDate;
+
+            if (lastGeneratedDate) {
+                const pacificTimezoneOffset = -7 * 60; // PDT offset in minutes
+                const localOffset = now.getTimezoneOffset();
+                const nowInPacific = new Date(now.getTime() + (pacificTimezoneOffset - localOffset) * 60000);
+                
+                const lastGeneratedInPacific = new Date(lastGeneratedDate.getTime() + (pacificTimezoneOffset - localOffset) * 60000);
+                
+                const lastGenDay = lastGeneratedInPacific.getDate();
+                const lastGenHour = lastGeneratedInPacific.getHours();
+
+                // If it's a new day, or if it's the same day but after 5 AM and quests were generated before 5 AM
+                if (nowInPacific.getDate() !== lastGenDay || (nowInPacific.getHours() >= 5 && lastGenHour < 5)) {
+                    shouldGenerate = true;
+                }
+            }
+            
+            if (shouldGenerate) {
+                setIsGenerating(true);
+                await generateDailyQuests({ userId: user.uid });
+                await refreshUserData?.(); // Refresh to get the new quests
+                setIsGenerating(false);
+            }
         }
     }
     handleGenerateQuests();
-  }, [user, dailyQuests, loading, refreshUserData]);
+  }, [user, userData, authLoading, refreshUserData]);
 
   if (loading) {
     return (
@@ -90,12 +117,12 @@ export function LeftSidebar() {
       <Card className="bg-card/50 backdrop-blur-lg border-border/20">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold">Daily Quests</CardTitle>
-          {/* <Button variant="link" className="p-0 h-auto text-primary">VIEW ALL</Button> */}
+          {isGenerating && <Loader2 className="h-5 w-5 animate-spin" />}
         </CardHeader>
         <CardContent className="space-y-4">
             {dailyQuests && dailyQuests.length > 0 ? (
                 dailyQuests.map((quest) => (
-                    <QuestItem key={quest.questId} quest={quest} />
+                    <QuestItem key={quest.questId + quest.description} quest={quest} />
                 ))
             ) : (
                 <p className="text-muted-foreground text-sm p-4 text-center">Come back tomorrow for new quests!</p>
