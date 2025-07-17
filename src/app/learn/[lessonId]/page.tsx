@@ -182,7 +182,7 @@ const isAnswerSimilar = (userAnswer: string, correctAnswer: string): boolean => 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, refreshUserData } = useAuth();
+  const { user, userData, refreshUserData } = useAuth();
   const { toast } = useToast();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
   
@@ -206,6 +206,7 @@ export default function LessonPage() {
   
   const currentModule = lesson?.modules[moduleIndex];
   const currentStep = currentModule?.steps[stepIndex];
+  const isLessonAlreadyCompleted = userData?.completedLessons?.includes(lessonId) ?? false;
 
   const triggerQuestUpdate = useCallback(async (actionType: 'complete_lesson_step' | 'answer_quiz_question_correctly' | 'create_savings_goal') => {
     if (user && refreshUserData) {
@@ -282,11 +283,9 @@ export default function LessonPage() {
         if (result.success) {
             await refreshUserData?.(); // Refresh user data to get new XP/Cents
         } else {
-            toast({
-                variant: 'destructive',
-                title: 'Error Saving Progress',
-                description: result.message || 'Could not save your progress, but you can continue.',
-            });
+            // This might happen if the lesson was already completed.
+            // We can still refresh data to be safe.
+            await refreshUserData?.();
         }
     } catch (error) {
         console.error('Failed to save progress', error);
@@ -303,7 +302,9 @@ export default function LessonPage() {
   }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
   
   const goToNextStep = useCallback(() => {
-      triggerQuestUpdate('complete_lesson_step');
+      if(!isLessonAlreadyCompleted) {
+        triggerQuestUpdate('complete_lesson_step');
+      }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
@@ -319,7 +320,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, triggerQuestUpdate]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, triggerQuestUpdate, isLessonAlreadyCompleted]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -373,7 +374,7 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
-      if (lesson?.title.includes('Quiz')) {
+      if (lesson?.title.includes('Quiz') && !isLessonAlreadyCompleted) {
         triggerQuestUpdate('answer_quiz_question_correctly');
       }
     } else {
@@ -385,7 +386,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, triggerQuestUpdate]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, triggerQuestUpdate, isLessonAlreadyCompleted]);
 
   const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
@@ -423,7 +424,7 @@ export default function LessonPage() {
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
-        if (lesson?.id === 's2' && step.storageKey === 'timeframe') {
+        if (lesson?.id === 's2' && step.storageKey === 'timeframe' && !isLessonAlreadyCompleted) {
             triggerQuestUpdate('create_savings_goal');
         }
         goToNextStep();
@@ -457,7 +458,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, triggerQuestUpdate, lesson?.id]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, triggerQuestUpdate, lesson?.id, isLessonAlreadyCompleted]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -527,7 +528,7 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
-      if (lesson?.title.includes('Quiz')) {
+      if (lesson?.title.includes('Quiz') && !isLessonAlreadyCompleted) {
         triggerQuestUpdate('answer_quiz_question_correctly');
       }
     } else {
@@ -594,6 +595,7 @@ export default function LessonPage() {
         return <ConceptCard key={uniqueKey} {...stepProps} />;
       
       case 'complete':
+        stepProps = { ...stepProps, isReviewMode: isLessonAlreadyCompleted };
         return <LessonComplete key={uniqueKey} {...stepProps} />;
         
       default: return <div>Unknown step type</div>;
@@ -624,7 +626,8 @@ export default function LessonPage() {
           {currentStep ? renderStepContent(currentStep) : (
             <LessonComplete 
               step={lastStepOfLesson as any} 
-              onContinue={handleLessonComplete} 
+              onContinue={handleLessonComplete}
+              isReviewMode={isLessonAlreadyCompleted}
             />
           )}
         </AnimatePresence>
