@@ -6,18 +6,24 @@ import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { minigames, Minigame } from '@/data/minigames-data';
-import { units as allUnits, Unit, DEV_MODE_UNLOCK_ALL } from '@/data/learn-data';
-import { isUnitCompleted } from '@/lib/lesson-utils';
-import { Lock, Gamepad2 } from 'lucide-react';
+import { units as allUnits, Unit } from '@/data/learn-data';
+import { Gamepad2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function MinigamesPage() {
-  // In a real app, you might get this from a user's progress state
-  // For now, we use the static data which can be modified for testing
-  const completedUnitIds = new Set(
-    allUnits.filter(unit => isUnitCompleted(unit)).map(unit => unit.id)
-  );
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth');
+    }
+  }, [user, loading, router]);
+
 
   return (
     <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -44,7 +50,7 @@ export default function MinigamesPage() {
           }}
         >
           {minigames.map((game, index) => {
-            const isUnlocked = DEV_MODE_UNLOCK_ALL || completedUnitIds.has(game.requiredUnitId);
+            const isUnlocked = true; // All games are unlocked for now
             const requiredUnit = allUnits.find(u => u.id === game.requiredUnitId);
 
             return (
@@ -85,10 +91,7 @@ export default function MinigamesPage() {
                        </Button>
                     ) : (
                       <div className="text-center text-sm text-muted-foreground p-3 rounded-md bg-background/30">
-                        <p className="font-semibold flex items-center justify-center gap-2">
-                          <Lock className="h-4 w-4" /> Locked
-                        </p>
-                        <p>Complete the "{requiredUnit?.title}" unit to unlock.</p>
+                         {/* This part is now hidden since isUnlocked is always true */}
                       </div>
                     )}
                   </CardContent>

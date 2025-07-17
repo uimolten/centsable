@@ -1,18 +1,38 @@
 
 "use client";
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { SavingsSorterGame } from '@/components/minigames/savings-sorter-game';
 import { BudgetBustersGame } from '@/components/minigames/budget-busters-game';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MinigamePage() {
   const params = useParams();
   const gameId = params.gameId;
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth');
+    }
+  }, [user, loading, router]);
+
 
   const renderGame = () => {
+    if (loading || !user) {
+        return (
+             <div className="text-center">
+                <Skeleton className="h-64 w-full" />
+             </div>
+        )
+    }
+
     switch (gameId) {
       case 'savings-sorter':
         return <SavingsSorterGame />;
