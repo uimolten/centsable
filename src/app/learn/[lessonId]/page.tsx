@@ -48,6 +48,8 @@ import { lessonRetirement1 } from '@/data/lesson-retirement-1';
 import { lessonRetirement2 } from '@/data/lesson-retirement-2';
 import { lessonRetirement3 } from '@/data/lesson-retirement-3';
 import { lessonRetirement4 } from '@/data/lesson-retirement-4';
+import { lessonRetirementPractice1 } from '@/data/lesson-retirement-practice-1';
+import { lessonRetirementQuiz1 } from '@/data/lesson-retirement-quiz-1';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -113,6 +115,9 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'r2') return lessonRetirement2;
   if (lessonId === 'r3') return lessonRetirement3;
   if (lessonId === 'r4') return lessonRetirement4;
+  if (lessonId === 'rp1') return lessonRetirementPractice1;
+  if (lessonId === 'rq1') return lessonRetirementQuiz1;
+
 
   return null;
 };

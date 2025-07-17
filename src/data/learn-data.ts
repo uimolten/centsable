@@ -89,6 +89,8 @@ const rawUnitsData: Unit[] = [
       { id: 'r2', title: 'The Magic of Time: Your Greatest Superpower', type: 'lesson', state: 'locked', xp: 8 },
       { id: 'r3', title: 'Choosing Your Treasure Chest: Roth IRAs & 401(k)s', type: 'lesson', state: 'locked', xp: 8 },
       { id: 'r4', title: 'Starting the Quest: Your First Step to Freedom', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'rp1', title: 'Practice: Your First Freedom Plan', type: 'practice', state: 'locked', xp: 15 },
+      { id: 'rq1', title: 'Financial Freedom Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
     ],
   },
   {
