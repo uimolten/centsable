@@ -10,7 +10,7 @@ import { UserNav } from '@/components/user-nav';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '../ui/skeleton';
 import { Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
 
 export function Header() {
   const { user, userData, loading } = useAuth();
@@ -88,6 +88,7 @@ export function Header() {
                   <SheetHeader className="flex-shrink-0 border-b border-border/10 pb-4">
                      <Logo onClick={closeMenu} />
                      <SheetTitle className="sr-only">Main Menu</SheetTitle>
+                     <SheetDescription className="sr-only">Navigate to different parts of the application.</SheetDescription>
                   </SheetHeader>
                   <nav className="flex-grow flex flex-col gap-6 mt-8">
                     {navLinks.map((link) => (

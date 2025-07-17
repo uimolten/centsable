@@ -159,6 +159,10 @@ export default function LearnPage() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-full max-w-sm p-0 flex flex-col bg-card/80 backdrop-blur-lg border-border/20">
+                         <SheetHeader>
+                           <SheetTitle className="sr-only">Daily Quests</SheetTitle>
+                           <SheetDescription className="sr-only">View your daily quests and progress.</SheetDescription>
+                         </SheetHeader>
                          <LeftSidebar />
                     </SheetContent>
                 </Sheet>
