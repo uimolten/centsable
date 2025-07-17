@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Gem, Coins, CheckCircle2, Award, Loader2 } from 'lucide-react';
@@ -113,12 +113,12 @@ export function LeftSidebar() {
 
   return (
     <div className="space-y-6 w-full max-w-sm">
-      <Card className="bg-card/50 backdrop-blur-lg border-border/20 h-full">
+      <Card className="bg-card/50 backdrop-blur-lg border-border/20 h-full flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold">Daily Quests</CardTitle>
           {isGenerating && <Loader2 className="h-5 w-5 animate-spin" />}
         </CardHeader>
-        <CardContent className="space-y-6 p-4">
+        <CardContent className="space-y-6 p-4 flex-grow">
             {dailyQuests && dailyQuests.length > 0 ? (
                 dailyQuests.map((quest, index) => (
                     <QuestItem key={quest.questId + index} quest={quest} />
@@ -127,6 +127,9 @@ export function LeftSidebar() {
                 <p className="text-muted-foreground text-sm p-4 text-center">Come back tomorrow for new quests!</p>
             )}
         </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <p className="text-xs text-muted-foreground text-center w-full">Quests refresh daily.</p>
+        </CardFooter>
       </Card>
     </div>
   );

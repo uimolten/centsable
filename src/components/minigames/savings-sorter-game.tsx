@@ -24,7 +24,7 @@ interface GameItem {
 const GAME_DURATION = 30; // seconds
 
 export function SavingsSorterGame() {
-  const { user } = useAuth();
+  const { user, refreshUserData } = useAuth();
   const [gameState, setGameState] = useState<GameState>('start');
   const [items, setItems] = useState<GameItem[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -42,9 +42,10 @@ export function SavingsSorterGame() {
     }
   }, []);
 
-  const triggerQuestUpdate = () => {
-    if (user) {
-      updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
+  const triggerQuestUpdate = async () => {
+    if (user && refreshUserData) {
+      await updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
+      await refreshUserData();
     }
   };
 

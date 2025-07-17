@@ -180,11 +180,11 @@ export default function LessonPage() {
   const currentStep = currentModule?.steps[stepIndex];
 
   const triggerQuestUpdate = useCallback(async (actionType: 'complete_lesson_step' | 'answer_quiz_question_correctly' | 'create_savings_goal') => {
-    if (user) {
-      // This is a fire-and-forget call. We don't need to wait for the result.
-      updateQuestProgress({ userId: user.uid, actionType });
+    if (user && refreshUserData) {
+      await updateQuestProgress({ userId: user.uid, actionType });
+      await refreshUserData();
     }
-  }, [user]);
+  }, [user, refreshUserData]);
 
   useEffect(() => {
     const loadedLesson = getLessonData(lessonId);

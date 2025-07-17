@@ -15,7 +15,7 @@ import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 type GameState = 'start' | 'playing' | 'level-end';
 
 export function BudgetBustersGame() {
-  const { user } = useAuth();
+  const { user, refreshUserData } = useAuth();
   const [gameState, setGameState] = useState<GameState>('start');
   const [levelIndex, setLevelIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
@@ -29,9 +29,10 @@ export function BudgetBustersGame() {
     }
   }, []);
 
-  const triggerQuestUpdate = () => {
-    if (user) {
-      updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
+  const triggerQuestUpdate = async () => {
+    if (user && refreshUserData) {
+      await updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
+      await refreshUserData();
     }
   };
 
