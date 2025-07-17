@@ -3,7 +3,7 @@ import type { Unit } from '@/types/learn';
 import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase } from 'lucide-react';
 
 // Set this to `true` to allow users to access any lesson, `false` to enforce sequential unlocking.
-export const DEV_MODE_UNLOCK_ALL = false;
+export const DEV_MODE_UNLOCK_ALL = true;
 
 const rawUnitsData: Unit[] = [
   {
