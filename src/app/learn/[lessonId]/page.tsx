@@ -50,6 +50,12 @@ import { lessonRetirement3 } from '@/data/lesson-retirement-3';
 import { lessonRetirement4 } from '@/data/lesson-retirement-4';
 import { lessonRetirementPractice1 } from '@/data/lesson-retirement-practice-1';
 import { lessonRetirementQuiz1 } from '@/data/lesson-retirement-quiz-1';
+import { lessonInsurance1 } from '@/data/lesson-insurance-1';
+import { lessonInsurance2 } from '@/data/lesson-insurance-2';
+import { lessonInsurance3 } from '@/data/lesson-insurance-3';
+import { lessonInsurance4 } from '@/data/lesson-insurance-4';
+import { lessonInsurancePractice1 } from '@/data/lesson-insurance-practice-1';
+import { lessonInsuranceQuiz1 } from '@/data/lesson-insurance-quiz-1';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -117,6 +123,14 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'r4') return lessonRetirement4;
   if (lessonId === 'rp1') return lessonRetirementPractice1;
   if (lessonId === 'rq1') return lessonRetirementQuiz1;
+
+  // Insurance
+  if (lessonId === 'ui1') return lessonInsurance1;
+  if (lessonId === 'ui2') return lessonInsurance2;
+  if (lessonId === 'ui3') return lessonInsurance3;
+  if (lessonId === 'ui4') return lessonInsurance4;
+  if (lessonId === 'uip1') return lessonInsurancePractice1;
+  if (lessonId === 'uiq1') return lessonInsuranceQuiz1;
 
 
   return null;
