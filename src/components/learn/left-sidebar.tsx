@@ -18,41 +18,47 @@ const QuestItem = ({ quest }: { quest: DailyQuest }) => {
   if (quest.isCompleted) {
     return (
       <div className="flex items-center gap-4 opacity-70">
-        <div className="p-3 rounded-lg bg-green-500/20 text-green-400">
+        <div className="flex-shrink-0 p-3 rounded-lg bg-green-500/20 text-green-400">
           <CheckCircle2 className="w-6 h-6" />
         </div>
         <div className="flex-grow">
           <p className="font-semibold text-foreground line-through">{quest.description}</p>
           <p className="text-xs text-muted-foreground">Completed!</p>
         </div>
-        <div className="flex items-center gap-1 text-yellow-400">
-            <Award className="w-4 h-4"/>
-            <span>Claimed</span>
+        <div className="flex flex-col items-end flex-shrink-0">
+          <div className="flex items-center gap-1 text-yellow-400">
+              <Award className="w-4 h-4"/>
+              <span>Claimed</span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="bg-primary/10 text-primary p-3 rounded-lg">
-        <QuestIcon questId={quest.questId} />
-      </div>
-      <div className="flex-grow">
-        <p className="font-semibold text-foreground">{quest.description}</p>
-        <Progress value={progressPercentage} className="h-2 mt-1 bg-muted" />
-        <p className="text-xs text-muted-foreground mt-1">{quest.currentProgress} / {quest.targetAmount}</p>
-      </div>
-      <div className="flex flex-col items-center">
-        <div className="flex items-center gap-1 text-primary">
-            <Gem className="w-4 h-4" />
-            <span>{quest.rewardXP}</span>
+    <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-lg mt-1">
+            <QuestIcon questId={quest.questId} />
         </div>
-        <div className="flex items-center gap-1 text-yellow-400">
-             <Coins className="w-4 h-4" />
-             <span>{quest.rewardCents}</span>
+        <div className="flex-grow space-y-1">
+            <div className="flex justify-between items-start">
+                <p className="font-semibold text-foreground pr-2">{quest.description}</p>
+                <div className="flex flex-col items-end flex-shrink-0">
+                    <div className="flex items-center gap-1 text-primary">
+                        <Gem className="w-4 h-4" />
+                        <span className="font-bold">{quest.rewardXP}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-yellow-400">
+                         <Coins className="w-4 h-4" />
+                         <span className="font-bold">{quest.rewardCents}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <Progress value={progressPercentage} className="h-2 flex-grow bg-muted" />
+                <p className="text-xs text-muted-foreground font-mono">{quest.currentProgress}/{quest.targetAmount}</p>
+            </div>
         </div>
-      </div>
     </div>
   );
 };
@@ -71,17 +77,10 @@ export function LeftSidebar() {
             let shouldGenerate = !lastGeneratedDate;
 
             if (lastGeneratedDate) {
-                const pacificTimezoneOffset = -7 * 60; // PDT offset in minutes
-                const localOffset = now.getTimezoneOffset();
-                const nowInPacific = new Date(now.getTime() + (pacificTimezoneOffset - localOffset) * 60000);
+                const lastGenDay = lastGeneratedDate.getUTCDate();
+                const currentDay = now.getUTCDate();
                 
-                const lastGeneratedInPacific = new Date(lastGeneratedDate.getTime() + (pacificTimezoneOffset - localOffset) * 60000);
-                
-                const lastGenDay = lastGeneratedInPacific.getDate();
-                const lastGenHour = lastGeneratedInPacific.getHours();
-
-                // If it's a new day, or if it's the same day but after 5 AM and quests were generated before 5 AM
-                if (nowInPacific.getDate() !== lastGenDay || (nowInPacific.getHours() >= 5 && lastGenHour < 5)) {
+                if (currentDay !== lastGenDay) {
                     shouldGenerate = true;
                 }
             }
@@ -103,7 +102,7 @@ export function LeftSidebar() {
             <CardHeader>
                 <Skeleton className="h-6 w-3/4" />
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-4">
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-12 w-full" />
@@ -114,15 +113,15 @@ export function LeftSidebar() {
 
   return (
     <div className="space-y-6 w-full max-w-sm">
-      <Card className="bg-card/50 backdrop-blur-lg border-border/20">
+      <Card className="bg-card/50 backdrop-blur-lg border-border/20 h-full">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold">Daily Quests</CardTitle>
           {isGenerating && <Loader2 className="h-5 w-5 animate-spin" />}
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6 p-4">
             {dailyQuests && dailyQuests.length > 0 ? (
-                dailyQuests.map((quest) => (
-                    <QuestItem key={quest.questId + quest.description} quest={quest} />
+                dailyQuests.map((quest, index) => (
+                    <QuestItem key={quest.questId + index} quest={quest} />
                 ))
             ) : (
                 <p className="text-muted-foreground text-sm p-4 text-center">Come back tomorrow for new quests!</p>

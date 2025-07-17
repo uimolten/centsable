@@ -2,8 +2,8 @@
 import type { Unit } from '@/types/learn';
 import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase } from 'lucide-react';
 
-// Set this to `true` before deploying to production to enable sequential unlocking.
-export const DEV_MODE_UNLOCK_ALL = true;
+// Set this to `true` to allow users to access any lesson, `false` to enforce sequential unlocking.
+export const DEV_MODE_UNLOCK_ALL = false;
 
 const rawUnitsData: Unit[] = [
   {
@@ -101,19 +101,5 @@ const rawUnitsData: Unit[] = [
   },
 ];
 
-// Logic to set the initial state of activities
-export const units: Unit[] = rawUnitsData.map((unit, unitIndex) => ({
-    ...unit,
-    activities: unit.activities.map((activity, activityIndex) => {
-      if (DEV_MODE_UNLOCK_ALL) {
-        // When dev mode is on, all activities are active by default.
-        return { ...activity, state: 'active' };
-      }
-      
-      // In production mode, only the very first activity is active.
-      const isFirstActivityOfAll = unitIndex === 0 && activityIndex === 0;
-      const state = isFirstActivityOfAll ? 'active' : 'locked';
-      
-      return { ...activity, state };
-    })
-}));
+// This logic is now handled dynamically in the LearnPage component based on user progress.
+export const units: Unit[] = rawUnitsData;

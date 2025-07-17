@@ -3,7 +3,7 @@
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs, Timestamp, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { UserData } from '@/types/user';
 import { DailyQuest } from '@/types/quests';
@@ -39,10 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
         const userDocRef = doc(db, 'users', user.uid);
         const questsCollectionRef = collection(db, 'users', user.uid, 'daily_quests');
+        const questsQuery = query(questsCollectionRef);
 
         const [userDoc, questsSnapshot] = await Promise.all([
             getDoc(userDocRef),
-            getDocs(questsCollectionRef)
+            getDocs(questsQuery)
         ]);
         
         if (userDoc.exists()) {
