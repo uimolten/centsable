@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -232,7 +231,7 @@ export default function LessonPage() {
 
   const handleLessonComplete = useCallback(async () => {
     if (!user || !lessonId || !currentStep || currentStep.type !== 'complete') {
-        router.push(`/learn?completed=${lessonId}`);
+        router.push(`/learn`);
         return;
     }
     
@@ -268,7 +267,7 @@ export default function LessonPage() {
             description: 'Could not save your progress, but you can continue.',
         });
     } finally {
-        router.push(`/learn?completed=${lessonId}`);
+        router.push(`/learn`);
     }
   }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
   
