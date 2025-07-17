@@ -81,12 +81,14 @@ const rawUnitsData: Unit[] = [
   },
   {
     id: 'unit-6',
-    title: 'Retirement Planning',
-    description: "It's never too early to start! Learn the basics of planning for retirement.",
+    title: 'Planning for Financial Freedom',
+    description: "It's never too early to start! Learn the basics of planning for the long term.",
     unitIcon: Briefcase,
     activities: [
-      { id: 'r1', title: 'Intro to Retirement Accounts', type: 'lesson', state: 'locked', xp: 5 },
-      { id: 'r2', title: 'Retirement Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
+      { id: 'r1', title: 'The Ultimate Endgame: What is Financial Freedom?', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'r2', title: 'The Magic of Time: Your Greatest Superpower', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'r3', title: 'Choosing Your Treasure Chest: Roth IRAs & 401(k)s', type: 'lesson', state: 'locked', xp: 8 },
+      { id: 'r4', title: 'Starting the Quest: Your First Step to Freedom', type: 'lesson', state: 'locked', xp: 8 },
     ],
   },
   {

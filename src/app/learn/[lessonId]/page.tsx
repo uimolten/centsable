@@ -44,6 +44,10 @@ import { lessonTaxes4 } from '@/data/lesson-taxes-4';
 import { lessonTaxesPractice1 } from '@/data/lesson-taxes-practice-1';
 import { lessonTaxesPractice2 } from '@/data/lesson-taxes-practice-2';
 import { lessonTaxesQuiz } from '@/data/lesson-taxes-quiz';
+import { lessonRetirement1 } from '@/data/lesson-retirement-1';
+import { lessonRetirement2 } from '@/data/lesson-retirement-2';
+import { lessonRetirement3 } from '@/data/lesson-retirement-3';
+import { lessonRetirement4 } from '@/data/lesson-retirement-4';
 import { LessonContainer } from '@/components/lesson/lesson-container';
 import { IntroCard } from '@/components/lesson/intro-card';
 import { MultipleChoice } from '@/components/lesson/multiple-choice';
@@ -103,6 +107,12 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'tp1') return lessonTaxesPractice1;
   if (lessonId === 'tp2') return lessonTaxesPractice2;
   if (lessonId === 'tq1') return lessonTaxesQuiz;
+
+  // Retirement
+  if (lessonId === 'r1') return lessonRetirement1;
+  if (lessonId === 'r2') return lessonRetirement2;
+  if (lessonId === 'r3') return lessonRetirement3;
+  if (lessonId === 'r4') return lessonRetirement4;
 
   return null;
 };
@@ -266,9 +276,11 @@ export default function LessonPage() {
             title: 'Error Saving Progress',
             description: 'Could not save your progress, but you can continue.',
         });
-    } finally {
-        router.push(`/learn`);
     }
+    
+    // This navigation should only happen after all async operations are done.
+    router.push(`/learn`);
+
   }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
   
   const goToNextStep = useCallback(() => {
