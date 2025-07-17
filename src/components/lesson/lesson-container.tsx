@@ -80,7 +80,10 @@ export function LessonContainer({
   }
 
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden font-body">
+    <div 
+      className="relative flex flex-col h-screen overflow-hidden font-body select-none"
+      onContextMenu={(e) => e.preventDefault()}
+    >
         {/* Glowing aura elements */}
         <div className="absolute top-0 left-1/4 h-96 w-96 bg-primary/10 blur-[150px] rounded-full -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute top-0 right-1/4 h-80 w-80 bg-primary/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
@@ -91,7 +94,7 @@ export function LessonContainer({
               <Button variant="ghost" size="icon" onClick={() => router.push('/learn')}>
                 <X className="h-7 w-7" />
               </Button>
-              <div className="relative flex-grow h-4 rounded-full bg-muted/30">
+              <div className="relative flex-grow h-4 rounded-full bg-muted">
                  <div className="absolute inset-0 h-full w-full overflow-hidden rounded-full">
                   <div
                       className="h-full bg-primary transition-all duration-500 ease-out"
