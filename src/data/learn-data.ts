@@ -81,7 +81,7 @@ const rawUnitsData: Unit[] = [
   },
   {
     id: 'unit-6',
-    title: 'Planning for Financial Freedom',
+    title: 'Retirement Planning',
     description: "It's never too early to start! Learn the basics of planning for the long term.",
     unitIcon: Briefcase,
     activities: [
