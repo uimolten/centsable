@@ -14,5 +14,6 @@ export interface UserData {
   lessonsCompleted: number;
   achievements: string[];
   completedLessons: string[];
+  lastQuestGenerated?: Timestamp;
   createdAt: Timestamp;
 }

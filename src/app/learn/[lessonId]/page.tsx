@@ -10,6 +10,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAuth } from '@/hooks/use-auth';
 import { saveProgress } from '@/ai/flows/save-progress-flow';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { playCorrectSound } from '@/lib/audio-utils';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
@@ -178,6 +179,13 @@ export default function LessonPage() {
   const currentModule = lesson?.modules[moduleIndex];
   const currentStep = currentModule?.steps[stepIndex];
 
+  const triggerQuestUpdate = useCallback(async (actionType: 'complete_lesson_step' | 'answer_quiz_question_correctly' | 'create_savings_goal') => {
+    if (user) {
+      // This is a fire-and-forget call. We don't need to wait for the result.
+      updateQuestProgress({ userId: user.uid, actionType });
+    }
+  }, [user]);
+
   useEffect(() => {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
@@ -265,6 +273,7 @@ export default function LessonPage() {
   }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
   
   const goToNextStep = useCallback(() => {
+      triggerQuestUpdate('complete_lesson_step');
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
@@ -280,7 +289,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, triggerQuestUpdate]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -334,6 +343,9 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
+      if (lesson?.title.includes('Quiz')) {
+        triggerQuestUpdate('answer_quiz_question_correctly');
+      }
     } else {
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);
@@ -343,7 +355,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered, incorrectAttempts]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, triggerQuestUpdate]);
 
   const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
@@ -381,6 +393,9 @@ export default function LessonPage() {
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
+        if (lesson?.id === 's2' && step.storageKey === 'timeframe') {
+            triggerQuestUpdate('create_savings_goal');
+        }
         goToNextStep();
         return;
     }
@@ -396,13 +411,7 @@ export default function LessonPage() {
     }
     
     if (hasAnswered && isCorrect === false) {
-      const newIncorrectAttempts = incorrectAttempts + 1;
-      setIncorrectAttempts(newIncorrectAttempts);
-
-      if (newIncorrectAttempts === 1) { // Only count the first mistake per step
-          setTotalIncorrectAttempts(prev => prev + 1);
-      }
-      
+      // User is trying again
       setHasAnswered(false);
       setIsCorrect(null);
       setIsSortIncomplete(false);
@@ -418,7 +427,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, triggerQuestUpdate, lesson?.id]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -454,6 +463,13 @@ export default function LessonPage() {
     const isCompleteAndCorrect = hasAnswered && isCorrect === true;
     if (isCompleteAndCorrect) return;
 
+    // This resets the 'Try Again' state if the user changes their answer.
+    if (hasAnswered && isCorrect === false) {
+      setHasAnswered(false);
+      setIsCorrect(null);
+    }
+
+
     if (currentStep?.type === 'multiple-choice') {
       const step = currentStep as MultipleChoiceStep;
       const isMultiSelect = Array.isArray(step.correctAnswer);
@@ -481,6 +497,9 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
+      if (lesson?.title.includes('Quiz')) {
+        triggerQuestUpdate('answer_quiz_question_correctly');
+      }
     } else {
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);

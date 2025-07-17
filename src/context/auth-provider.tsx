@@ -3,13 +3,15 @@
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { UserData } from '@/types/user';
+import { DailyQuest } from '@/types/quests';
 
 interface AuthContextType {
   user: User | null;
   userData: UserData | null;
+  dailyQuests: DailyQuest[] | null;
   loading: boolean;
   isAdmin: boolean;
   signOut: () => Promise<void>;
@@ -21,12 +23,14 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [dailyQuests, setDailyQuests] = useState<DailyQuest[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = useCallback(async (user: User | null) => {
     if (!user) {
         setUser(null);
         setUserData(null);
+        setDailyQuests(null);
         setLoading(false);
         return;
     }
@@ -34,7 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user);
     try {
         const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
+        const questsCollectionRef = collection(db, 'users', user.uid, 'daily_quests');
+
+        const [userDoc, questsSnapshot] = await Promise.all([
+            getDoc(userDocRef),
+            getDocs(questsCollectionRef)
+        ]);
+        
         if (userDoc.exists()) {
             const data = userDoc.data();
              setUserData({
@@ -75,9 +85,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const createdDoc = await getDoc(userDocRef);
             setUserData(createdDoc.data() as UserData);
         }
+
+        const quests = questsSnapshot.docs.map(doc => doc.data() as DailyQuest);
+        setDailyQuests(quests);
+
     } catch (error) {
         console.error("Error fetching user data:", error);
         setUserData(null);
+        setDailyQuests(null);
     } finally {
         setLoading(false);
     }
@@ -95,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await firebaseSignOut(auth);
     setUser(null);
     setUserData(null);
+    setDailyQuests(null);
   };
 
   const refreshUserData = async () => {
@@ -107,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAdmin = userData?.role === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, userData, loading, isAdmin, signOut, refreshUserData }}>
+    <AuthContext.Provider value={{ user, userData, dailyQuests, loading, isAdmin, signOut, refreshUserData }}>
       {children}
     </AuthContext.Provider>
   );

@@ -9,10 +9,13 @@ import { PieChart, Hand, Target, Star } from 'lucide-react';
 import { levels as gameLevels, Level } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from './level-display';
 import { Mascot } from '@/components/lesson/mascot';
+import { useAuth } from '@/hooks/use-auth';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 
 type GameState = 'start' | 'playing' | 'level-end';
 
 export function BudgetBustersGame() {
+  const { user } = useAuth();
   const [gameState, setGameState] = useState<GameState>('start');
   const [levelIndex, setLevelIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
@@ -26,10 +29,17 @@ export function BudgetBustersGame() {
     }
   }, []);
 
+  const triggerQuestUpdate = () => {
+    if (user) {
+      updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
+    }
+  };
+
   const handleLevelComplete = (score: number, success: boolean) => {
     setFinalScore(score);
     setWasSuccess(success);
     setGameState('level-end');
+    triggerQuestUpdate();
     if (success && score > highScore) {
       setHighScore(score);
       localStorage.setItem('budgetBustersHighScore', score.toString());

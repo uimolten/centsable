@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { savingsSorterItems } from '@/data/minigame-savings-sorter-data';
 import { PiggyBank, Hand, Target, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 
 type GameState = 'start' | 'playing' | 'end';
 type ItemCategory = 'Need' | 'Want';
@@ -22,6 +24,7 @@ interface GameItem {
 const GAME_DURATION = 30; // seconds
 
 export function SavingsSorterGame() {
+  const { user } = useAuth();
   const [gameState, setGameState] = useState<GameState>('start');
   const [items, setItems] = useState<GameItem[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -38,6 +41,12 @@ export function SavingsSorterGame() {
       setHighScore(parseInt(savedHighScore, 10));
     }
   }, []);
+
+  const triggerQuestUpdate = () => {
+    if (user) {
+      updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
+    }
+  };
 
   const startGame = () => {
     setItems(shuffle(savingsSorterItems));
@@ -76,6 +85,7 @@ export function SavingsSorterGame() {
 
     if (timeLeft <= 0) {
       setGameState('end');
+      triggerQuestUpdate();
       if (score > highScore) {
         setHighScore(score);
         localStorage.setItem('savingsSorterHighScore', score.toString());
@@ -103,9 +113,9 @@ export function SavingsSorterGame() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
-             <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> An item will appear. Decide if it's a "Need" (essential) or a "Want" (nice to have) as fast as you can.</p></div>
-             <div className="flex items-start gap-3"><Target className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score as many points as possible before the timer runs out. Correct answers give +100 points, incorrect answers give -50.</p></div>
-             <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
+             <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>How to Play:</b> An item will appear. Decide if it's a "Need" (essential) or a "Want" (nice to have) as fast as you can.</p></div>
+             <div className="flex items-start gap-3"><Target className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>Goal:</b> Score as many points as possible before the timer runs out. Correct answers give +100 points, incorrect answers give -50.</p></div>
+             <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>High Score:</b> {highScore} points</p></div>
           </div>
           <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
         </CardContent>

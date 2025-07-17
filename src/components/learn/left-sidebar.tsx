@@ -1,47 +1,105 @@
 
 "use client";
 
+import { useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Gem, Timer, Zap } from 'lucide-react';
+import { Gem, Coins, CheckCircle2, Award } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
+import { QuestIcon } from './quest-icon';
+import { generateDailyQuests } from '@/ai/flows/generate-daily-quests-flow';
 
-const DailyQuest = ({ icon: Icon, title, progress, max, reward: RewardIcon }: { icon: React.ElementType, title: string, progress: number, max: number, reward: React.ElementType }) => (
-  <div className="flex items-center gap-4">
-    <div className="bg-primary/10 text-primary p-3 rounded-lg">
-      <Icon className="w-6 h-6" />
+const QuestItem = ({ quest }: { quest: any }) => {
+  const progressPercentage = quest.targetAmount > 0 ? (quest.currentProgress / quest.targetAmount) * 100 : 0;
+  
+  if (quest.isCompleted) {
+    return (
+      <div className="flex items-center gap-4 opacity-70">
+        <div className="p-3 rounded-lg bg-green-500/20 text-green-400">
+          <CheckCircle2 className="w-6 h-6" />
+        </div>
+        <div className="flex-grow">
+          <p className="font-semibold text-foreground line-through">{quest.description}</p>
+          <p className="text-xs text-muted-foreground">Completed!</p>
+        </div>
+        <div className="flex items-center gap-1 text-yellow-400">
+            <Award className="w-4 h-4"/>
+            <span>Claimed</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <div className="bg-primary/10 text-primary p-3 rounded-lg">
+        <QuestIcon questId={quest.questId} />
+      </div>
+      <div className="flex-grow">
+        <p className="font-semibold text-foreground">{quest.description}</p>
+        <Progress value={progressPercentage} className="h-2 mt-1 bg-muted" />
+        <p className="text-xs text-muted-foreground mt-1">{quest.currentProgress} / {quest.targetAmount}</p>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="flex items-center gap-1 text-primary">
+            <Gem className="w-4 h-4" />
+            <span>{quest.rewardXP}</span>
+        </div>
+        <div className="flex items-center gap-1 text-yellow-400">
+             <Coins className="w-4 h-4" />
+             <span>{quest.rewardCents}</span>
+        </div>
+      </div>
     </div>
-    <div className="flex-grow">
-      <p className="font-semibold text-foreground">{title}</p>
-      <Progress value={(progress / max) * 100} className="h-2 mt-1" />
-      <p className="text-xs text-muted-foreground mt-1">{progress} / {max}</p>
-    </div>
-    <RewardIcon className="w-8 h-8 text-yellow-400" />
-  </div>
-);
+  );
+};
+
 
 export function LeftSidebar() {
-  const { userData } = useAuth();
-  
-  // In a real app, this might come from a configuration or be more dynamic
-  const quests = [
-    { icon: Zap, title: 'Earn 10 XP today', progress: userData?.xp ?? 0, max: 10, reward: Gem },
-    { icon: Timer, title: 'Maintain your streak', progress: userData?.streak ?? 0, max: 5, reward: Gem },
-    { icon: Gem, title: 'Complete a lesson', progress: userData?.lessonsCompleted ?? 0, max: 1, reward: Gem },
-  ];
+  const { user, dailyQuests, loading, refreshUserData } = useAuth();
+
+  useEffect(() => {
+    const handleGenerateQuests = async () => {
+        if (!loading && user && dailyQuests?.length === 0) {
+            await generateDailyQuests({ userId: user.uid });
+            await refreshUserData?.(); // Refresh to get the new quests
+        }
+    }
+    handleGenerateQuests();
+  }, [user, dailyQuests, loading, refreshUserData]);
+
+  if (loading) {
+    return (
+         <Card className="bg-card/50 backdrop-blur-lg border-border/20">
+            <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <div className="space-y-6 w-full max-w-sm">
       <Card className="bg-card/50 backdrop-blur-lg border-border/20">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-lg font-bold">Daily Quests</CardTitle>
-          <Button variant="link" className="p-0 h-auto text-primary">VIEW ALL</Button>
+          {/* <Button variant="link" className="p-0 h-auto text-primary">VIEW ALL</Button> */}
         </CardHeader>
         <CardContent className="space-y-4">
-            {quests.map((quest, index) => (
-                <DailyQuest key={index} {...quest} />
-            ))}
+            {dailyQuests && dailyQuests.length > 0 ? (
+                dailyQuests.map((quest) => (
+                    <QuestItem key={quest.questId} quest={quest} />
+                ))
+            ) : (
+                <p className="text-muted-foreground text-sm p-4 text-center">Come back tomorrow for new quests!</p>
+            )}
         </CardContent>
       </Card>
     </div>
