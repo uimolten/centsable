@@ -13,7 +13,7 @@ import { Skeleton } from '../ui/skeleton';
 import { QuestIcon } from './quest-icon';
 import { generateDailyQuests } from '@/ai/flows/generate-daily-quests-flow';
 import { isSameDay, isBefore } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 
 interface QuestItemProps {
   quest: Quest;
@@ -75,11 +75,11 @@ export function LeftSidebar({ isSheet = false }: LeftSidebarProps) {
 
       const pacificTimeZone = 'America/Los_Angeles';
       const now = new Date();
-      const nowInPacific = utcToZonedTime(now, pacificTimeZone);
+      const nowInPacific = toZonedTime(now, pacificTimeZone);
       
       let lastGeneratedDate: Date | null = null;
       if (userData.lastQuestGenerated) {
-        lastGeneratedDate = utcToZonedTime(userData.lastQuestGenerated.toDate(), pacificTimeZone);
+        lastGeneratedDate = toZonedTime(userData.lastQuestGenerated.toDate(), pacificTimeZone);
       }
       
       const fiveAmTodayPacific = new Date(nowInPacific);
