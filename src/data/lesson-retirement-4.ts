@@ -19,11 +19,12 @@ export const lessonRetirement4: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'What do you need to start? (Tap all that apply)',
+          question: 'What do you need to start? (Select all that apply)',
           options: [
             { id: 'opt1', text: '1. Talk to a trusted adult.' },
             { id: 'opt2', text: '2. Find a brokerage that offers custodial accounts.' },
             { id: 'opt3', text: '3. Contribute a small amount of money (even $20!).' },
+            { id: 'opt4', text: '4. Be 18 years old.' },
           ],
           correctAnswer: ['opt1', 'opt2', 'opt3'],
         },

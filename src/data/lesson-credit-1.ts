@@ -19,7 +19,7 @@ export const lessonCredit1: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'What do you pick?',
+          question: 'What do you pick? (Select all that apply)',
           options: [
             { id: 'opt1', text: 'Wait and save up the cash 📅' },
             { id: 'opt2', text: 'Use a credit card to buy it now 💳' },

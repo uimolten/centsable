@@ -15,7 +15,7 @@ export const lessonCredit2: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'You just got your first credit card. For a starter card, what is a likely credit limit a bank would give you?',
+          question: 'You just got your first credit card. For a starter card, what is a likely credit limit a bank would give you? (Select all that apply)',
           options: [
             { id: 'opt1', text: '<b>$500</b>' },
             { id: 'opt2', text: '<b>$1,000</b>' },
