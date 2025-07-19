@@ -118,11 +118,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserData(null);
   };
 
-  const refreshUserData = async () => {
+  const refreshUserData = useCallback(async () => {
     if (user) {
       await fetchUserData(user, false);
     }
-  };
+  }, [user, fetchUserData]);
   
   const isAdmin = userData?.role === 'admin';
 

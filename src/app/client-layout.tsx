@@ -34,7 +34,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-
+  
   if (!showLayout) {
     return <>{children}</>;
   }

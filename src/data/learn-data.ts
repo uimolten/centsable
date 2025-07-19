@@ -99,7 +99,7 @@ const rawUnitsData: Unit[] = [
     activities: [
       { id: 'ui1', title: 'What is Insurance & Why Bother?', type: 'lesson', state: 'locked', xp: 5 },
       { id: 'ui2', title: 'The Language of Insurance: Unlocking the Code', type: 'lesson', state: 'locked', xp: 7 },
-      { id: 'ui3', title: 'Leveling Up: Types of Insurance You\'ll Actually Need', type: 'lesson', state: 'locked', xp: 7 },
+      { id: 'ui3', title: "Leveling Up: Types of Insurance You'll Actually Need", type: 'lesson', state: 'locked', xp: 7 },
       { id: 'ui4', title: 'Choosing Your Shield: How to Pick a Policy', type: 'lesson', state: 'locked', xp: 5 },
       { id: 'uip1', title: 'Practice: Scenario Simulator', type: 'practice', state: 'locked', xp: 15 },
       { id: 'uiq1', title: 'Insurance Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
