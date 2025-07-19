@@ -27,7 +27,7 @@ export const lessonTaxes5: Lesson = {
         },
         {
           type: 'concept',
-          text: "If you're a freelancer or gig worker (like for DoorDash or Uber), you don't have taxes withheld. You have to pay them yourself! This is called **self-employment tax**.",
+          text: "If you're a freelancer or gig worker (like for DoorDash or Uber), you don't have taxes withheld. You have to pay them yourself! This is called <b>self-employment tax</b>.",
         },
         {
           type: 'concept',

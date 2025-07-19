@@ -11,7 +11,7 @@ export const lessonBudgeting5: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's talk about the real reason we've learned to budget: to turn dreams into reality. 🚀 Your *budget* is the rocket fuel for your goals.",
+          text: "Let's talk about the real reason we've learned to budget: to turn dreams into reality. 🚀 Your <b>budget</b> is the rocket fuel for your goals.",
         },
         {
           type: 'multiple-choice',
@@ -33,11 +33,11 @@ export const lessonBudgeting5: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "A vague goal like ‘I wanna save for a car’ won’t cut it. You need a *SMART* Goal! It's a goal that is *S*pecific, *M*easurable, *A*chievable, *R*elevant, and *T*ime-bound.",
+          text: "A vague goal like ‘I wanna save for a car’ won’t cut it. You need a <b>SMART</b> Goal! It's a goal that is <b>S</b>pecific, <b>M</b>easurable, <b>A</b>chievable, <b>R</b>elevant, and <b>T</b>ime-bound.",
         },
         {
           type: 'concept',
-          text: "Goals also have different time frames. A *Short-Term Goal* is usually under a year (like saving for a new phone). A *Long-Term Goal* takes over a year (like saving for a car).",
+          text: "Goals also have different time frames. A <b>Short-Term Goal</b> is usually under a year (like saving for a new phone). A <b>Long-Term Goal</b> takes over a year (like saving for a car).",
         },
         {
           type: 'multiple-choice',
@@ -69,17 +69,17 @@ export const lessonBudgeting5: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'Here’s where saving for long-term goals gets awesome. The earlier you start, the less you have to save. Why? *Compound Interest!*',
+          text: 'Here’s where saving for long-term goals gets awesome. The earlier you start, the less you have to save. Why? <b>Compound Interest!</b>',
         },
         {
           type: 'concept',
-          text: 'It’s when your money earns interest, then *THAT* interest earns its own interest. It’s like a tiny snowball that grows into a huge one over time. We will explore this more in the Investing unit!',
+          text: 'It’s when your money earns interest, then <b>THAT</b> interest earns its own interest. It’s like a tiny snowball that grows into a huge one over time. We will explore this more in the Investing unit!',
           image: 'https://placehold.co/400x225',
           imageHint: 'compounding chart growth',
         },
         {
           type: 'scenario',
-          text: "*Alex* starts saving *<b>$50</b>/month* at age 18. By 30, they’ll have over *<b>$10,000</b>*! *Jamie* waits until 25. By 30, they’ll only have around *<b>$3,500</b>*. Starting early is a superpower!",
+          text: "<b>Alex</b> starts saving <b>$50</b>/month at age 18. By 30, they’ll have over <b>$10,000</b>! <b>Jamie</b> waits until 25. By 30, they’ll only have around <b>$3,500</b>. Starting early is a superpower!",
           image: 'https://placehold.co/400x225',
           imageHint: 'bar chart comparison',
         },

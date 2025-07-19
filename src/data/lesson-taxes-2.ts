@@ -14,14 +14,12 @@ export const lessonTaxes2: Lesson = {
           text: "Let's revisit your $150 paycheck that shrank to $128 after taxes. This brings up two very important terms: Gross Income and Net Income.",
         },
         {
-          type: 'fill-in-the-blank',
-          question: "Your <b>Gross Income</b> was the total you earned, which was $<b>150</b>.",
-          correctAnswer: '150',
+          type: 'scenario',
+          text: "Your <b>Gross Income</b> was the total you earned, which was $<b>150</b>.",
         },
         {
-          type: 'fill-in-the-blank',
-          question: "Your <b>Net Income</b>, or take-home pay, was the amount after taxes, which was $<b>128</b>.",
-          correctAnswer: '128',
+          type: 'scenario',
+          text: "Your <b>Net Income</b>, or take-home pay, was the amount after taxes, which was $<b>128</b>.",
         },
         {
           type: 'concept',

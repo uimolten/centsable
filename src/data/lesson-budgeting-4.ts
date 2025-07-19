@@ -15,7 +15,7 @@ export const lessonBudgeting4: Lesson = {
         },
         {
             type: 'multiple-choice',
-            question: "Which of these is a common *Budget Buster* that can wreck a financial plan?",
+            question: "Which of these is a common <b>Budget Buster</b> that can wreck a financial plan?",
             options: [
                 { id: 'opt1', text: '🍔 Random snack runs' },
                 { id: 'opt2', text: '🎉 FOMO when friends invite you out' },
@@ -27,11 +27,11 @@ export const lessonBudgeting4: Lesson = {
         },
         {
           type: 'concept',
-          text: "Budgets break when you don’t prepare for surprises—like your headphones breaking or friends convincing you to go out *AGAIN* this weekend. These are called *Budget Busters*: unexpected expenses that smash your plan if you’re not ready.",
+          text: "Budgets break when you don’t prepare for surprises—like your headphones breaking or friends convincing you to go out <b>AGAIN</b> this weekend. These are called <b>Budget Busters</b>: unexpected expenses that smash your plan if you’re not ready.",
         },
         {
             type: 'concept',
-            text: "*Jargon Highlight: Budget Buster* = Surprise cost that wasn’t in your plan (e.g., car repair, vet bill, lost phone). But don’t worry. A strong budget doesn’t break—it bends."
+            text: "<b>Jargon Highlight: Budget Buster</b> = Surprise cost that wasn’t in your plan (e.g., car repair, vet bill, lost phone). But don’t worry. A strong budget doesn’t break—it bends."
         },
       ],
     },
@@ -41,11 +41,11 @@ export const lessonBudgeting4: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Here’s the secret: a budget is a living thing—it grows and shifts with you. A *Flexible Budget* adjusts when your income drops or expenses rise."
+          text: "Here’s the secret: a budget is a living thing—it grows and shifts with you. A <b>Flexible Budget</b> adjusts when your income drops or expenses rise."
         },
         {
           type: 'concept',
-          text: "Instead of giving up, you tweak your categories. When money gets tight, you should: <br>✅ Cut back on *Wants* first. <br>✅ Protect your *Needs*. <br>✅ Keep *Savings* a priority, even if smaller.",
+          text: "Instead of giving up, you tweak your categories. When money gets tight, you should: <br>✅ Cut back on <b>Wants</b> first. <br>✅ Protect your <b>Needs</b>. <br>✅ Keep <b>Savings</b> a priority, even if smaller.",
         },
         {
           type: 'multiple-choice',
@@ -67,11 +67,11 @@ export const lessonBudgeting4: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: 'Surprises aren’t the only issue. Watch out for *Overspending Traps*: situations where you accidentally blow past your budget because you weren’t paying attention.',
+          text: 'Surprises aren’t the only issue. Watch out for <b>Overspending Traps</b>: situations where you accidentally blow past your budget because you weren’t paying attention.',
         },
         {
           type: 'concept',
-          text: "Common traps include too many food deliveries, late-night online shopping, or peer pressure. A great strategy to avoid this is setting a *Spending Cap* for a category (e.g., '$100 for eating out this month'). Another is the *24-Hour Rule*: for any big, non-essential purchase, wait a day before buying.",
+          text: "Common traps include too many food deliveries, late-night online shopping, or peer pressure. A great strategy to avoid this is setting a <b>Spending Cap</b> for a category (e.g., '$100 for eating out this month'). Another is the <b>24-Hour Rule</b>: for any big, non-essential purchase, wait a day before buying.",
         },
         {
           type: 'multiple-choice',

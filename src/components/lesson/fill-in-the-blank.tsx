@@ -58,7 +58,7 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
         <span dangerouslySetInnerHTML={{ __html: parts[1] }} />
       </div>
 
-      {incorrectAttempts >= 3 && !hasAnswered && (
+      {incorrectAttempts >= 3 && !hasAnswered && step.reinforcement && (
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

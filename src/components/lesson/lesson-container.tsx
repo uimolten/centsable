@@ -76,6 +76,9 @@ export function LessonContainer({
     if (currentStep.type === 'fill-in-the-blank') {
       return currentStep.correctAnswer;
     }
+    if (currentStep.type === 'multiple-choice' && currentStep.reinforcement) {
+        return currentStep.reinforcement;
+    }
     return undefined;
   }
 
@@ -143,6 +146,7 @@ export function LessonContainer({
                     onBack={onBack}
                     isFirstStep={isFirstStep}
                     isSortIncomplete={isSortIncomplete}
+                    customReinforcement={isCorrect ? currentStep?.reinforcement : undefined}
                   />
                 ) : (
                   <motion.div

@@ -46,7 +46,7 @@ export function AnswerFeedback({ isCorrect, onAction, buttonText, isButtonDisabl
             "text-xl font-bold",
             isCorrect ? 'text-green-300' : 'text-red-300'
             )}>{message}</p>
-          <p className="text-foreground/80">{reinforcement}</p>
+          <p className="text-foreground/80" dangerouslySetInnerHTML={{ __html: reinforcement }} />
         </div>
         <div className="flex items-center gap-4">
             <Button
