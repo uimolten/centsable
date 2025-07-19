@@ -15,7 +15,7 @@ export const lessonTaxes3: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: 'Your friend brags about getting a $500 tax refund. What does this actually mean?',
+          question: 'Your friend brags about getting a <b>$500</b> tax refund. What does this actually mean?',
           options: [
             { id: 'opt1', text: 'They earned an extra $500 from the government.' },
             { id: 'opt2', text: 'It was a lottery prize for filing taxes.' },
@@ -26,7 +26,7 @@ export const lessonTaxes3: Lesson = {
         },
         {
           type: 'concept',
-          text: "Filing taxes is like settling up your tab with the government. You compare what you SHOULD have paid with what you DID pay through withholding.",
+          text: "Filing taxes is like settling up your tab with the government. You compare what you <b>SHOULD</b> have paid with what you <b>DID</b> pay through withholding.",
         },
         {
           type: 'concept',
@@ -74,7 +74,7 @@ export const lessonTaxes3: Lesson = {
         },
         {
             type: 'goal-builder',
-            instructions: 'Why is it important to keep your W-2 form in a safe place, even after you’ve filed your taxes?',
+            instructions: 'Why is it important to keep your <b>W-2</b> form in a safe place, even after you’ve filed your taxes?',
             inputType: 'text',
             placeholder: 'e.g., As proof of income or in case of an audit.',
             storageKey: 'w2Importance',

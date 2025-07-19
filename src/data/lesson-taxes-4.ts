@@ -27,11 +27,11 @@ export const lessonTaxes4: Lesson = {
         },
         {
           type: 'concept',
-          text: "A <b>Tax Deduction</b> reduces your taxable income. If you earned $15,000, a $1,000 deduction means you now only pay tax on $14,000. In the 12% tax bracket, this saves you <b>$120</b>.",
+          text: "A <b>Tax Deduction</b> reduces your taxable income. If you earned <b>$15,000</b>, a <b>$1,000</b> deduction means you now only pay tax on <b>$14,000</b>. In the <b>12%</b> tax bracket, this saves you <b>$120</b>.",
         },
         {
           type: 'concept',
-          text: "A <b>Tax Credit</b> is a dollar-for-dollar reduction of your final tax bill. If your tax bill is $1,500 and you get a $1,000 tax credit, your final bill is now only <b>$500</b>!",
+          text: "A <b>Tax Credit</b> is a dollar-for-dollar reduction of your final tax bill. If your tax bill is <b>$1,500</b> and you get a <b>$1,000</b> tax credit, your final bill is now only <b>$500</b>!",
         },
         {
           type: 'concept',
@@ -65,7 +65,7 @@ export const lessonTaxes4: Lesson = {
         },
         {
           type: 'concept',
-          text: "And critically, when you apply for college financial aid using the FAFSA, you'll need info from your tax return. Filing correctly is crucial for getting grants and scholarships!",
+          text: "And critically, when you apply for college financial aid using the <b>FAFSA</b>, you'll need info from your tax return. Filing correctly is crucial for getting grants and scholarships!",
           image: "https://placehold.co/400x225",
           imageHint: 'FAFSA form logo',
         },

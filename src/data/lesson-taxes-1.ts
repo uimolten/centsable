@@ -11,11 +11,11 @@ export const lessonTaxes1: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "You land your first job, promised a wage of $15/hour. You work 10 hours, expecting to earn $150...",
+          text: "You land your first job, promised a wage of <b>$15</b>/hour. You work <b>10</b> hours, expecting to earn <b>$150</b>...",
         },
         {
           type: 'multiple-choice',
-          question: "But when you get your first paycheck, it's only for $128. What happened to the other $22?",
+          question: "But when you get your first paycheck, it's only for <b>$128</b>. What happened to the other <b>$22</b>?",
           options: [
             { id: 'opt1', text: 'Your boss made a mistake.' },
             { id: 'opt2', text: 'Some of it went to a required savings plan.' },
@@ -27,7 +27,7 @@ export const lessonTaxes1: Lesson = {
         },
         {
           type: 'concept',
-          text: "Taxes are required payments you make to federal, state, and local governments. Think of it as crowdfunding for our country. This collective money, called <b>revenue</b>, is used to pay for shared services that benefit everyone.",
+          text: "<b>Taxes</b> are required payments you make to federal, state, and local governments. Think of it as crowdfunding for our country. This collective money, called <b>revenue</b>, is used to pay for shared services that benefit everyone.",
         },
         {
           type: 'concept',
@@ -69,7 +69,7 @@ export const lessonTaxes1: Lesson = {
         },
         {
             type: 'goal-builder',
-            instructions: 'Now that you know the four main types, which two do you think will affect you the most in the next five years? Explain your reasoning.',
+            instructions: 'Now that you know the <b>four</b> main types, which <b>two</b> do you think will affect you the most in the next <b>five</b> years? Explain your reasoning.',
             inputType: 'text',
             placeholder: 'e.g., Sales tax because I buy stuff...',
             storageKey: 'taxImpactReflection',

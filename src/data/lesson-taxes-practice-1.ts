@@ -15,7 +15,7 @@ export const lessonTaxesPractice1: Lesson = {
         },
         {
           type: 'scenario',
-          text: 'You work 20 hours at a rate of $16/hour. Your employer withholds $25 for federal taxes, $10 for state taxes, and $24.48 for FICA payroll taxes.',
+          text: 'You work <b>20</b> hours at a rate of <b>$16</b>/hour. Your employer withholds <b>$25</b> for federal taxes, <b>$10</b> for state taxes, and <b>$24.48</b> for <b>FICA payroll taxes</b>.',
         },
         {
           type: 'fill-in-the-blank',

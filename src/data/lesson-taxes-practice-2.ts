@@ -11,7 +11,7 @@ export const lessonTaxesPractice2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's put it all together. Here is a sample W-2 for a student named Alex who worked a summer job. Use it to complete this mini tax return.",
+          text: "Let's put it all together. Here is a sample <b>W-2</b> for a student named Alex who worked a summer job. Use it to complete this mini tax return.",
         },
         {
           type: 'scenario',
@@ -19,11 +19,11 @@ export const lessonTaxesPractice2: Lesson = {
         },
         {
           type: 'concept',
-          text: "First, we calculate Alex's tax bill. Since Alex's income is less than the standard deduction ($14,600 for 2025), their taxable income is $0. Therefore, their final tax bill is <b>$0</b>.",
+          text: "First, we calculate Alex's tax bill. Since Alex's income is less than the <b>standard deduction</b> (<b>$14,600</b> for 2025), their taxable income is <b>$0</b>. Therefore, their final tax bill is <b>$0</b>.",
         },
         {
           type: 'multiple-choice',
-          question: 'Alex owed $0 in taxes, but had $150 withheld from their paychecks. What is the result?',
+          question: 'Alex owed <b>$0</b> in taxes, but had <b>$150</b> withheld from their paychecks. What is the result?',
           options: [
             { id: 'opt1', text: 'Alex owes more money.' },
             { id: 'opt2', text: 'Alex gets a refund of $150.' },
@@ -35,7 +35,7 @@ export const lessonTaxesPractice2: Lesson = {
         },
         {
           type: 'concept',
-          text: 'This is a simplified example. In reality, you can easily file for free using IRS Free File or VITA (Volunteer Income Tax Assistance) programs.',
+          text: 'This is a simplified example. In reality, you can easily file for free using <b>IRS Free File</b> or <b>VITA</b> (Volunteer Income Tax Assistance) programs.',
         },
         {
           type: 'complete',

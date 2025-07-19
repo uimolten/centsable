@@ -11,15 +11,15 @@ export const lessonTaxes2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "Let's revisit your $150 paycheck that shrank to $128 after taxes. This brings up two very important terms: Gross Income and Net Income.",
+          text: "Let's revisit your <b>$150</b> paycheck that shrank to <b>$128</b> after taxes. This brings up two very important terms: <b>Gross Income</b> and <b>Net Income</b>.",
         },
         {
           type: 'scenario',
-          text: "Your <b>Gross Income</b> was the total you earned, which was $<b>150</b>.",
+          text: "Your <b>Gross Income</b> was the total you earned, which was <b>$150</b>.",
         },
         {
           type: 'scenario',
-          text: "Your <b>Net Income</b>, or take-home pay, was the amount after taxes, which was $<b>128</b>.",
+          text: "Your <b>Net Income</b>, or <b>take-home pay</b>, was the amount after taxes, which was <b>$128</b>.",
         },
         {
           type: 'concept',
@@ -43,15 +43,15 @@ export const lessonTaxes2: Lesson = {
         },
         {
           type: 'concept',
-          text: "On the W-4, you can claim dependents (people you financially support) or indicate other income to make your withholding more accurate.",
+          text: "On the <b>W-4</b>, you can claim <b>dependents</b> (people you financially support) or indicate other income to make your withholding more accurate.",
         },
         {
           type: 'scenario',
-          text: "Let's do a simulation. You start a job and fill out your W-4 as 'Single' with no dependents. Your net pay is $128.",
+          text: "Let's do a simulation. You start a job and fill out your <b>W-4</b> as 'Single' with no dependents. Your net pay is <b>$128</b>.",
         },
         {
           type: 'multiple-choice',
-          question: "Now, imagine you have a child. You update your W-4 to claim one dependent. What do you think will happen to your net pay?",
+          question: "Now, imagine you have a child. You update your <b>W-4</b> to claim one dependent. What do you think will happen to your net pay?",
           options: [
             { id: 'opt1', text: 'It will go up.' },
             { id: 'opt2', text: 'It will go down.' },
@@ -63,7 +63,7 @@ export const lessonTaxes2: Lesson = {
         },
         {
             type: 'goal-builder',
-            instructions: 'After seeing how the W-4 works, would you prefer to have more money withheld (and likely get a refund), or less withheld (and have more cash now)? Why?',
+            instructions: 'After seeing how the <b>W-4</b> works, would you prefer to have more money withheld (and likely get a refund), or less withheld (and have more cash now)? Why?',
             inputType: 'text',
             placeholder: 'e.g., I want more cash now to help with my budget.',
             storageKey: 'w4Preference',
