@@ -6,12 +6,11 @@ import React from 'react';
 
 interface LearningPathwayProps {
   units: Unit[];
-  onSelectActivity: (activity: Activity, element: HTMLButtonElement) => void;
+  onSelectActivity: (activity: Activity) => void;
   selectedActivityId?: string;
-  popoverContent?: React.ReactNode;
 }
 
-export function LearningPathway({ units, onSelectActivity, selectedActivityId, popoverContent }: LearningPathwayProps) {
+export function LearningPathway({ units, onSelectActivity, selectedActivityId }: LearningPathwayProps) {
   const allActivities = React.useMemo(() => units.flatMap(unit => unit.activities), [units]);
   const totalActivities = allActivities.length;
   
@@ -48,26 +47,13 @@ export function LearningPathway({ units, onSelectActivity, selectedActivityId, p
             />
             <div className="mt-8 space-y-8 relative">
               {unit.activities.map((activity, index) => (
-                <div key={activity.id} className="relative">
-                  <ActivityNode
-                    activity={activity}
-                    onSelect={onSelectActivity}
-                    position={index % 2 === 0 ? 'left' : 'right'}
-                    isSelected={activity.id === selectedActivityId}
-                  />
-                  {activity.id === selectedActivityId && popoverContent && (
-                    <div className="absolute z-20 w-80"
-                      style={{
-                        top: '50%',
-                        left: index % 2 === 0 ? 'calc(50% + 60px)' : 'auto',
-                        right: index % 2 !== 0 ? 'calc(50% + 60px)' : 'auto',
-                        transform: 'translateY(-50%)'
-                      }}
-                    >
-                      {popoverContent}
-                    </div>
-                  )}
-                </div>
+                <ActivityNode
+                  key={activity.id}
+                  activity={activity}
+                  onSelect={onSelectActivity}
+                  position={index % 2 === 0 ? 'left' : 'right'}
+                  isSelected={activity.id === selectedActivityId}
+                />
               ))}
             </div>
           </div>

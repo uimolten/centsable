@@ -84,7 +84,7 @@ export default function LearnPage() {
     }
   }, [selectedActivity, isDesktop]);
 
-  const handleSelectActivity = (activity: Activity, element: HTMLButtonElement) => {
+  const handleSelectActivity = (activity: Activity) => {
     if (activity.state === 'locked') {
         setSelectedActivity(null);
         return;
@@ -142,16 +142,22 @@ export default function LearnPage() {
         </aside>
 
         {/* Main Lessons Column */}
-        <main className="lg:col-span-9 relative">
+        <main className="lg:col-span-6 relative">
             <div className="max-w-xl mx-auto">
                 <LearningPathway 
                     units={units}
                     onSelectActivity={handleSelectActivity}
                     selectedActivityId={selectedActivity?.id}
-                    popoverContent={isDesktop && selectedActivity && rightSidebarContent}
                 />
             </div>
         </main>
+        
+        {/* --- Right Sidebar (Desktop) --- */}
+        <aside className="hidden lg:block lg:col-span-3">
+             <div className="sticky top-24">
+                {rightSidebarContent}
+            </div>
+        </aside>
       </div>
       
       {/* Mobile Quest Button */}
