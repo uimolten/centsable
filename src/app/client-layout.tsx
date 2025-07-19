@@ -5,20 +5,35 @@ import { useAuth } from '@/hooks/use-auth';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Logo } from '@/components/logo';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { loading } = useAuth();
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const isAuthPage = pathname.startsWith('/auth');
-  // A lesson page will have a path like /learn/s1, so more than 2 segments.
-  // The main learn page is just /learn, which has 2 segments.
   const isIndividualLessonPage = pathname.startsWith('/learn/') && pathname.split('/').length > 2;
 
   const showLayout = !isAuthPage && !isIndividualLessonPage;
+
+  if (!isClient) {
+    // Render a static loading shell on the server to prevent hydration mismatch
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4 animate-pulse">
+            <Logo />
+            <p className="text-muted-foreground">Loading your adventure...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading && showLayout) {
      return (
