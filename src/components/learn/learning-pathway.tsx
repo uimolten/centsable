@@ -59,8 +59,8 @@ export function LearningPathway({ units, onSelectActivity, selectedActivityId, p
                     <div className="absolute z-20 w-80"
                       style={{
                         top: '50%',
-                        left: index % 2 === 0 ? 'calc(50% + 50px)' : 'auto',
-                        right: index % 2 !== 0 ? 'calc(50% + 50px)' : 'auto',
+                        left: index % 2 === 0 ? 'calc(50% + 60px)' : 'auto',
+                        right: index % 2 !== 0 ? 'calc(50% + 60px)' : 'auto',
                         transform: 'translateY(-50%)'
                       }}
                     >
