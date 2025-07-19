@@ -106,7 +106,7 @@ export default function LearnPage() {
 
   if (loading) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-5 px-8 py-8">
             <aside className="hidden lg:block lg:col-span-3">
                  <Skeleton className="h-[500px] w-full" />
             </aside>
@@ -133,7 +133,7 @@ export default function LearnPage() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 px-8 py-8 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-5 px-8 py-8 h-full">
         {/* --- Left Sidebar (Desktop) --- */}
         <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-24">
