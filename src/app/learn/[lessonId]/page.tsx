@@ -472,8 +472,13 @@ export default function LessonPage() {
       if (event.key === 'Enter' && (event.target as HTMLElement).tagName !== 'TEXTAREA') {
         event.preventDefault(); 
         
-        const isAnswerEmpty = userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
+        let isAnswerEmpty = userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
         
+        // Special check for interactive-sort
+        if (currentStep?.type === 'interactive-sort') {
+          isAnswerEmpty = false; // It's never "empty" in the traditional sense.
+        }
+
         const isInputBasedStep = currentStep && ['multiple-choice', 'fill-in-the-blank', 'goal-builder'].includes(currentStep.type);
         if (isInputBasedStep && isAnswerEmpty) {
           return; // Block enter if no answer is provided for interactive steps
@@ -549,7 +554,7 @@ export default function LessonPage() {
   };
   
   const getInstructionText = (step?: Step): string => {
-    if (!step) return "Congratulations!";
+    if (!step) return "Congratulations! You completed the lesson.";
     switch (step.type) {
       case 'complete':
         return "Congratulations! You completed the lesson.";
