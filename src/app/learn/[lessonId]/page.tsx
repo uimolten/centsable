@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -190,7 +191,7 @@ export default function LessonPage() {
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [hasAnswered, setHasAnswered] = useState(false);
-  const [totalSteps, setTotalSteps] = useState(0);
+  const [totalContentSteps, setTotalContentSteps] = useState(0);
   const [interactiveStepsCount, setInteractiveStepsCount] = useState(0);
   const [totalIncorrectAttempts, setTotalIncorrectAttempts] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(0);
@@ -218,16 +219,19 @@ export default function LessonPage() {
         updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' }).then(() => refreshUserData());
       }
       setLesson(loadedLesson);
-      const steps = loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0);
-      setTotalSteps(steps);
+      const allSteps = loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0);
+      
+      const lastStep = loadedLesson.modules.slice(-1)[0]?.steps.slice(-1)[0];
+      const contentSteps = lastStep?.type === 'complete' ? allSteps - 1 : allSteps;
+      setTotalContentSteps(contentSteps);
       
       const interactiveSteps = loadedLesson.modules.flatMap(m => m.steps).filter(s => ['multiple-choice', 'fill-in-the-blank', 'interactive-sort', 'tap-the-pairs'].includes(s.type)).length;
       setInteractiveStepsCount(interactiveSteps);
 
       // Set lives based on lesson length
-      if (steps > 10) {
+      if (allSteps > 10) {
         setLives(5);
-      } else if (steps > 5) {
+      } else if (allSteps > 5) {
         setLives(3);
       } else {
         setLives(2);
@@ -504,7 +508,7 @@ export default function LessonPage() {
     return <div>Lesson not found or has ended! Redirecting...</div>;
   }
   
-  const progress = !currentStep ? 100 : totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+  const progress = !currentStep ? 100 : totalContentSteps > 0 ? (completedSteps / totalContentSteps) * 100 : 0;
 
   const handleSelectAnswer = (answer: string) => {
     const isCompleteAndCorrect = hasAnswered && isCorrect === true;
@@ -575,7 +579,11 @@ export default function LessonPage() {
       case 'interactive-sort':
         return step.instructions;
       case 'multiple-choice':
-        return step.question;
+        let questionText = step.question;
+        if (Array.isArray(step.correctAnswer)) {
+          questionText += " (Select all that apply)";
+        }
+        return questionText;
       case 'concept':
         return step.text ?? '';
       case 'intro':
