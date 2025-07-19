@@ -317,7 +317,11 @@ export default function LessonPage() {
       }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
-      } else {
+      } else if (moduleIndex < (lesson?.modules.length ?? 0) -1) {
+        setModuleIndex(moduleIndex + 1);
+        setStepIndex(0);
+      }
+      else {
         // This is the end of the last step, trigger completion logic
         await handleLessonComplete();
       }
@@ -328,7 +332,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, handleLessonComplete, moduleIndex, stepIndex, user, refreshUserData]);
+  }, [currentModule?.steps.length, handleLessonComplete, moduleIndex, stepIndex, user, refreshUserData, lesson?.modules.length]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -487,11 +491,7 @@ export default function LessonPage() {
     return <div>Lesson not found or has ended! Redirecting...</div>;
   }
   
-  let progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
-  if (!currentStep) {
-    // If we're on the completion screen, progress is 100%
-    progress = 100;
-  }
+  const progress = !currentStep ? 100 : totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
 
   const handleSelectAnswer = (answer: string) => {
     const isCompleteAndCorrect = hasAnswered && isCorrect === true;
