@@ -22,21 +22,21 @@ const shuffleArray = (array: any[]) => {
 
 const MASTER_QUEST_POOL = [
   // Learning & Knowledge Quests
-  { id: 'quiz_whiz', description: 'Answer [X] quiz questions correctly.', goalRange: [3, 5], rewards: { xp: 20, cents: 5 }, enabled: true, actionType: 'complete_quiz_question' },
-  { id: 'lesson_learner', description: 'Complete [X] new lesson steps.', goalRange: [5, 10], rewards: { xp: 25, cents: 5 }, enabled: true, actionType: 'complete_lesson_step' },
+  { id: 'quiz_whiz', description: 'Answer [X] quiz questions correctly.', goalRange: [3, 5], rewards: { xp: 20, cents: 0 }, enabled: true, actionType: 'complete_quiz_question' },
+  { id: 'lesson_learner', description: 'Complete [X] new lesson steps.', goalRange: [5, 10], rewards: { xp: 25, cents: 0 }, enabled: true, actionType: 'complete_lesson_step' },
   { id: 'topic_starter', description: 'Start a new lesson in any unit.', goalRange: [1, 1], rewards: { xp: 10, cents: 0 }, enabled: true, actionType: 'start_new_lesson' },
-  { id: 'unit_finisher', description: 'Complete any full lesson unit.', goalRange: [1, 1], rewards: { xp: 50, cents: 15 }, enabled: true, actionType: 'complete_unit' },
-  { id: 'practice_perfect', description: 'Complete [X] practice sessions.', goalRange: [1, 2], rewards: { xp: 20, cents: 5 }, enabled: true, actionType: 'complete_practice_session' },
+  { id: 'unit_finisher', description: 'Complete any full lesson unit.', goalRange: [1, 1], rewards: { xp: 50, cents: 0 }, enabled: true, actionType: 'complete_unit' },
+  { id: 'practice_perfect', description: 'Complete [X] practice sessions.', goalRange: [1, 2], rewards: { xp: 20, cents: 0 }, enabled: true, actionType: 'complete_practice_session' },
 
   // Minigame & Activity Quests
-  { id: 'game_on', description: 'Play [X] rounds of any minigame.', goalRange: [2, 3], rewards: { xp: 15, cents: 10 }, enabled: true, actionType: 'play_minigame_round' },
-  { id: 'budget_buster_champ', description: 'Successfully complete a round of Budget Busters.', goalRange: [1, 1], rewards: { xp: 20, cents: 10 }, enabled: true, actionType: 'play_minigame_round' },
-  { id: 'high_scorer', description: 'Beat your high score in any minigame.', goalRange: [1, 1], rewards: { xp: 30, cents: 15 }, enabled: true, actionType: 'beat_high_score' },
+  { id: 'game_on', description: 'Play [X] rounds of any minigame.', goalRange: [2, 3], rewards: { xp: 15, cents: 0 }, enabled: true, actionType: 'play_minigame_round' },
+  { id: 'budget_buster_champ', description: 'Successfully complete a round of Budget Busters.', goalRange: [1, 1], rewards: { xp: 20, cents: 0 }, enabled: true, actionType: 'play_minigame_round' },
+  { id: 'high_scorer', description: 'Beat your high score in any minigame.', goalRange: [1, 1], rewards: { xp: 30, cents: 0 }, enabled: true, actionType: 'beat_high_score' },
 
   // General App Engagement Quests
   { id: 'login_streak', description: 'Log in today to keep your streak alive.', goalRange: [1, 1], rewards: { xp: 10, cents: 0 }, enabled: true, actionType: 'login' },
   { id: 'profile_updater', description: 'Update your username or avatar.', goalRange: [1, 1], rewards: { xp: 15, cents: 0 }, enabled: true, actionType: 'update_profile' },
-  { id: 'explorer', description: 'Visit [X] different pages (Lessons, Minigames, Profile).', goalRange: [3, 3], rewards: { xp: 15, cents: 5 }, enabled: true, actionType: 'visit_page' },
+  { id: 'explorer', description: 'Visit [X] different pages (Lessons, Minigames, Profile).', goalRange: [3, 3], rewards: { xp: 15, cents: 0 }, enabled: true, actionType: 'visit_page' },
   { id: 'goal_setter', description: 'Create a new SMART savings goal.', goalRange: [1, 1], rewards: { xp: 30, cents: 0 }, enabled: false, actionType: 'create_goal' }
 ];
 
@@ -93,8 +93,11 @@ const generateDailyQuestsFlow = ai.defineFlow(
         });
       }
 
-      // 4. Update the user's last generated timestamp
-      batch.update(userDocRef, { lastQuestGenerated: serverTimestamp() });
+      // 4. Update the user's last generated timestamp and reset the completion flag
+      batch.update(userDocRef, { 
+        lastQuestGenerated: serverTimestamp(),
+        dailyQuestsCompleted: false,
+      });
 
       // 5. Commit the batch
       await batch.commit();

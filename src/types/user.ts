@@ -18,4 +18,5 @@ export interface UserData {
   lastQuestGenerated?: Timestamp;
   createdAt: Timestamp;
   dailyQuests?: Quest[];
+  dailyQuestsCompleted?: boolean;
 }

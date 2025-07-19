@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, writeBatch, increment, doc } from "firebase/firestore";
 import type { QuestActionType, Quest } from '@/types/quests';
+import type { UserData } from '@/types/user';
 
 const UpdateQuestProgressInputSchema = z.object({
   userId: z.string(),
@@ -53,6 +54,7 @@ const updateQuestProgressFlow = ai.defineFlow(
 
       const userDocRef = doc(db, "users", userId);
       const questsRef = collection(userDocRef, "daily_quests");
+      
       const q = query(
         questsRef, 
         where('questId', 'in', relevantQuestIds),
@@ -66,6 +68,7 @@ const updateQuestProgressFlow = ai.defineFlow(
 
       const batch = writeBatch(db);
       let updatedCount = 0;
+      let justCompletedQuests: string[] = [];
 
       questsToUpdateSnapshot.forEach(questDoc => {
         const quest = { id: questDoc.id, ...questDoc.data() } as Quest;
@@ -79,10 +82,35 @@ const updateQuestProgressFlow = ai.defineFlow(
             xp: increment(quest.rewardXP),
             cents: increment(quest.rewardCents)
           });
+          justCompletedQuests.push(questDoc.id);
         }
         updatedCount++;
       });
       
+      // We only want to check for the grand bonus if at least one quest was just completed.
+      if (justCompletedQuests.length > 0) {
+        const allQuestsSnapshot = await getDocs(questsRef);
+        const allQuests = allQuestsSnapshot.docs.map(doc => doc.data() as Quest);
+
+        // This checks if ALL quests are now complete.
+        // It's important to do this check outside the forEach loop to have the full picture.
+        const allDailyQuestsCompleted = allQuests.every(q => 
+            q.isCompleted || justCompletedQuests.includes((q as any).id)
+        );
+        
+        const userDoc = await userDocRef.get();
+        const userData = userDoc.data() as UserData;
+
+        // Give bonus only if all quests are done and bonus hasn't been given yet
+        if (allDailyQuestsCompleted && allQuests.length === 3 && !userData.dailyQuestsCompleted) {
+           batch.update(userDocRef, {
+             xp: increment(25),
+             cents: increment(15),
+             dailyQuestsCompleted: true, // Set flag to prevent giving bonus again
+           });
+        }
+      }
+
       await batch.commit();
 
       return { success: true, questsUpdated: updatedCount };

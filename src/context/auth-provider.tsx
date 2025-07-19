@@ -71,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               lastQuestGenerated: data.lastQuestGenerated,
               createdAt: data.createdAt,
               dailyQuests: quests,
+              dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
             });
         } else {
             // If the user exists in Auth but not Firestore, create their record
@@ -85,7 +86,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 streak: 0,
                 lessonsCompleted: 0,
                 achievements: [],
-                completedLessons: []
+                completedLessons: [],
+                dailyQuestsCompleted: false,
             };
             await setDoc(userDocRef, {
                 ...newUserData,
