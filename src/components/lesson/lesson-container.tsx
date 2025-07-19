@@ -79,6 +79,8 @@ export function LessonContainer({
     return undefined;
   }
 
+  const showFooter = currentStep?.type !== 'complete';
+
   return (
     <div 
       className="relative flex flex-col h-screen overflow-hidden font-body select-none"
@@ -127,54 +129,56 @@ export function LessonContainer({
             </div>
           </main>
 
-          <footer className="flex-shrink-0 relative h-28">
-             <AnimatePresence mode="wait">
-              {hasAnswered && isCorrect !== null ? (
-                <AnswerFeedback
-                  key="feedback"
-                  isCorrect={isCorrect}
-                  onAction={onAction}
-                  buttonText={getButtonText()}
-                  isButtonDisabled={isButtonDisabled()}
-                  correctAnswerText={incorrectAttempts >= 3 ? getCorrectAnswerText() : undefined}
-                  onBack={onBack}
-                  isFirstStep={isFirstStep}
-                  isSortIncomplete={isSortIncomplete}
-                />
-              ) : (
-                <motion.div
-                  key="action"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="container mx-auto p-4 flex justify-center items-center gap-4 h-full"
-                >
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="text-lg font-bold"
-                    onClick={onBack}
-                    disabled={isFirstStep}
+          {showFooter && (
+            <footer className="flex-shrink-0 relative h-28">
+              <AnimatePresence mode="wait">
+                {hasAnswered && isCorrect !== null ? (
+                  <AnswerFeedback
+                    key="feedback"
+                    isCorrect={isCorrect}
+                    onAction={onAction}
+                    buttonText={getButtonText()}
+                    isButtonDisabled={isButtonDisabled()}
+                    correctAnswerText={incorrectAttempts >= 3 ? getCorrectAnswerText() : undefined}
+                    onBack={onBack}
+                    isFirstStep={isFirstStep}
+                    isSortIncomplete={isSortIncomplete}
+                  />
+                ) : (
+                  <motion.div
+                    key="action"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="container mx-auto p-4 flex justify-center items-center gap-4 h-full"
                   >
-                    Back
-                  </Button>
-                  <Button
-                    size="lg"
-                    className={cn(
-                      "text-lg font-bold min-w-[200px] shadow-lg active:scale-95 transition-transform",
-                      getButtonText() === 'Continue' && "shadow-glow",
-                      getButtonText() === 'Try Again' && "bg-amber-500 hover:bg-amber-600"
-                    )}
-                    onClick={onAction}
-                    disabled={isButtonDisabled()}
-                  >
-                    {getButtonText()}
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </footer>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="text-lg font-bold"
+                      onClick={onBack}
+                      disabled={isFirstStep}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      size="lg"
+                      className={cn(
+                        "text-lg font-bold min-w-[200px] shadow-lg active:scale-95 transition-transform",
+                        getButtonText() === 'Continue' && "shadow-glow",
+                        getButtonText() === 'Try Again' && "bg-amber-500 hover:bg-amber-600"
+                      )}
+                      onClick={onAction}
+                      disabled={isButtonDisabled()}
+                    >
+                      {getButtonText()}
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </footer>
+          )}
         </div>
     </div>
   );
