@@ -10,7 +10,7 @@ export const lessonBudgetingPractice1: Lesson = {
   modules: [
     {
       title: 'The Budget Allocator',
-      xp: 80,
+      xp: 15,
       steps: [
         {
           type: 'intro',
@@ -18,6 +18,7 @@ export const lessonBudgetingPractice1: Lesson = {
         },
         {
           type: 'scenario',
+          text: "Your monthly income is <b>$200</b>. Let's calculate your 50/30/20 targets.",
         },
         {
           type: 'multiple-choice',
@@ -51,13 +52,14 @@ export const lessonBudgetingPractice1: Lesson = {
         },
         {
           type: 'concept',
+          text: "Great job! Knowing these targets is the first step to building a real budget.",
         },
         {
           type: 'complete',
           title: 'PRACTICE COMPLETE!',
           text: "You've built your first budget.",
           rewards: {
-            xp: 80,
+            xp: 15,
             coins: 15,
           },
         },

@@ -7,7 +7,7 @@ export const lessonBudgeting2: Lesson = {
   modules: [
     {
       title: 'The Ultimate Cheat Code',
-      xp: 70,
+      xp: 7,
       steps: [
         {
           type: 'intro',
@@ -15,6 +15,7 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'concept',
+          text: "The rule splits your after-tax income into three buckets:<br><b>50% for Needs</b><br><b>30% for Wants</b><br><b>20% for Savings</b>",
           image: "https://placehold.co/400x225",
           imageHint: 'three buckets color coded'
         },
@@ -35,17 +36,18 @@ export const lessonBudgeting2: Lesson = {
           items: [
             { id: 'item-1', text: 'Rent', correctBox: 'box1' },
             { id: 'item-2', text: 'Video Games', correctBox: 'box2' },
-            { id: 'item-3', text: 'Emergency Fund', correctBox: 'box1' }, // Savings is a need
+            { id: 'item-3', text: 'Emergency Fund', correctBox: 'box1' }, // Savings is a need for financial health
             { id: 'item-4', text: 'Groceries', correctBox: 'box1' },
             { id: 'item-5', text: 'Movie Tickets', correctBox: 'box2' },
           ],
         },
         {
           type: 'concept',
+          text: "This rule is a guideline, not a law! It's a starting point to help you balance living your life now and planning for your future.",
         },
         {
           type: 'fill-in-the-blank',
-          question: "The 50/30/20 rule recommends putting ____% of your income towards savings.",
+          question: "The 50/30/20 rule recommends putting <b>____%</b> of your income towards savings.",
           correctAnswer: '20',
           reinforcement: "Perfect! Paying your future self is a top priority.",
         },
@@ -54,7 +56,7 @@ export const lessonBudgeting2: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You've learned the 50/30/20 cheat code.",
           rewards: {
-            xp: 70,
+            xp: 7,
             coins: 10,
           },
         },

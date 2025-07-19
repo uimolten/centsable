@@ -7,7 +7,7 @@ export const lessonBudgeting3: Lesson = {
   modules: [
     {
       title: 'Build Your Game Plan',
-      xp: 70,
+      xp: 7,
       steps: [
         {
           type: 'intro',
@@ -15,21 +15,29 @@ export const lessonBudgeting3: Lesson = {
         },
         {
           type: 'concept',
+          text: "<b>Step 1:</b> Calculate your monthly income. This is any money you get from jobs, allowance, or side hustles.",
         },
         {
           type: 'scenario',
+          text: 'You earn <b>$100</b> from a part-time job and get <b>$40</b> for allowance.',
         },
         {
           type: 'fill-in-the-blank',
-          question: 'Total monthly income: $______',
+          question: 'What is your total monthly income? $______',
           correctAnswer: '140',
           reinforcement: "Great! That's the number we'll work with.",
         },
         {
           type: 'concept',
+          text: "<b>Step 2:</b> Plan your spending using the 50/30/20 rule as your guide.",
         },
         {
           type: 'concept',
+          text: "For an income of $140:<br><b>50% Needs</b> = $70<br><b>30% Wants</b> = $42<br><b>20% Savings</b> = $28",
+        },
+        {
+          type: 'concept',
+          text: "<b>Step 3:</b> As you spend money during the month, track it against your plan. Did you stay under your 'Wants' limit? Awesome!",
         },
         {
           type: 'multiple-choice',
@@ -46,7 +54,7 @@ export const lessonBudgeting3: Lesson = {
           title: 'QUEST COMPLETE!',
           text: "You now have a powerful game plan for your money.",
           rewards: {
-            xp: 70,
+            xp: 7,
             coins: 10,
           },
         },

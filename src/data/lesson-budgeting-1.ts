@@ -7,7 +7,7 @@ export const lessonBudgeting1: Lesson = {
   modules: [
     {
       title: 'The Power of Tracking',
-      xp: 50,
+      xp: 5,
       steps: [
         {
           type: 'intro',
@@ -15,6 +15,7 @@ export const lessonBudgeting1: Lesson = {
         },
         {
           type: 'concept',
+          text: "Before you can tell your money where to go, you need to know where it's already going. This is called tracking your expenses.",
         },
         {
           type: 'multiple-choice',
@@ -40,13 +41,14 @@ export const lessonBudgeting1: Lesson = {
         },
         {
           type: 'concept',
+          text: "Tracking everything—even tiny purchases—reveals your spending habits. Sometimes the results are surprising! 🤯",
         },
         {
           type: 'complete',
           title: 'QUEST COMPLETE!',
           text: "You've learned the power of being a money detective.",
           rewards: {
-            xp: 50,
+            xp: 5,
             coins: 5,
           },
         },

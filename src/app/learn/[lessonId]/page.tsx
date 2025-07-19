@@ -20,9 +20,7 @@ import { lessonBudgeting1 } from '@/data/lesson-budgeting-1';
 import { lessonBudgeting2 } from '@/data/lesson-budgeting-2';
 import { lessonBudgeting3 } from '@/data/lesson-budgeting-3';
 import { lessonBudgeting4 } from '@/data/lesson-budgeting-4';
-import { lessonBudgeting5 } from '@/data/lesson-budgeting-5';
 import { lessonBudgetingPractice1 } from '@/data/lesson-budgeting-practice-1';
-import { lessonBudgetingPractice2 } from '@/data/lesson-budgeting-practice-2';
 import { lessonBudgetingQuiz } from '@/data/lesson-budgeting-quiz';
 import { lessonCredit1 } from '@/data/lesson-credit-1';
 import { lessonCredit2 } from '@/data/lesson-credit-2';
@@ -86,9 +84,7 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'b2') return lessonBudgeting2;
   if (lessonId === 'b3') return lessonBudgeting3;
   if (lessonId === 'b4') return lessonBudgeting4;
-  if (lessonId === 'b5') return lessonBudgeting5;
   if (lessonId === 'bp1') return lessonBudgetingPractice1;
-  if (lessonId === 'bp2') return lessonBudgetingPractice2;
   if (lessonId === 'bq1') return lessonBudgetingQuiz;
 
   // Credit
@@ -560,8 +556,12 @@ export default function LessonPage() {
         return step.question;
       case 'concept':
         return step.text ?? '';
-      default:
+      case 'intro':
+          return step.text ?? '';
+      case 'scenario':
         return step.text ?? '';
+      default:
+        return '';
     }
   }
 

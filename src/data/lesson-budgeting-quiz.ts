@@ -34,7 +34,7 @@ export const lessonBudgetingQuiz: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "An expense that you could live without, like a new video game, is considered a _____.",
+          question: "An expense that you could live without, like a new video game, is considered a <b>_____</b>.",
           correctAnswer: 'Want',
         },
         {
