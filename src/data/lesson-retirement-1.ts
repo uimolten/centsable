@@ -24,6 +24,7 @@ export const lessonRetirement1: Lesson = {
             { id: 'opt1', text: 'Winning the lottery' },
             { id: 'opt2', text: 'Never working again because your money works for you' },
             { id: 'opt3', text: 'Getting a high-paying job' },
+            { id: 'opt4', text: 'Having a million dollars in cash' },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Exactly! It's about freedom of choice.",

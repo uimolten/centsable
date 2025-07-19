@@ -38,6 +38,7 @@ export const lessonInsurance3: Lesson = {
             { id: 'opt1', text: 'Auto Insurance' },
             { id: 'opt2', text: 'Health Insurance' },
             { id: 'opt3', text: 'Renters Insurance' },
+            { id: 'opt4', text: 'Life Insurance' },
           ],
           correctAnswer: 'opt3',
         },
