@@ -62,9 +62,10 @@ import { ConceptCard } from '@/components/lesson/concept-card';
 import { FillInTheBlank } from '@/components/lesson/fill-in-the-blank';
 import { TapThePairs } from '@/components/lesson/tap-the-pairs';
 import { InteractiveSort } from '@/components/lesson/interactive-sort';
+import { InteractiveTown } from '@/components/lesson/interactive-town';
 import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goal-builder-step';
 import { GoalSummary } from '@/components/lesson/goal-summary';
-import { ScenarioStep } from '@/types/lesson';
+import { ScenarioStep, InteractiveTownStep } from '@/types/lesson';
 
 import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson, SortItem as BaseSortItem, CompleteStep } from '@/types/lesson';
 import { useToast } from '@/hooks/use-toast';
@@ -421,7 +422,7 @@ export default function LessonPage() {
       return;
     }
     
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'goal-builder', 'interactive-town'].includes(currentStep.type);
     
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
@@ -559,6 +560,8 @@ export default function LessonPage() {
           return step.text ?? '';
       case 'scenario':
         return step.text ?? '';
+      case 'interactive-town':
+          return step.text ?? 'Click the icons to see what your taxes fund!';
       default:
         return '';
     }
@@ -587,6 +590,10 @@ export default function LessonPage() {
       case 'interactive-sort':
         stepProps = { ...stepProps, items: interactiveSortItems, onItemsChange: setInteractiveSortItems, hasAnswered, isCorrect, incorrectAttempts };
         return <InteractiveSort key={uniqueKey} {...stepProps} />;
+
+      case 'interactive-town':
+          stepProps = { ...stepProps, step: step as InteractiveTownStep };
+          return <InteractiveTown key={uniqueKey} {...stepProps} />;
 
       case 'goal-builder':
         stepProps = { ...stepProps, userAnswer: userAnswers[0] ?? '', onAnswerChange: handleSelectAnswer };

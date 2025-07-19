@@ -9,6 +9,7 @@ export type StepType =
   | 'scenario'
   | 'goal-builder'
   | 'goal-summary'
+  | 'interactive-town'
   | 'complete';
 
 interface BaseStep {
@@ -95,6 +96,17 @@ export interface GoalSummaryStep extends BaseStep {
   textTemplate: string;
 }
 
+export interface InteractiveTownItem {
+  id: string;
+  icon: 'school' | 'road' | 'police' | 'hospital' | 'jet';
+  tooltip: string;
+  position: { top: string; left: string };
+}
+export interface InteractiveTownStep extends BaseStep {
+  type: 'interactive-town';
+  items: InteractiveTownItem[];
+}
+
 export interface CompleteStep extends BaseStep {
   type: 'complete';
   rewards: {
@@ -113,6 +125,7 @@ export type Step =
   | ScenarioStep
   | GoalBuilderStep
   | GoalSummaryStep
+  | InteractiveTownStep
   | CompleteStep;
 
 export interface Module {

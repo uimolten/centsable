@@ -30,10 +30,14 @@ export const lessonTaxes1: Lesson = {
           text: "<b>Taxes</b> are required payments you make to federal, state, and local governments. Think of it as crowdfunding for our country. This collective money, called <b>revenue</b>, is used to pay for shared services that benefit everyone.",
         },
         {
-          type: 'concept',
-          text: "An interactive graphic of a town appears. Students click on different elements to see what taxes fund: a school, road, police car, hospital, and military jet.",
-          image: "https://placehold.co/400x225",
-          imageHint: 'town services collage',
+          type: 'interactive-town',
+          items: [
+            { id: 'school', icon: 'school', tooltip: 'Taxes help fund public schools, teachers, and resources.', position: { top: '30%', left: '25%' } },
+            { id: 'road', icon: 'road', tooltip: 'Taxes pay for building and maintaining roads and bridges.', position: { top: '75%', left: '50%' } },
+            { id: 'police', icon: 'police', tooltip: 'Taxes support local police and fire departments to keep us safe.', position: { top: '55%', left: '70%' } },
+            { id: 'hospital', icon: 'hospital', tooltip: 'Taxes fund public hospitals and healthcare programs like Medicare.', position: { top: '20%', left: '65%' } },
+            { id: 'jet', icon: 'jet', tooltip: 'A large portion of federal taxes goes to national defense and the military.', position: { top: '10%', left: '10%' } },
+          ]
         },
       ],
     },
