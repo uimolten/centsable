@@ -6,6 +6,7 @@ import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/a
 import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs, Timestamp, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { UserData } from '@/types/user';
+import { Quest } from '@/types/quests';
 
 interface AuthContextType {
   user: User | null;
@@ -34,9 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user);
     try {
         const userDocRef = doc(db, 'users', user.uid);
+        const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
         
-        const userDoc = await getDoc(userDocRef);
+        const [userDoc, questsSnapshot] = await Promise.all([
+          getDoc(userDocRef),
+          getDocs(questsQuery),
+        ]);
         
+        const quests = questsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
+
         if (userDoc.exists()) {
             const data = userDoc.data();
              setUserData({
@@ -54,10 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               completedLessons: data.completedLessons ?? [],
               lastQuestGenerated: data.lastQuestGenerated,
               createdAt: data.createdAt,
+              dailyQuests: quests,
             });
         } else {
             // If the user exists in Auth but not Firestore, create their record
-            const newUserData: Omit<UserData, 'createdAt' | 'uid'> = {
+            const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests'> = {
                 email: user.email!,
                 displayName: user.displayName || 'New Adventurer',
                 photoURL: user.photoURL,
@@ -75,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: serverTimestamp(),
             });
             const createdDoc = await getDoc(userDocRef);
-            setUserData({ uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid'> });
+            setUserData({ uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [] });
         }
 
     } catch (error) {

@@ -11,6 +11,8 @@ import { Pencil, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { updateUsername } from '@/ai/flows/update-username-flow';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
+import { useAuth } from '@/hooks/use-auth';
 import { Logo } from '../logo';
 
 interface ProfileHeaderProps {
@@ -20,6 +22,7 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProps) {
+  const { refreshUserData } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user.displayName ?? '');
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +53,8 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
 
       if (result.success) {
         await onUpdateUser();
+        await updateQuestProgress({ userId: user.uid, actionType: 'update_profile' });
+        await refreshUserData?.();
         toast({ title: "Username updated successfully!" });
         setIsEditing(false);
       } else {

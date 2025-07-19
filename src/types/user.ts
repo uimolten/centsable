@@ -1,5 +1,6 @@
 
 import type { Timestamp } from "firebase/firestore";
+import type { Quest } from './quests';
 
 export interface UserData {
   uid: string;
@@ -16,4 +17,5 @@ export interface UserData {
   completedLessons: string[];
   lastQuestGenerated?: Timestamp;
   createdAt: Timestamp;
+  dailyQuests?: Quest[];
 }

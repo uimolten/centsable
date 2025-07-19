@@ -9,6 +9,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAuth } from '@/hooks/use-auth';
 import { saveProgress } from '@/ai/flows/save-progress-flow';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { playCorrectSound } from '@/lib/audio-utils';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
@@ -210,6 +211,9 @@ export default function LessonPage() {
   useEffect(() => {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
+      if (user && refreshUserData) {
+        updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' }).then(() => refreshUserData());
+      }
       setLesson(loadedLesson);
       const steps = loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0);
       setTotalSteps(steps);
@@ -230,7 +234,7 @@ export default function LessonPage() {
       // Handle lesson not found, maybe redirect
       router.push('/learn');
     }
-  }, [lessonId, router]);
+  }, [lessonId, router, user, refreshUserData]);
   
   // Derived state for progress to ensure accuracy
   useEffect(() => {
@@ -258,6 +262,10 @@ export default function LessonPage() {
     }
     
     const { rewards } = currentStep as CompleteStep;
+    const isPractice = lesson?.title.toLowerCase().includes('practice');
+    const isQuiz = lesson?.title.toLowerCase().includes('quiz');
+
+    const actionType = isPractice ? 'complete_practice_session' : isQuiz ? 'complete_unit' : undefined;
 
     // Calculate accuracy for bonus XP
     const accuracy = interactiveStepsCount > 0 ? 1 - (totalIncorrectAttempts / interactiveStepsCount) : 1;
@@ -265,22 +273,23 @@ export default function LessonPage() {
     const totalXp = rewards.xp + bonusXp;
 
     try {
-        const result = await saveProgress({
-            userId: user.uid,
-            lessonId: lessonId,
-            xpGained: totalXp,
-            centsGained: rewards.coins,
-        });
+        const operations = [
+            saveProgress({
+                userId: user.uid,
+                lessonId: lessonId,
+                xpGained: totalXp,
+                centsGained: rewards.coins,
+            })
+        ];
 
-        if (result.success) {
-            await refreshUserData?.(); // Refresh user data to get new XP/Cents
-        } else {
-            // This might happen if the lesson was already completed.
-            // We can still refresh data to be safe.
-            await refreshUserData?.();
+        if (actionType) {
+            operations.push(updateQuestProgress({ userId: user.uid, actionType }));
         }
+
+        await Promise.all(operations);
+        await refreshUserData?.(); // Refresh user data to get new XP/Cents
     } catch (error) {
-        console.error('Failed to save progress', error);
+        console.error('Failed to save progress or update quest', error);
         toast({
             variant: 'destructive',
             title: 'Error Saving Progress',
@@ -291,9 +300,12 @@ export default function LessonPage() {
     // This navigation should only happen after all async operations are done.
     router.push(`/learn`);
 
-  }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
+  }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson?.title]);
   
-  const goToNextStep = useCallback(() => {
+  const goToNextStep = useCallback(async () => {
+      if (user && refreshUserData) {
+          updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' }).then(() => refreshUserData());
+      }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
@@ -309,7 +321,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, isLessonAlreadyCompleted]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, isLessonAlreadyCompleted, user, refreshUserData]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -363,6 +375,12 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
+      if (user && refreshUserData) {
+          const isQuiz = lesson?.title.toLowerCase().includes('quiz');
+          if (isQuiz) {
+              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' }).then(() => refreshUserData());
+          }
+      }
     } else {
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);
@@ -372,7 +390,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, isLessonAlreadyCompleted]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, isLessonAlreadyCompleted, user, refreshUserData]);
 
   const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
@@ -409,6 +427,9 @@ export default function LessonPage() {
     
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
+        if (user && refreshUserData && step.storageKey === 'item') { // Assume goal creation quest updates on first step
+            updateQuestProgress({ userId: user.uid, actionType: 'create_goal' }).then(() => refreshUserData());
+        }
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
         goToNextStep();
         return;
@@ -441,7 +462,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, lesson?.id, isLessonAlreadyCompleted]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, lesson?.id, isLessonAlreadyCompleted, user, refreshUserData]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -511,6 +532,12 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
+      if (user && refreshUserData) {
+          const isQuiz = lesson?.title.toLowerCase().includes('quiz');
+          if (isQuiz) {
+              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' }).then(() => refreshUserData());
+          }
+      }
     } else {
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);

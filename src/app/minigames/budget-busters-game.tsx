@@ -10,6 +10,7 @@ import { levels as gameLevels, Level } from '@/data/minigame-budget-busters-data
 import { LevelDisplay } from './level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 
 type GameState = 'start' | 'playing' | 'level-end';
 
@@ -28,14 +29,30 @@ export function BudgetBustersGame() {
     }
   }, []);
 
+  const triggerQuestUpdate = async (isSuccess: boolean, newScore: number) => {
+    if (!user || !refreshUserData) return;
+    
+    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+    if (isSuccess && newScore > highScore) {
+      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
+    }
+    
+    await Promise.all(updates);
+    await refreshUserData();
+  };
+
   const handleLevelComplete = (score: number, success: boolean) => {
     setFinalScore(score);
     setWasSuccess(success);
     setGameState('level-end');
-    if (success && score > highScore) {
+    
+    const isNewHighScore = success && score > highScore;
+    if (isNewHighScore) {
       setHighScore(score);
       localStorage.setItem('budgetBustersHighScore', score.toString());
     }
+    
+    triggerQuestUpdate(success, score);
   };
 
   const handleNext = () => {

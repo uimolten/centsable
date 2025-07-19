@@ -10,6 +10,7 @@ import { savingsSorterItems } from '@/data/minigame-savings-sorter-data';
 import { PiggyBank, Hand, Target, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
+import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 
 type GameState = 'start' | 'playing' | 'end';
 type ItemCategory = 'Need' | 'Want';
@@ -40,6 +41,18 @@ export function SavingsSorterGame() {
       setHighScore(parseInt(savedHighScore, 10));
     }
   }, []);
+
+  const triggerQuestUpdate = async (isNewHighScore: boolean) => {
+    if (!user || !refreshUserData) return;
+
+    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+    if (isNewHighScore) {
+      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
+    }
+    
+    await Promise.all(updates);
+    await refreshUserData();
+  };
 
   const startGame = () => {
     setItems(shuffle(savingsSorterItems));
@@ -78,10 +91,12 @@ export function SavingsSorterGame() {
 
     if (timeLeft <= 0) {
       setGameState('end');
-      if (score > highScore) {
+      const isNewHighScore = score > highScore && score > 0;
+      if (isNewHighScore) {
         setHighScore(score);
         localStorage.setItem('savingsSorterHighScore', score.toString());
       }
+      triggerQuestUpdate(isNewHighScore);
       return;
     }
 
