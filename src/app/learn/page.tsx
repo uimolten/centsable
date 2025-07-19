@@ -12,8 +12,12 @@ import type { Activity, ActivityState, Unit } from '@/types/learn';
 import { AnimatePresence } from 'framer-motion';
 import { LearningPathway } from '@/components/learn/learning-pathway';
 import { RightSidebar } from '@/components/learn/right-sidebar';
+import { LeftSidebar } from '@/components/learn/left-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Target } from 'lucide-react';
 
 
 export default function LearnPage() {
@@ -95,7 +99,10 @@ export default function LearnPage() {
   if (loading) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 py-8">
-            <main className="lg:col-span-9 space-y-8">
+            <aside className="hidden lg:block lg:col-span-3">
+                 <Skeleton className="h-[500px] w-full" />
+            </aside>
+            <main className="lg:col-span-6 space-y-8">
                 <Skeleton className="h-48 w-full max-w-lg mx-auto" />
                 <Skeleton className="h-96 w-full" />
             </main>
@@ -107,33 +114,56 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 px-8 py-8">
-      {/* Main Lessons Column */}
-      <main className="lg:col-span-9">
-        <LearningPathway 
-            units={units}
-            onSelectActivity={handleSelectActivity}
-            selectedActivityId={selectedActivity?.id}
-        />
-      </main>
+    <>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 px-8 py-8">
+        {/* --- Left Sidebar (Desktop) --- */}
+        <aside className="hidden lg:block lg:col-span-3">
+            <div className="sticky top-24">
+                <LeftSidebar />
+            </div>
+        </aside>
 
-      {/* --- Right Sidebar (Desktop) --- */}
-      <aside className="hidden lg:block lg:col-span-3">
-        <div className="sticky top-24">
-            <Card className="bg-card/50 backdrop-blur-lg border border-border/10">
-                <CardContent className="p-6">
-                    <AnimatePresence mode="wait">
-                        <RightSidebar 
-                            key={selectedActivity?.id ?? 'empty'}
-                            activity={selectedActivity}
-                            unit={selectedUnit}
-                            onStart={handleStartActivity}
-                        />
-                    </AnimatePresence>
-                </CardContent>
-            </Card>
-        </div>
-      </aside>
-    </div>
+        {/* Main Lessons Column */}
+        <main className="lg:col-span-6">
+          <LearningPathway 
+              units={units}
+              onSelectActivity={handleSelectActivity}
+              selectedActivityId={selectedActivity?.id}
+          />
+        </main>
+
+        {/* --- Right Sidebar (Desktop) --- */}
+        <aside className="hidden lg:block lg:col-span-3">
+          <div className="sticky top-24">
+              <Card className="bg-card/50 backdrop-blur-lg border border-border/10">
+                  <CardContent className="p-6">
+                      <AnimatePresence mode="wait">
+                          <RightSidebar 
+                              key={selectedActivity?.id ?? 'empty'}
+                              activity={selectedActivity}
+                              unit={selectedUnit}
+                              onStart={handleStartActivity}
+                          />
+                      </AnimatePresence>
+                  </CardContent>
+              </Card>
+          </div>
+        </aside>
+      </div>
+      
+      {/* Mobile Quest Button */}
+      {!isDesktop && (
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button className="fixed bottom-6 right-6 z-40 rounded-full w-16 h-16 shadow-glow" size="icon">
+                    <Target className="w-8 h-8"/>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="p-0 border-none w-full max-w-md bg-transparent">
+                <LeftSidebar isSheet={true} />
+            </SheetContent>
+        </Sheet>
+      )}
+    </>
   );
 }

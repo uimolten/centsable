@@ -13,6 +13,7 @@ import { Flame, GraduationCap, Coins } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserData } from "@/types/user";
+import { updateQuestProgress } from "@/ai/flows/update-quest-progress-flow";
 
 export default function ProfilePage() {
   const { user, userData: authUserData, loading: authLoading, refreshUserData } = useAuth();
@@ -35,6 +36,10 @@ export default function ProfilePage() {
 
   const handleUpdateUser = async () => {
     await refreshUserData?.();
+    if(user){
+      await updateQuestProgress({ userId: user.uid, actionType: 'update_profile' });
+      await refreshUserData?.();
+    }
   };
   
   if (authLoading || loading || !user || !userData) {

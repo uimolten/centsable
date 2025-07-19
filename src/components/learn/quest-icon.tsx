@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, BrainCircuit, Target, Gamepad2, User, BookOpen, LucideIcon } from 'lucide-react';
+import { Flame, BrainCircuit, Target, Gamepad2, User, BookOpen, LucideIcon, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const questIconMap: Record<string, LucideIcon> = {
@@ -12,10 +12,11 @@ const questIconMap: Record<string, LucideIcon> = {
   practice_perfect: BrainCircuit,
   game_on: Gamepad2,
   budget_buster_champ: Gamepad2,
-  high_scorer: Target,
+  high_scorer: Star,
   login_streak: Flame,
   profile_updater: User,
   explorer: Target,
+  create_goal: Target,
   default: Target,
 };
 

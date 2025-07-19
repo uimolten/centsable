@@ -23,4 +23,5 @@ export type QuestActionType =
   | 'beat_high_score'
   | 'login'
   | 'update_profile'
-  | 'visit_page';
+  | 'visit_page'
+  | 'create_goal';

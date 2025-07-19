@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Gem, Coins, CheckCircle2, Loader2, X } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from '../ui/skeleton';
 import { QuestIcon } from './quest-icon';
 import { generateDailyQuests } from '@/ai/flows/generate-daily-quests-flow';
