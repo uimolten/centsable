@@ -14,8 +14,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   const isAuthPage = pathname.startsWith('/auth');
-  const isLearnPage = pathname.startsWith('/learn');
-  const showLayout = !isAuthPage && !isLearnPage;
+  // A lesson page will have a path like /learn/s1, so more than 2 segments.
+  // The main learn page is just /learn, which has 2 segments.
+  const isIndividualLessonPage = pathname.startsWith('/learn/') && pathname.split('/').length > 2;
+
+  const showLayout = !isAuthPage && !isIndividualLessonPage;
 
   if (loading && showLayout) {
      return (
