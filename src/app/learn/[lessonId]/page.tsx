@@ -551,6 +551,8 @@ export default function LessonPage() {
   const getInstructionText = (step?: Step): string => {
     if (!step) return "Congratulations!";
     switch (step.type) {
+      case 'complete':
+        return "Congratulations! You completed the lesson.";
       case 'fill-in-the-blank':
         return step.question;
       case 'tap-the-pairs':
