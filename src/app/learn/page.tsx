@@ -24,9 +24,7 @@ export default function LearnPage() {
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [popoverPosition, setPopoverPosition] = useState<{ top: number, left?: number, right?: number }>({ top: 0 });
-  const pathwayRef = useRef<HTMLDivElement>(null);
-
+  
 
   const units = useMemo(() => {
     if (!userData && !DEV_MODE_UNLOCK_ALL) {
@@ -92,24 +90,8 @@ export default function LearnPage() {
         return;
     }
     
-    setSelectedActivity(activity);
-
-    if (pathwayRef.current && element) {
-        const pathwayRect = pathwayRef.current.getBoundingClientRect();
-        const elementRect = element.getBoundingClientRect();
-
-        const top = (elementRect.top - pathwayRect.top) + (elementRect.height / 2);
-
-        const nodePosition = element.getAttribute('data-position');
-        
-        if (nodePosition === 'left') {
-            const left = (elementRect.right - pathwayRect.left) + 10;
-            setPopoverPosition({ top, left });
-        } else {
-            const right = pathwayRect.right - elementRect.left + 10;
-            setPopoverPosition({ top, right });
-        }
-    }
+    // If the same activity is clicked, deselect it. Otherwise, select the new one.
+    setSelectedActivity(prev => (prev?.id === activity.id ? null : activity));
   };
 
   const handleStartActivity = (activity: Activity) => {
@@ -160,28 +142,15 @@ export default function LearnPage() {
         </aside>
 
         {/* Main Lessons Column */}
-        <main ref={pathwayRef} className="lg:col-span-9 relative overflow-y-auto">
+        <main className="lg:col-span-9 relative">
             <div className="max-w-xl mx-auto">
                 <LearningPathway 
                     units={units}
                     onSelectActivity={handleSelectActivity}
                     selectedActivityId={selectedActivity?.id}
+                    popoverContent={isDesktop && selectedActivity && rightSidebarContent}
                 />
             </div>
-
-            {isDesktop && selectedActivity && (
-                <div 
-                    className="absolute z-20 w-80"
-                    style={{ 
-                        top: `${popoverPosition.top}px`,
-                        left: popoverPosition.left !== undefined ? `${popoverPosition.left}px` : 'auto',
-                        right: popoverPosition.right !== undefined ? `${popoverPosition.right}px` : 'auto',
-                        transform: 'translateY(-50%)'
-                    }}
-                >
-                    {rightSidebarContent}
-                </div>
-            )}
         </main>
       </div>
       
@@ -202,7 +171,12 @@ export default function LearnPage() {
 
       {/* Mobile/Tablet Activity Details Sheet */}
       {!isDesktop && (
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <Sheet open={isSheetOpen} onOpenChange={(isOpen) => {
+          setIsSheetOpen(isOpen);
+          if (!isOpen) {
+            setSelectedActivity(null);
+          }
+        }}>
           <SheetContent side="bottom" className="p-0 border-none bg-card/80 backdrop-blur-lg rounded-t-2xl h-[85vh]">
              <SheetHeader>
                <SheetTitle className="sr-only">Lesson Details</SheetTitle>

@@ -8,9 +8,10 @@ interface LearningPathwayProps {
   units: Unit[];
   onSelectActivity: (activity: Activity, element: HTMLButtonElement) => void;
   selectedActivityId?: string;
+  popoverContent?: React.ReactNode;
 }
 
-export function LearningPathway({ units, onSelectActivity, selectedActivityId }: LearningPathwayProps) {
+export function LearningPathway({ units, onSelectActivity, selectedActivityId, popoverContent }: LearningPathwayProps) {
   const allActivities = React.useMemo(() => units.flatMap(unit => unit.activities), [units]);
   const totalActivities = allActivities.length;
   
@@ -20,8 +21,6 @@ export function LearningPathway({ units, onSelectActivity, selectedActivityId }:
     }, -1);
   }, [allActivities]);
   
-  // We add 0.5 to approximately center the progress line on the last completed node.
-  // This is a visual approximation as nodes are not perfectly evenly spaced.
   const progressPercentage = totalActivities > 0 && lastCompletedIndex > -1
     ? ((lastCompletedIndex + 0.5) / totalActivities) * 100
     : 0;
@@ -49,13 +48,26 @@ export function LearningPathway({ units, onSelectActivity, selectedActivityId }:
             />
             <div className="mt-8 space-y-8 relative">
               {unit.activities.map((activity, index) => (
-                <ActivityNode
-                  key={activity.id}
-                  activity={activity}
-                  onSelect={onSelectActivity}
-                  position={index % 2 === 0 ? 'left' : 'right'}
-                  isSelected={activity.id === selectedActivityId}
-                />
+                <div key={activity.id} className="relative">
+                  <ActivityNode
+                    activity={activity}
+                    onSelect={onSelectActivity}
+                    position={index % 2 === 0 ? 'left' : 'right'}
+                    isSelected={activity.id === selectedActivityId}
+                  />
+                  {activity.id === selectedActivityId && popoverContent && (
+                    <div className="absolute z-20 w-80"
+                      style={{
+                        top: '50%',
+                        left: index % 2 === 0 ? 'calc(50% + 50px)' : 'auto',
+                        right: index % 2 !== 0 ? 'calc(50% + 50px)' : 'auto',
+                        transform: 'translateY(-50%)'
+                      }}
+                    >
+                      {popoverContent}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
