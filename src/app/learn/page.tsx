@@ -16,7 +16,7 @@ import { LeftSidebar } from '@/components/learn/left-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Target } from 'lucide-react';
 
 
@@ -98,15 +98,15 @@ export default function LearnPage() {
 
   if (loading) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 px-8 py-8">
             <aside className="hidden lg:block lg:col-span-3">
                  <Skeleton className="h-[500px] w-full" />
             </aside>
-            <main className="lg:col-span-6 space-y-8">
+            <main className="lg:col-span-7 space-y-8">
                 <Skeleton className="h-48 w-full max-w-lg mx-auto" />
                 <Skeleton className="h-96 w-full" />
             </main>
-            <aside className="hidden lg:block lg:col-span-3">
+            <aside className="hidden lg:block lg:col-span-2">
                  <Skeleton className="h-64 w-full" />
             </aside>
         </div>
@@ -124,7 +124,7 @@ export default function LearnPage() {
         </aside>
 
         {/* Main Lessons Column */}
-        <main className="lg:col-span-6">
+        <main className="lg:col-span-7">
           <LearningPathway 
               units={units}
               onSelectActivity={handleSelectActivity}
@@ -133,7 +133,7 @@ export default function LearnPage() {
         </main>
 
         {/* --- Right Sidebar (Desktop) --- */}
-        <aside className="hidden lg:block lg:col-span-3">
+        <aside className="hidden lg:block lg:col-span-2">
           <div className="sticky top-24">
               <Card className="bg-card/50 backdrop-blur-lg border border-border/10">
                   <CardContent className="p-6">
@@ -160,6 +160,7 @@ export default function LearnPage() {
                 </Button>
             </SheetTrigger>
             <SheetContent side="right" className="p-0 border-none w-full max-w-md bg-transparent">
+                <SheetTitle className="sr-only">Daily Quests</SheetTitle>
                 <LeftSidebar isSheet={true} />
             </SheetContent>
         </Sheet>

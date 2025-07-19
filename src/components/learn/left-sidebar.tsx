@@ -86,9 +86,12 @@ export function LeftSidebar({ isSheet = false }: LeftSidebarProps) {
       fiveAmTodayPacific.setHours(5, 0, 0, 0);
 
       const needsNewQuests = !lastGeneratedDate || 
-                             (!isSameDay(nowInPacific, lastGeneratedDate) && isBefore(lastGeneratedDate, fiveAmTodayPacific));
+                             (lastGeneratedDate && !isSameDay(nowInPacific, lastGeneratedDate) && isBefore(lastGeneratedDate, fiveAmTodayPacific));
 
-      if (needsNewQuests && !isGenerating) {
+      // For testing: Also generate if no quests are currently loaded.
+      const shouldGenerateForTesting = quests.length === 0;
+
+      if ((needsNewQuests || shouldGenerateForTesting) && !isGenerating) {
         setIsGenerating(true);
         try {
           await generateDailyQuests({ userId: user.uid });
@@ -102,7 +105,7 @@ export function LeftSidebar({ isSheet = false }: LeftSidebarProps) {
     };
 
     generateQuestsIfNeeded();
-  }, [user, userData, isGenerating, refreshUserData]);
+  }, [user, userData, isGenerating, refreshUserData, quests]);
 
   const renderContent = () => {
     if (isGenerating || !userData) {
