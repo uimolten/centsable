@@ -24,6 +24,7 @@ export const lessonBudgeting4: Lesson = {
             { id: 'opt1', text: 'Give up on budgeting' },
             { id: 'opt2', text: "Try to spend a little less on 'Wants'" },
             { id: 'opt3', text: 'Ignore it' },
+            { id: 'opt4', text: 'Take the difference from your savings' },
           ],
           correctAnswer: 'opt2',
         },
