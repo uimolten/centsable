@@ -14,7 +14,6 @@ import { updateUsername } from '@/ai/flows/update-username-flow';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { useAuth } from '@/hooks/use-auth';
 import { Logo } from '../logo';
-import { playClickSound } from '@/lib/audio-utils';
 
 interface ProfileHeaderProps {
   user: UserData;
@@ -34,7 +33,6 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
   }, [user.displayName]);
 
   const handleSave = async () => {
-    playClickSound();
     if (displayName.trim().length < 3) {
       toast({
         variant: "destructive",
@@ -78,13 +76,11 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
   };
 
   const handleCancel = () => {
-    playClickSound();
     setDisplayName(user.displayName ?? '');
     setIsEditing(false);
   };
   
   const handleEdit = () => {
-    playClickSound();
     setIsEditing(true);
   }
 

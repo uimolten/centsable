@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { LayoutDashboard, LogOut, User as UserIcon } from 'lucide-react';
-import { playClickSound } from '@/lib/audio-utils';
 
 export function UserNav() {
   const { user, userData, signOut } = useAuth();
@@ -24,20 +23,19 @@ export function UserNav() {
   if (!user) return null;
 
   const handleSignOut = () => {
-    playClickSound();
     signOut();
   }
 
   return (
     <div className="flex items-center gap-4">
       {isAdmin && (
-        <Button variant="ghost" size="sm" asChild onClick={playClickSound}>
+        <Button variant="ghost" size="sm" asChild>
           <Link href="/admin">Admin Panel</Link>
         </Button>
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full" onClick={playClickSound}>
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
               <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
@@ -55,7 +53,7 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem asChild onClick={playClickSound}>
+            <DropdownMenuItem asChild>
               <Link href="/profile"><UserIcon className="mr-2 h-4 w-4" />Profile</Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>

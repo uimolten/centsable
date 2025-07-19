@@ -12,7 +12,6 @@ import { Skeleton } from '../ui/skeleton';
 import { Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
 import { LoginPromptDialog } from '../auth/login-prompt-dialog';
-import { playClickSound } from '@/lib/audio-utils';
 
 export function Header() {
   const { user, userData, loading } = useAuth();
@@ -37,7 +36,6 @@ export function Header() {
   const closeMenu = () => setIsMenuOpen(false);
 
   const handleLinkClick = (isProtected: boolean, e: React.MouseEvent) => {
-    playClickSound();
     if (isProtected && !user && !loading) {
       e.preventDefault();
       setIsLoginPromptOpen(true);
@@ -82,10 +80,10 @@ export function Header() {
                   <UserNav />
                 ) : (
                   <>
-                    <Button variant="ghost" asChild onClick={playClickSound}>
+                    <Button variant="ghost" asChild>
                       <Link href="/auth">Log In</Link>
                     </Button>
-                    <Button asChild className="shadow-glow transition-all duration-300 hover:shadow-glow-lg" onClick={playClickSound}>
+                    <Button asChild className="shadow-glow transition-all duration-300 hover:shadow-glow-lg">
                       <Link href="/auth?view=signup">Sign Up</Link>
                     </Button>
                   </>
@@ -96,7 +94,7 @@ export function Header() {
               <div className="md:hidden">
                 <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" onClick={playClickSound}>
+                    <Button variant="ghost" size="icon">
                       <Menu className="h-6 w-6" />
                       <span className="sr-only">Open menu</span>
                     </Button>
@@ -134,10 +132,10 @@ export function Header() {
                         </div>
                       ) : (
                         <div className="flex flex-col gap-4">
-                          <Button variant="outline" asChild size="lg" className="text-lg" onClick={playClickSound}>
+                          <Button variant="outline" asChild size="lg" className="text-lg">
                             <Link href="/auth" onClick={closeMenu}>Log In</Link>
                           </Button>
-                          <Button asChild size="lg" className="shadow-glow text-lg" onClick={playClickSound}>
+                          <Button asChild size="lg" className="shadow-glow text-lg">
                             <Link href="/auth?view=signup" onClick={closeMenu}>Sign Up</Link>
                           </Button>
                         </div>

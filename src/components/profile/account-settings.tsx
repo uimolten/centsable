@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { playClickSound, playIncorrectSound } from '@/lib/audio-utils';
+import { playIncorrectSound } from '@/lib/audio-utils';
 
 interface AccountSettingsProps {
   user: UserData;
@@ -32,7 +32,6 @@ export function AccountSettings({ user }: AccountSettingsProps) {
   const [isResetting, setIsResetting] = useState(false);
 
   const handlePasswordReset = async () => {
-    playClickSound();
     setIsResetting(true);
     try {
       await sendPasswordResetEmail(auth, user.email);
@@ -62,7 +61,6 @@ export function AccountSettings({ user }: AccountSettingsProps) {
   }
 
   const handleSignOut = () => {
-    playClickSound();
     signOut();
   }
 
@@ -98,7 +96,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
           <CardContent>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full" onClick={playClickSound}>Delete Account</Button>
+                <Button variant="destructive" className="w-full">Delete Account</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -109,7 +107,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={playClickSound}>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
                     Delete My Account
                   </AlertDialogAction>
