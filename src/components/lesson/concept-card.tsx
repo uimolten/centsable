@@ -47,11 +47,6 @@ export function ConceptCard({ step }: ConceptCardProps) {
             />
         </div>
       )}
-       {step.text && step.type === 'scenario' && (
-        <div className="text-xl md:text-2xl font-semibold leading-relaxed bg-card/50 p-6 rounded-lg w-full max-w-2xl">
-          <p dangerouslySetInnerHTML={{ __html: step.text }} />
-        </div>
-      )}
     </motion.div>
   );
 }
