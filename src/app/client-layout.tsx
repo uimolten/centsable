@@ -1,6 +1,7 @@
 
 "use client";
 
+import { AuthProvider } from '@/context/auth-provider';
 import { useAuth } from '@/hooks/use-auth';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -9,8 +10,8 @@ import { Logo } from '@/components/logo';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  const { loading } = useAuth();
+function LayoutContent({ children }: { children: React.ReactNode }) {
+  const { authLoading } = useAuth();
   const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
@@ -23,8 +24,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   const showLayout = !isAuthPage && !isIndividualLessonPage;
 
-  if (!isClient) {
-    // Render a static loading shell on the server to prevent hydration mismatch
+  if (!isClient || authLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4 animate-pulse">
@@ -33,17 +33,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </div>
       </div>
     );
-  }
-
-  if (loading && showLayout) {
-     return (
-        <div className="w-full h-screen flex items-center justify-center bg-background">
-            <div className="flex flex-col items-center gap-4 animate-pulse">
-                <Logo />
-                <p className="text-muted-foreground">Loading your adventure...</p>
-            </div>
-        </div>
-      )
   }
 
   if (!showLayout) {
@@ -58,4 +47,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <Toaster />
     </div>
   );
+}
+
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <AuthProvider>
+            <LayoutContent>{children}</LayoutContent>
+        </AuthProvider>
+    )
 }

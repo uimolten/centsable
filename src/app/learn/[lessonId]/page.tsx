@@ -258,21 +258,21 @@ export default function LessonPage() {
   }, [currentStep]);
 
   const handleLessonComplete = useCallback(async () => {
-    if (!user || !lessonId || !currentStep || currentStep.type !== 'complete') {
+    if (!user || !lessonId) {
         router.push(`/learn`);
         return;
     }
     
-    const { rewards } = currentStep as CompleteStep;
     const isPractice = lesson?.title.toLowerCase().includes('practice');
     const isQuiz = lesson?.title.toLowerCase().includes('quiz');
+    const lastStep = lesson?.modules.slice(-1)[0].steps.slice(-1)[0] as CompleteStep;
 
     const actionType = isPractice ? 'complete_practice_session' : isQuiz ? 'complete_unit' : undefined;
 
     // Calculate accuracy for bonus XP
     const accuracy = interactiveStepsCount > 0 ? 1 - (totalIncorrectAttempts / interactiveStepsCount) : 1;
     const bonusXp = accuracy >= 0.9 ? 5 : 0;
-    const totalXp = rewards.xp + bonusXp;
+    const totalXp = lastStep.rewards.xp + bonusXp;
 
     try {
         const operations = [
@@ -280,7 +280,7 @@ export default function LessonPage() {
                 userId: user.uid,
                 lessonId: lessonId,
                 xpGained: totalXp,
-                centsGained: rewards.coins,
+                centsGained: lastStep.rewards.coins,
             })
         ];
 
@@ -302,7 +302,7 @@ export default function LessonPage() {
     // This navigation should only happen after all async operations are done.
     router.push(`/learn`);
 
-  }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson?.title]);
+  }, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson?.title, lesson?.modules]);
   
   const goToNextStep = useCallback(async () => {
       if (user && refreshUserData) {
@@ -314,7 +314,9 @@ export default function LessonPage() {
         setModuleIndex(moduleIndex + 1);
         setStepIndex(0);
       } else {
-        setStepIndex(stepIndex + 1); 
+        // This is the end of the last step, trigger completion
+        handleLessonComplete();
+        return;
       }
       
       setHasAnswered(false);
@@ -323,7 +325,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, isLessonAlreadyCompleted, user, refreshUserData]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, isLessonAlreadyCompleted, user, refreshUserData, handleLessonComplete]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -407,8 +409,6 @@ export default function LessonPage() {
     
     // When there are no more steps, complete the lesson.
     if (!currentStep) {
-        // This makes sure the progress bar hits 100%
-        setCompletedSteps(totalSteps);
         await handleLessonComplete();
         return;
     }

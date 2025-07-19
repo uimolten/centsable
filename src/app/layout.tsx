@@ -24,10 +24,8 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;800&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body">
-        <AuthProvider>
-          <ClientLayout>{children}</ClientLayout>
-          <Toaster />
-        </AuthProvider>
+        <ClientLayout>{children}</ClientLayout>
+        <Toaster />
       </body>
     </html>
   );

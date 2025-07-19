@@ -12,7 +12,7 @@ interface AuthContextType {
   user: User | null;
   userData: UserData | null;
   loading: boolean;
-  isAdmin: boolean;
+  authLoading: boolean; // For initial auth check
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 }
@@ -22,12 +22,14 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true); // This represents the auth state check
+  const [loading, setLoading] = useState(false); // For subsequent data refreshes
+  const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
 
   const fetchUserData = useCallback(async (user: User | null) => {
     if (!user) {
         setUser(null);
         setUserData(null);
+        setAuthLoading(false);
         setLoading(false);
         return;
     }
@@ -90,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Error fetching user data:", error);
         setUserData(null);
     } finally {
+        setAuthLoading(false);
         setLoading(false);
     }
   }, []);
@@ -118,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAdmin = userData?.role === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, userData, loading, isAdmin, signOut, refreshUserData }}>
+    <AuthContext.Provider value={{ user, userData, loading, authLoading, isAdmin, signOut, refreshUserData }}>
       {children}
     </AuthContext.Provider>
   );
