@@ -27,7 +27,7 @@ export const lessonSaving2: Lesson = {
             { id: 'opt4', text: 'I will buy a new phone.' },
           ],
           correctAnswer: 'opt2',
-          reinforcement: 'Exactly! A real goal has details.',
+          reinforcement: "Exactly! It's <b>S</b>pecific (concert tickets), <b>M</b>easurable ($50), and <b>T</b>ime-bound (next month).",
         },
         {
           type: 'concept',
