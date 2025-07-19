@@ -75,8 +75,8 @@ export default function LearnPage() {
 
   const selectedUnit = useMemo(() => {
     if (!selectedActivity) return undefined;
-    return rawUnitsData.find(unit => unit.activities.some(act => act.id === selectedActivity.id));
-  }, [selectedActivity]);
+    return units.find(unit => unit.activities.some(act => act.id === selectedActivity.id));
+  }, [selectedActivity, units]);
 
   useEffect(() => {
     if (selectedActivity && !isDesktop) {
@@ -95,18 +95,21 @@ export default function LearnPage() {
     setSelectedActivity(activity);
 
     if (pathwayRef.current && element) {
-        const pathwayRect = pathwayRef.current.getBoundingClientRect();
-        const elementRect = element.getBoundingClientRect();
-        
-        const top = elementRect.top - pathwayRect.top + pathwayRef.current.scrollTop + (elementRect.height / 2);
-        
-        const nodePosition = element.getAttribute('data-position');
-        
-        if (nodePosition === 'left') {
-            setPopoverPosition({ top, left: pathwayRect.width / 2 + elementRect.width / 2 + 10 });
-        } else {
-            setPopoverPosition({ top, right: pathwayRect.width / 2 + elementRect.width / 2 + 10 });
-        }
+      const pathwayRect = pathwayRef.current.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+      const popoverWidth = 320; // The width of the ActivityDetails card (w-80)
+
+      const top = elementRect.top - pathwayRect.top + pathwayRef.current.scrollTop + (elementRect.height / 2);
+
+      const nodePosition = element.getAttribute('data-position');
+      
+      if (nodePosition === 'left') {
+        const left = elementRect.left - pathwayRect.left + elementRect.width + 10;
+        setPopoverPosition({ top, left });
+      } else {
+        const right = pathwayRect.right - elementRect.right + elementRect.width + 10;
+        setPopoverPosition({ top, right });
+      }
     }
   };
 
@@ -169,7 +172,7 @@ export default function LearnPage() {
 
             {isDesktop && selectedActivity && (
                 <div 
-                    className="absolute z-20"
+                    className="absolute z-20 w-80"
                     style={{ 
                         top: `${popoverPosition.top}px`,
                         left: popoverPosition.left ? `${popoverPosition.left}px` : 'auto',
