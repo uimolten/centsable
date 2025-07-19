@@ -3,104 +3,54 @@ import type { Lesson } from '@/types/lesson';
 
 export const lessonBudgeting3: Lesson = {
   id: 'b3',
-  title: 'Building a Budget',
+  title: 'Building Your Game Plan: How to Create a Budget',
   modules: [
     {
-      title: 'The 50/30/20 Rule',
-      xp: 3,
+      title: 'Build Your Game Plan',
+      xp: 70,
       steps: [
         {
           type: 'intro',
-          text: 'You know *why* you need a budget and you*ve tracked your spending. Now, let*s actually **build** one with a simple, powerful framework: the <b>50/30/20 Rule</b>.',
+          text: "New Quest: Build Your Game Plan! You've tracked your spending and learned the 50/30/20 rule. Now, let's create your first budget.",
         },
         {
           type: 'concept',
-          text: 'Imagine your income is a pizza. 🍕 The 50/30/20 rule is a recipe for how to slice it up based on the <b>Needs</b> and <b>Wants</b> we defined in the first lesson.',
-          image: 'https://placehold.co/400x225',
-          imageHint: 'pizza slices',
+          text: "Step 1: Calculate your monthly income. This is any money you get from jobs, allowance, or side hustles.",
+        },
+        {
+          type: 'scenario',
+          text: "You earn $100 from a part-time job and get $40 for allowance. What's your total monthly income?",
+        },
+        {
+          type: 'fill-in-the-blank',
+          question: 'Total monthly income: $______',
+          correctAnswer: '140',
+          reinforcement: "Great! That's the number we'll work with.",
         },
         {
           type: 'concept',
-          text: "<b>50%</b> of your income goes to your 🍽️ <b>Needs</b>. Remember, these are the absolute essentials you can't live without.",
+          text: "Step 2: Plan your spending using the 50/30/20 rule as your guide. With an income of $140, your plan is: <br> • 50% Needs = $70 <br> • 30% Wants = $42 <br> • 20% Savings = $28",
         },
         {
           type: 'concept',
-          text: "<b>30%</b> goes to your 🎉 <b>Wants</b>—the fun stuff that makes life exciting.",
-        },
-        {
-          type: 'concept',
-          text: "And the most important slice, <b>20%</b>, goes to 💾 <b>Savings & Goals</b>. This is for your future self.",
+          text: "Step 3: As you spend money during the month, track it against your plan. Did you stay under your 'Wants' limit? Awesome!",
         },
         {
           type: 'multiple-choice',
-          question: "Using the 50/30/20 rule, if you earn <b>$500</b> a month, how much should go into savings?",
+          question: "What's the final step of budgeting?",
           options: [
-            { id: 'opt1', text: '$50' },
-            { id: 'opt2', text: '$250' },
-            { id: 'opt3', text: '$150' },
-            { id: 'opt4', text: '$100' },
-          ],
-          correctAnswer: 'opt4',
-          reinforcement: "Perfect! 20% of $500 is $100. That's a great amount to put towards your goals each month!",
-        },
-      ],
-    },
-    {
-      title: 'Pay Yourself First',
-      xp: 2,
-      steps: [
-        {
-          type: 'concept',
-          text: "Here's a pro-tip that will change your financial life: <b>Pay Yourself First</b>.",
-        },
-        {
-          type: 'concept',
-          text: "It means that as SOON as you get paid, the first 'bill' you pay is your savings. You move that 20% to your savings account *before* you do anything else. This way, you're not trying to save whatever is 'left over' at the end of the month.",
-        },
-        {
-          type: 'multiple-choice',
-          question: "What's the main advantage of 'Pay Yourself First'?",
-          options: [
-            { id: 'opt1', text: 'It feels good to spend money.' },
-            { id: 'opt2', text: 'It guarantees that you actually save money.' },
-            { id: 'opt3', text: 'It helps you pay your other bills late.' },
-            { id: 'opt4', text: 'It makes your income look bigger.' },
+            { id: 'opt1', text: 'Set it and forget it' },
+            { id: 'opt2', text: 'Track your spending against your plan' },
+            { id: 'opt3', text: 'Spend all your money' },
           ],
           correctAnswer: 'opt2',
-          reinforcement: 'Exactly! You prioritize your future self.',
-        },
-      ]
-    },
-    {
-      title: 'The Emergency Fund',
-      xp: 3,
-      steps: [
-        {
-          type: 'concept',
-          text: "Part of your savings should go to an <b>Emergency Fund</b>. Think of this as your financial airbag. 🛟",
-        },
-        {
-          type: 'concept',
-          text: "It's money set aside ONLY for true surprises—like your phone screen cracking, a surprise vet bill, or needing a new tire. It's not for concert tickets that just went on sale!",
-        },
-        {
-          type: 'multiple-choice',
-          question: 'Which of these is a good use for an emergency fund?',
-          options: [
-            { id: 'opt1', text: 'A new video game is on sale.' },
-            { id: 'opt2', text: 'Your friends are going out for pizza.' },
-            { id: 'opt3', text: 'Your laptop for school suddenly breaks.' },
-            { id: 'opt4', text: 'You want to buy a new shirt.' },
-          ],
-          correctAnswer: 'opt3',
-          reinforcement: "That's a perfect example! An emergency fund turns a crisis into a minor inconvenience.",
         },
         {
           type: 'complete',
-          title: 'LESSON COMPLETE!',
-          text: "You've learned a powerful and simple way to build your first budget!",
+          title: 'QUEST COMPLETE!',
+          text: "You now have a powerful game plan for your money.",
           rewards: {
-            xp: 8,
+            xp: 70,
             coins: 10,
           },
         },
