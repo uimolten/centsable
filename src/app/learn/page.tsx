@@ -74,8 +74,9 @@ export default function LearnPage() {
   }, [userData]);
 
   const selectedUnit = useMemo(() => {
-    return units.find(unit => unit.activities.some(act => act.id === selectedActivity?.id));
-  }, [units, selectedActivity]);
+    if (!selectedActivity) return undefined;
+    return rawUnitsData.find(unit => unit.activities.some(act => act.id === selectedActivity.id));
+  }, [selectedActivity]);
 
   useEffect(() => {
     if (selectedActivity && !isDesktop) {
@@ -97,14 +98,14 @@ export default function LearnPage() {
         const pathwayRect = pathwayRef.current.getBoundingClientRect();
         const elementRect = element.getBoundingClientRect();
         
-        const top = elementRect.top - pathwayRect.top + window.scrollY;
+        const top = elementRect.top - pathwayRect.top + pathwayRef.current.scrollTop + (elementRect.height / 2);
         
         const nodePosition = element.getAttribute('data-position');
         
         if (nodePosition === 'left') {
-            setPopoverPosition({ top, left: elementRect.width + 20 });
+            setPopoverPosition({ top, left: pathwayRect.width / 2 + elementRect.width / 2 + 10 });
         } else {
-            setPopoverPosition({ top, right: elementRect.width + 20 });
+            setPopoverPosition({ top, right: pathwayRect.width / 2 + elementRect.width / 2 + 10 });
         }
     }
   };
@@ -148,7 +149,7 @@ export default function LearnPage() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 px-8 py-8 h-full">
         {/* --- Left Sidebar (Desktop) --- */}
         <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-24">
@@ -157,7 +158,7 @@ export default function LearnPage() {
         </aside>
 
         {/* Main Lessons Column */}
-        <main ref={pathwayRef} className="lg:col-span-9 relative">
+        <main ref={pathwayRef} className="lg:col-span-9 relative overflow-y-auto">
             <div className="max-w-xl mx-auto">
                 <LearningPathway 
                     units={units}
@@ -168,7 +169,7 @@ export default function LearnPage() {
 
             {isDesktop && selectedActivity && (
                 <div 
-                    className="absolute"
+                    className="absolute z-20"
                     style={{ 
                         top: `${popoverPosition.top}px`,
                         left: popoverPosition.left ? `${popoverPosition.left}px` : 'auto',
