@@ -21,13 +21,13 @@ export const lessonInvesting5: Lesson = {
         },
         {
           type: 'concept',
-          text: "Since you're under 18, you'll need a parent or guardian to help you open a <b>Custodial Account</b>. It's your account, but they help manage it until you're an adult.",
+          text: "If you're under 18, you'll need a parent or guardian to help you open a <b>Custodial Account</b>. It's your account, but they help manage it until you're an adult.",
           image: 'https://placehold.co/400x225',
           imageHint: 'adult child team',
         },
         {
           type: 'multiple-choice',
-          question: "What kind of account does a teen need to start investing with an adult's help?",
+          question: "What might a teen need to start investing?",
           options: [
             { id: 'opt1', text: 'A savings account' },
             { id: 'opt2', text: 'A custodial account' },

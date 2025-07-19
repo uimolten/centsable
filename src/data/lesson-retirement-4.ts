@@ -15,7 +15,7 @@ export const lessonRetirement4: Lesson = {
         },
         {
           type: 'concept',
-          text: "The easiest way to start as a teen is to open a Custodial Roth IRA. This is an account in your name that a parent or guardian helps you manage.",
+          text: "The easiest way to start as a teen is to open a Custodial Roth IRA. If you're under 18, this is an account in your name that a parent or guardian helps you manage.",
         },
         {
           type: 'multiple-choice',

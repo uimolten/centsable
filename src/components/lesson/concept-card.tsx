@@ -19,6 +19,10 @@ const iconMap = {
 export function ConceptCard({ step }: ConceptCardProps) {
   const Icon = step.type === 'concept' && step.icon ? iconMap[step.icon] : null;
 
+  // The text for concept and scenario steps is now rendered in the SpeechBubble component.
+  // Rendering it here would be duplicative.
+  const textToShow = step.type === 'concept' ? step.text : undefined;
+
   return (
     <motion.div
       key={step.type + (step.text ?? '')}
@@ -46,6 +50,9 @@ export function ConceptCard({ step }: ConceptCardProps) {
                 data-ai-hint={step.imageHint}
             />
         </div>
+      )}
+      {textToShow && (
+        <p className="text-2xl font-bold leading-relaxed max-w-xl" dangerouslySetInnerHTML={{ __html: textToShow }} />
       )}
     </motion.div>
   );
