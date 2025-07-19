@@ -65,7 +65,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
     >
       <div className={cn(
         "grid grid-cols-1 gap-3",
-        step.options.some(o => o.image) ? "md:grid-cols-3" : "md:grid-cols-2"
+        step.options.length > 2 ? "md:grid-cols-2" : "md:grid-cols-1"
       )}>
         {step.options.map((option) => {
           const isSelected = userAnswers.includes(option.id);
