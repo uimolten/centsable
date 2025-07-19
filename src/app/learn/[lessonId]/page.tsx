@@ -201,7 +201,8 @@ export default function LessonPage() {
   const [interactiveSortItems, setInteractiveSortItems] = useState<SortItem[]>([]);
   const [isSortIncomplete, setIsSortIncomplete] = useState(false);
   const [isLessonAlreadyCompleted, setIsLessonAlreadyCompleted] = useState(false);
-  
+  const [bonusXp, setBonusXp] = useState(0);
+
   useEffect(() => {
     if (userData) {
       setIsLessonAlreadyCompleted(userData.completedLessons?.includes(lessonId) ?? false);
@@ -237,6 +238,9 @@ export default function LessonPage() {
     }
   }, [lessonId, router, user, refreshUserData, isLessonAlreadyCompleted]);
   
+  const currentModule = lesson?.modules[moduleIndex];
+  const currentStep = currentModule?.steps[stepIndex];
+
   // Derived state for progress to ensure accuracy
   useEffect(() => {
     if (!lesson) return;
@@ -250,9 +254,6 @@ export default function LessonPage() {
     setCompletedSteps(stepsSoFar);
   }, [moduleIndex, stepIndex, lesson]);
 
-  const currentModule = lesson?.modules[moduleIndex];
-  const currentStep = currentModule?.steps[stepIndex];
-  
   useEffect(() => {
     if (currentStep?.type === 'interactive-sort') {
       setInteractiveSortItems(shuffle(currentStep.items).map(item => ({ ...item, location: 'pool' })));
@@ -261,52 +262,53 @@ export default function LessonPage() {
 
   const handleLessonComplete = useCallback(async () => {
     if (!user || !lessonId || !lesson) {
-      router.push(`/learn`);
-      return;
+        router.push(`/learn`);
+        return;
     }
 
     if (!isLessonAlreadyCompleted) {
-      const isPractice = lesson.title.toLowerCase().includes('practice');
-      const isQuiz = lesson.title.toLowerCase().includes('quiz');
-      const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0] as CompleteStep;
+        const isPractice = lesson.title.toLowerCase().includes('practice');
+        const isQuiz = lesson.title.toLowerCase().includes('quiz');
+        const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0] as CompleteStep;
 
-      const actionType = isPractice ? 'complete_practice_session' : isQuiz ? 'complete_unit' : undefined;
+        const actionType = isPractice ? 'complete_practice_session' : isQuiz ? 'complete_unit' : undefined;
 
-      // Calculate accuracy for bonus XP
-      const accuracy = interactiveStepsCount > 0 ? 1 - (totalIncorrectAttempts / interactiveStepsCount) : 1;
-      const bonusXp = accuracy >= 0.9 ? 5 : 0;
-      const totalXp = lastStep.rewards.xp + bonusXp;
+        // Calculate accuracy for bonus XP
+        const accuracy = interactiveStepsCount > 0 ? 1 - (totalIncorrectAttempts / interactiveStepsCount) : 1;
+        const calculatedBonusXp = accuracy >= 0.9 ? 5 : 0;
+        setBonusXp(calculatedBonusXp); // Set state for UI
+        const totalXp = lastStep.rewards.xp + calculatedBonusXp;
 
-      try {
-        const operations = [
-          saveProgress({
-            userId: user.uid,
-            lessonId: lessonId,
-            xpGained: totalXp,
-            centsGained: lastStep.rewards.coins,
-          })
-        ];
+        try {
+            const operations = [
+                saveProgress({
+                    userId: user.uid,
+                    lessonId: lessonId,
+                    xpGained: totalXp,
+                    centsGained: lastStep.rewards.coins,
+                })
+            ];
 
-        if (actionType) {
-          operations.push(updateQuestProgress({ userId: user.uid, actionType }));
+            if (actionType) {
+                operations.push(updateQuestProgress({ userId: user.uid, actionType }));
+            }
+
+            await Promise.all(operations);
+            await refreshUserData?.(); // Refresh user data to get new XP/Cents
+        } catch (error) {
+            console.error('Failed to save progress or update quest', error);
+            toast({
+                variant: 'destructive',
+                title: 'Error Saving Progress',
+                description: 'Could not save your progress, but you can continue.',
+            });
         }
-
-        await Promise.all(operations);
-        await refreshUserData?.(); // Refresh user data to get new XP/Cents
-      } catch (error) {
-        console.error('Failed to save progress or update quest', error);
-        toast({
-          variant: 'destructive',
-          title: 'Error Saving Progress',
-          description: 'Could not save your progress, but you can continue.',
-        });
-      }
     }
     
-    // This navigation should only happen after all async operations are done.
-    router.push(`/learn`);
+    // This is now only a marker to show the completion UI
+    setStepIndex(prev => prev + 1);
 
-  }, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, isLessonAlreadyCompleted]);
+}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, isLessonAlreadyCompleted]);
   
   const goToNextStep = useCallback(async () => {
       if (user && refreshUserData) {
@@ -314,13 +316,9 @@ export default function LessonPage() {
       }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
-      } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
-        setModuleIndex(moduleIndex + 1);
-        setStepIndex(0);
       } else {
-        // This is the end of the last step, trigger completion
-        // The LessonComplete component will be shown which handles the final action
-        setStepIndex(stepIndex + 1); // This will make currentStep null and trigger the completion UI
+        // This is the end of the last step, trigger completion logic
+        await handleLessonComplete();
       }
       
       setHasAnswered(false);
@@ -329,7 +327,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, user, refreshUserData]);
+  }, [currentModule?.steps.length, handleLessonComplete, moduleIndex, stepIndex, user, refreshUserData]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -398,7 +396,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, isLessonAlreadyCompleted, user, refreshUserData]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, user, refreshUserData]);
 
   const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
@@ -412,7 +410,8 @@ export default function LessonPage() {
     }
     
     if (!currentStep) {
-        await handleLessonComplete();
+        // This case is for the final completion screen.
+        router.push('/learn');
         return;
     }
 
@@ -461,7 +460,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, lesson?.id, isLessonAlreadyCompleted, user, refreshUserData]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, user, refreshUserData]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -569,7 +568,7 @@ export default function LessonPage() {
     const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
     let stepProps: any = {
       step: step as any,
-      onContinue: handleLessonComplete,
+      onContinue: () => router.push('/learn'),
     };
 
     switch (step.type) {
@@ -605,7 +604,7 @@ export default function LessonPage() {
         return <ConceptCard key={uniqueKey} {...{ step: step as ScenarioStep }} />;
       
       case 'complete':
-        stepProps = { ...stepProps, isReviewMode: isLessonAlreadyCompleted };
+        stepProps = { ...stepProps, isReviewMode: isLessonAlreadyCompleted, bonusXp };
         return <LessonComplete key={uniqueKey} {...stepProps} />;
         
       default: return <div>Unknown step type</div>;
@@ -636,8 +635,9 @@ export default function LessonPage() {
           {currentStep ? renderStepContent(currentStep) : (
             <LessonComplete 
               step={lastStepOfLesson as any} 
-              onContinue={handleLessonComplete}
+              onContinue={() => router.push('/learn')}
               isReviewMode={isLessonAlreadyCompleted}
+              bonusXp={bonusXp}
             />
           )}
         </AnimatePresence>

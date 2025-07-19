@@ -1,15 +1,16 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Gem, Award, CheckCircle2 } from 'lucide-react';
+import { Gem, Award, CheckCircle2, Star } from 'lucide-react';
 import type { CompleteStep } from '@/types/lesson';
 
 interface LessonCompleteProps {
   step: CompleteStep;
   onContinue: () => void;
   isReviewMode?: boolean;
+  bonusXp?: number;
 }
 
-export function LessonComplete({ step, onContinue, isReviewMode }: LessonCompleteProps) {
+export function LessonComplete({ step, onContinue, isReviewMode, bonusXp = 0 }: LessonCompleteProps) {
   if (isReviewMode) {
     return (
       <motion.div
@@ -42,10 +43,10 @@ export function LessonComplete({ step, onContinue, isReviewMode }: LessonComplet
       className="text-center space-y-8 flex flex-col items-center bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
     >
       <Award className="w-32 h-32 text-yellow-400" />
-      <h1 className="text-4xl font-black text-primary font-headline">{step.title}</h1>
+      <h1 className="text-4xl font-black text-primary font-headline" dangerouslySetInnerHTML={{ __html: step.title }} />
       {step.text && <p className="text-xl text-muted-foreground" dangerouslySetInnerHTML={{ __html: step.text }} />}
       
-      <div className="flex gap-8 justify-center">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 justify-center items-center">
         <div className="flex items-center gap-2 p-4 bg-card/50 rounded-lg">
             <Gem className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold">+{step.rewards.xp} XP</span>
@@ -54,6 +55,19 @@ export function LessonComplete({ step, onContinue, isReviewMode }: LessonComplet
             <span className="text-3xl">🪙</span>
             <span className="text-2xl font-bold">+{step.rewards.coins}</span>
         </div>
+        {bonusXp > 0 && (
+           <motion.div 
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1, transition: { delay: 0.3 } }}
+            className="flex items-center gap-2 p-4 bg-yellow-400/20 text-yellow-300 rounded-lg"
+           >
+            <Star className="w-8 h-8" />
+            <div className="flex flex-col text-left">
+              <span className="text-xl font-bold">+{bonusXp} XP</span>
+              <span className="text-xs">Accuracy Bonus!</span>
+            </div>
+           </motion.div>
+        )}
       </div>
 
       <Button size="lg" className="text-lg font-bold shadow-glow" onClick={onContinue}>
