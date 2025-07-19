@@ -15,12 +15,12 @@ export const lessonTaxes2: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "Your <b>Gross Income</b> was the total you earned, which was $____.",
+          question: "Your <b>Gross Income</b> was the total you earned, which was $<b>150</b>.",
           correctAnswer: '150',
         },
         {
           type: 'fill-in-the-blank',
-          question: "Your <b>Net Income</b>, or take-home pay, was the amount after taxes, which was $____.",
+          question: "Your <b>Net Income</b>, or take-home pay, was the amount after taxes, which was $<b>128</b>.",
           correctAnswer: '128',
         },
         {
@@ -73,7 +73,7 @@ export const lessonTaxes2: Lesson = {
         {
           type: 'complete',
           title: 'LESSON COMPLETE!',
-          text: "You've cracked the code of your paycheck!",
+          text: 'You\'ve cracked the code of your paycheck!',
           rewards: {
             xp: 8,
             coins: 10,

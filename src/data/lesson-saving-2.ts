@@ -22,7 +22,7 @@ export const lessonSaving2: Lesson = {
           question: 'Which one is a real goal?',
           options: [
             { id: 'opt1', text: 'I want to be rich.' },
-            { id: 'opt2', text: 'I will save <b>$50</b> for concert tickets by next month.' },
+            { id: 'opt2', text: 'I will save $50 for concert tickets by next month.' },
             { id: 'opt3', text: 'Saving is important.' },
             { id: 'opt4', text: 'I will buy a new phone.' },
           ],

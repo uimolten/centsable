@@ -43,7 +43,7 @@ export function LessonComplete({ step, onContinue, isReviewMode }: LessonComplet
     >
       <Award className="w-32 h-32 text-yellow-400" />
       <h1 className="text-4xl font-black text-primary font-headline">{step.title}</h1>
-      <p className="text-xl text-muted-foreground">{step.text}</p>
+      {step.text && <p className="text-xl text-muted-foreground" dangerouslySetInnerHTML={{ __html: step.text }} />}
       
       <div className="flex gap-8 justify-center">
         <div className="flex items-center gap-2 p-4 bg-card/50 rounded-lg">

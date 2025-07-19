@@ -47,7 +47,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
             height={150}
             className="rounded-lg object-cover aspect-square"
           />
-          {option.text && <span className="text-center font-semibold">{option.text}</span>}
+          {option.text && <span className="text-center font-semibold" dangerouslySetInnerHTML={{ __html: option.text }} />}
         </div>
       );
     }
