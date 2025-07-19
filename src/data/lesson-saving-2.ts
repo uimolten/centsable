@@ -27,7 +27,7 @@ export const lessonSaving2: Lesson = {
             { id: 'opt4', text: 'I will buy a new phone.' },
           ],
           correctAnswer: 'opt2',
-          reinforcement: "Exactly! It's <b>S</b>pecific (concert tickets), <b>M</b>easurable ($50), and <b>T</b>ime-bound (next month).",
+          reinforcement: "Exactly! A great goal is <b>S</b>pecific (what are you saving for?), <b>M</b>easurable (how much does it cost?), and <b>T</b>ime-bound (when do you need it by?). You can track your progress toward it.",
         },
         {
           type: 'concept',
@@ -142,7 +142,7 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'goal-summary',
-          textTemplate: 'To save ${amount} for {item} {timeframe}.',
+          textTemplate: 'To save {amount} for {item} {timeframe}.',
         },
       ],
     },
