@@ -9,7 +9,6 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAuth } from '@/hooks/use-auth';
 import { saveProgress } from '@/ai/flows/save-progress-flow';
-import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { playCorrectSound } from '@/lib/audio-utils';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
@@ -208,13 +207,6 @@ export default function LessonPage() {
   const currentStep = currentModule?.steps[stepIndex];
   const isLessonAlreadyCompleted = userData?.completedLessons?.includes(lessonId) ?? false;
 
-  const triggerQuestUpdate = useCallback(async (actionType: 'complete_lesson_step' | 'answer_quiz_question_correctly' | 'create_savings_goal') => {
-    if (user && refreshUserData) {
-      await updateQuestProgress({ userId: user.uid, actionType });
-      await refreshUserData();
-    }
-  }, [user, refreshUserData]);
-
   useEffect(() => {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
@@ -302,9 +294,6 @@ export default function LessonPage() {
   }, [lessonId, router, user, currentStep, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts]);
   
   const goToNextStep = useCallback(() => {
-      if(!isLessonAlreadyCompleted) {
-        triggerQuestUpdate('complete_lesson_step');
-      }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < (lesson?.modules.length ?? 0) - 1) {
@@ -320,7 +309,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, triggerQuestUpdate, isLessonAlreadyCompleted]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, isLessonAlreadyCompleted]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -374,9 +363,6 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
-      if (lesson?.title.includes('Quiz') && !isLessonAlreadyCompleted) {
-        triggerQuestUpdate('answer_quiz_question_correctly');
-      }
     } else {
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);
@@ -386,7 +372,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, triggerQuestUpdate, isLessonAlreadyCompleted]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, isLessonAlreadyCompleted]);
 
   const handleFooterAction = useCallback(async () => {
     if (lives === 0) {
@@ -424,9 +410,6 @@ export default function LessonPage() {
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
-        if (lesson?.id === 's2' && step.storageKey === 'timeframe' && !isLessonAlreadyCompleted) {
-            triggerQuestUpdate('create_savings_goal');
-        }
         goToNextStep();
         return;
     }
@@ -458,7 +441,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, triggerQuestUpdate, lesson?.id, isLessonAlreadyCompleted]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, handleLessonComplete, totalSteps, incorrectAttempts, lesson?.id, isLessonAlreadyCompleted]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -528,9 +511,6 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
-      if (lesson?.title.includes('Quiz') && !isLessonAlreadyCompleted) {
-        triggerQuestUpdate('answer_quiz_question_correctly');
-      }
     } else {
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);

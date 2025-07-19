@@ -9,7 +9,6 @@ import { z } from 'zod';
 import { doc, updateDoc, getDoc, arrayUnion, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { SaveProgressInputSchema, SaveProgressOutputSchema, type SaveProgressInput, type SaveProgressOutput } from '@/types/actions';
-import { updateQuestProgress } from './update-quest-progress-flow';
 
 export async function saveProgress(input: SaveProgressInput): Promise<SaveProgressOutput> {
   return saveProgressFlow(input);
@@ -37,9 +36,6 @@ const saveProgressFlow = ai.defineFlow(
         return { success: true, message: 'Progress already saved for this lesson.' };
       }
       
-      // Fire-and-forget quest update
-      updateQuestProgress({ userId, actionType: 'complete_lesson' });
-
       await updateDoc(userDocRef, {
         completedLessons: arrayUnion(lessonId),
         lessonsCompleted: increment(1),
