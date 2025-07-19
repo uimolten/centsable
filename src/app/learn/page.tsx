@@ -97,17 +97,16 @@ export default function LearnPage() {
     if (pathwayRef.current && element) {
       const pathwayRect = pathwayRef.current.getBoundingClientRect();
       const elementRect = element.getBoundingClientRect();
-      const popoverWidth = 320; // The width of the ActivityDetails card (w-80)
-
-      const top = elementRect.top - pathwayRect.top + pathwayRef.current.scrollTop + (elementRect.height / 2);
+      
+      const top = element.offsetTop + (element.offsetHeight / 2);
 
       const nodePosition = element.getAttribute('data-position');
       
       if (nodePosition === 'left') {
-        const left = elementRect.left - pathwayRect.left + elementRect.width + 10;
+        const left = element.offsetLeft + element.offsetWidth + 10;
         setPopoverPosition({ top, left });
       } else {
-        const right = pathwayRect.right - elementRect.right + elementRect.width + 10;
+        const right = pathwayRef.current.offsetWidth - element.offsetLeft + 10;
         setPopoverPosition({ top, right });
       }
     }
@@ -175,8 +174,8 @@ export default function LearnPage() {
                     className="absolute z-20 w-80"
                     style={{ 
                         top: `${popoverPosition.top}px`,
-                        left: popoverPosition.left ? `${popoverPosition.left}px` : 'auto',
-                        right: popoverPosition.right ? `${popoverPosition.right}px` : 'auto',
+                        left: popoverPosition.left !== undefined ? `${popoverPosition.left}px` : 'auto',
+                        right: popoverPosition.right !== undefined ? `${popoverPosition.right}px` : 'auto',
                         transform: 'translateY(-50%)'
                     }}
                 >
