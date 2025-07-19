@@ -213,7 +213,7 @@ export default function LessonPage() {
   useEffect(() => {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
-      if (user && refreshUserData) {
+      if (user && refreshUserData && !isLessonAlreadyCompleted) {
         updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' }).then(() => refreshUserData());
       }
       setLesson(loadedLesson);
@@ -236,7 +236,7 @@ export default function LessonPage() {
       // Handle lesson not found, maybe redirect
       router.push('/learn');
     }
-  }, [lessonId, router, user, refreshUserData]);
+  }, [lessonId, router, user, refreshUserData, isLessonAlreadyCompleted]);
   
   // Derived state for progress to ensure accuracy
   useEffect(() => {
@@ -263,6 +263,11 @@ export default function LessonPage() {
         return;
     }
     
+    if (isLessonAlreadyCompleted) {
+        router.push(`/learn`);
+        return;
+    }
+
     const isPractice = lesson?.title.toLowerCase().includes('practice');
     const isQuiz = lesson?.title.toLowerCase().includes('quiz');
     const lastStep = lesson?.modules.slice(-1)[0].steps.slice(-1)[0] as CompleteStep;
@@ -302,7 +307,7 @@ export default function LessonPage() {
     // This navigation should only happen after all async operations are done.
     router.push(`/learn`);
 
-  }, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson?.title, lesson?.modules]);
+  }, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson?.title, lesson?.modules, isLessonAlreadyCompleted]);
   
   const goToNextStep = useCallback(async () => {
       if (user && refreshUserData) {
@@ -315,8 +320,8 @@ export default function LessonPage() {
         setStepIndex(0);
       } else {
         // This is the end of the last step, trigger completion
-        handleLessonComplete();
-        return;
+        // The LessonComplete component will be shown which handles the final action
+        setStepIndex(stepIndex + 1); // This will make currentStep null and trigger the completion UI
       }
       
       setHasAnswered(false);
@@ -325,7 +330,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, isLessonAlreadyCompleted, user, refreshUserData, handleLessonComplete]);
+  }, [currentModule?.steps.length, lesson?.modules.length, moduleIndex, stepIndex, user, refreshUserData]);
 
   const goToPreviousStep = useCallback(() => {
     if (moduleIndex === 0 && stepIndex === 0) return;
@@ -407,25 +412,18 @@ export default function LessonPage() {
       return;
     }
     
-    // When there are no more steps, complete the lesson.
     if (!currentStep) {
         await handleLessonComplete();
         return;
     }
 
-    // Special handling for the 'complete' step to prevent double rendering.
-    if (currentStep.type === 'complete') {
-      await handleLessonComplete();
-      return;
-    }
-    
     if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
       setIsSortIncomplete(true);
       handleCheck(); // This will register as an incorrect answer
       return;
     }
     
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'goal-summary'].includes(currentStep.type);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary'].includes(currentStep.type);
     
     if (currentStep.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
