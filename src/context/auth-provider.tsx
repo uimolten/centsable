@@ -15,6 +15,7 @@ interface AuthContextType {
   authLoading: boolean; // For initial auth check
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
+  isAdmin: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,7 +26,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false); // For subsequent data refreshes
   const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
 
-  const fetchUserData = useCallback(async (user: User | null) => {
+  const fetchUserData = useCallback(async (user: User | null, isInitialLoad: boolean = false) => {
+    if (isInitialLoad) {
+      setAuthLoading(true);
+    } else {
+      setLoading(true);
+    }
+
     if (!user) {
         setUser(null);
         setUserData(null);
@@ -100,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      fetchUserData(user);
+      fetchUserData(user, true);
     });
     return () => unsubscribe();
   }, [fetchUserData]);
@@ -113,8 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUserData = async () => {
     if (user) {
-      setLoading(true);
-      await fetchUserData(user);
+      await fetchUserData(user, false);
     }
   };
   
