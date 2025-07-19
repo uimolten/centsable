@@ -95,20 +95,20 @@ export default function LearnPage() {
     setSelectedActivity(activity);
 
     if (pathwayRef.current && element) {
-      const pathwayRect = pathwayRef.current.getBoundingClientRect();
-      const elementRect = element.getBoundingClientRect();
-      
-      const top = element.offsetTop + (element.offsetHeight / 2);
+        const pathwayRect = pathwayRef.current.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
 
-      const nodePosition = element.getAttribute('data-position');
-      
-      if (nodePosition === 'left') {
-        const left = element.offsetLeft + element.offsetWidth + 10;
-        setPopoverPosition({ top, left });
-      } else {
-        const right = pathwayRef.current.offsetWidth - element.offsetLeft + 10;
-        setPopoverPosition({ top, right });
-      }
+        const top = (elementRect.top - pathwayRect.top) + (elementRect.height / 2);
+
+        const nodePosition = element.getAttribute('data-position');
+        
+        if (nodePosition === 'left') {
+            const left = (elementRect.right - pathwayRect.left) + 10;
+            setPopoverPosition({ top, left });
+        } else {
+            const right = pathwayRect.right - elementRect.left + 10;
+            setPopoverPosition({ top, right });
+        }
     }
   };
 
