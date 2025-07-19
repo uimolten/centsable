@@ -1,35 +1,38 @@
 
 "use client";
 
-// This function creates and plays a simple sound without needing an audio file.
-export function playCorrectSound() {
-  // Ensure this code only runs in the browser
+function playSound(type: 'sine' | 'square' | 'sawtooth' | 'triangle', startFreq: number, endFreq: number, duration: number, startVol: number = 0.5) {
   if (typeof window === 'undefined' || !window.AudioContext) {
     return;
   }
 
   const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-  
-  // Create an oscillator node for the sound wave
   const oscillator = audioContext.createOscillator();
-  // Create a gain node to control the volume
   const gainNode = audioContext.createGain();
 
-  // Configure the sound
-  oscillator.type = 'sine'; // A smooth, clean tone
-  oscillator.frequency.setValueAtTime(600, audioContext.currentTime); // Start pitch
-  oscillator.frequency.exponentialRampToValueAtTime(900, audioContext.currentTime + 0.05); // Rise in pitch
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(startFreq, audioContext.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(endFreq, audioContext.currentTime + duration * 0.7);
 
-  // Configure the volume envelope to make it sound like a "pluck"
-  gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+  gainNode.gain.setValueAtTime(startVol, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
 
-  // Connect the nodes: oscillator -> gain -> destination (speakers)
   oscillator.connect(gainNode);
   gainNode.connect(audioContext.destination);
 
-  // Play the sound
   oscillator.start(audioContext.currentTime);
-  // Stop the sound after a short duration
-  oscillator.stop(audioContext.currentTime + 0.2);
+  oscillator.stop(audioContext.currentTime + duration);
+}
+
+// This function creates and plays a simple sound without needing an audio file.
+export function playCorrectSound() {
+  playSound('sine', 600, 900, 0.2);
+}
+
+export function playIncorrectSound() {
+  playSound('sawtooth', 200, 100, 0.3);
+}
+
+export function playClickSound() {
+  playSound('triangle', 440, 440, 0.05, 0.2);
 }

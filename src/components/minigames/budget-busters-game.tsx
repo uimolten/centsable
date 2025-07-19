@@ -11,6 +11,7 @@ import { LevelDisplay } from './level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
+import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
 
 type GameState = 'start' | 'playing' | 'level-end';
 
@@ -29,25 +30,44 @@ export function BudgetBustersGame() {
     }
   }, []);
 
-  const triggerQuestUpdate = async () => {
-    if (user && refreshUserData) {
-      await updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
-      await refreshUserData();
+  const triggerQuestUpdate = async (isSuccess: boolean, newScore: number) => {
+    if (!user || !refreshUserData) return;
+    
+    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+    if (isSuccess && newScore > highScore) {
+      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
     }
+    
+    await Promise.all(updates);
+    await refreshUserData();
   };
 
   const handleLevelComplete = (score: number, success: boolean) => {
+    if (success) {
+      playCorrectSound();
+    } else {
+      playIncorrectSound();
+    }
     setFinalScore(score);
     setWasSuccess(success);
     setGameState('level-end');
-    triggerQuestUpdate();
-    if (success && score > highScore) {
+    
+    const isNewHighScore = success && score > highScore;
+    if (isNewHighScore) {
       setHighScore(score);
       localStorage.setItem('budgetBustersHighScore', score.toString());
     }
+    
+    triggerQuestUpdate(success, score);
   };
+  
+  const handleGameStart = () => {
+    playClickSound();
+    setGameState('playing');
+  }
 
   const handleNext = () => {
+    playClickSound();
     if (wasSuccess && levelIndex < gameLevels.length - 1) {
       setLevelIndex(prev => prev + 1);
       setGameState('playing');
@@ -58,6 +78,7 @@ export function BudgetBustersGame() {
   };
 
   const handleRestart = () => {
+    playClickSound();
     setGameState('playing');
   };
 
@@ -78,7 +99,7 @@ export function BudgetBustersGame() {
              <div className="flex items-start gap-3"><Target className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Prioritize! Pulling from 'Wants' gives you a higher score bonus than pulling from 'Savings'. Needs are locked.</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
           </div>
-          <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={() => setGameState('playing')}>Start Game</Button>
+          <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={handleGameStart}>Start Game</Button>
         </CardContent>
       </Card>
     );

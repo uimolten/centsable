@@ -11,6 +11,7 @@ import { PiggyBank, Hand, Target, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
+import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
 
 type GameState = 'start' | 'playing' | 'end';
 type ItemCategory = 'Need' | 'Want';
@@ -42,14 +43,20 @@ export function SavingsSorterGame() {
     }
   }, []);
 
-  const triggerQuestUpdate = async () => {
-    if (user && refreshUserData) {
-      await updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' });
-      await refreshUserData();
+  const triggerQuestUpdate = async (isNewHighScore: boolean) => {
+    if (!user || !refreshUserData) return;
+
+    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+    if (isNewHighScore) {
+      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
     }
+    
+    await Promise.all(updates);
+    await refreshUserData();
   };
 
   const startGame = () => {
+    playClickSound();
     setItems(shuffle(savingsSorterItems));
     setCurrentItemIndex(0);
     setScore(0);
@@ -60,11 +67,14 @@ export function SavingsSorterGame() {
   const handleAnswer = (selectedCategory: ItemCategory) => {
     if (feedback) return; // Prevent multiple answers for the same item
 
+    playClickSound();
     const currentItem = items[currentItemIndex];
     if (currentItem.category === selectedCategory) {
+      playCorrectSound();
       setScore(prev => prev + 100);
       setFeedback('correct');
     } else {
+      playIncorrectSound();
       setScore(prev => Math.max(0, prev - 50));
       setFeedback('incorrect');
     }
@@ -86,11 +96,13 @@ export function SavingsSorterGame() {
 
     if (timeLeft <= 0) {
       setGameState('end');
-      triggerQuestUpdate();
-      if (score > highScore) {
+      playIncorrectSound(); // Time's up sound
+      const isNewHighScore = score > highScore && score > 0;
+      if (isNewHighScore) {
         setHighScore(score);
         localStorage.setItem('savingsSorterHighScore', score.toString());
       }
+      triggerQuestUpdate(isNewHighScore);
       return;
     }
 

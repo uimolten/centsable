@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { playClickSound, playIncorrectSound } from '@/lib/audio-utils';
 
 interface AccountSettingsProps {
   user: UserData;
@@ -31,6 +32,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
   const [isResetting, setIsResetting] = useState(false);
 
   const handlePasswordReset = async () => {
+    playClickSound();
     setIsResetting(true);
     try {
       await sendPasswordResetEmail(auth, user.email);
@@ -50,12 +52,18 @@ export function AccountSettings({ user }: AccountSettingsProps) {
   };
   
   const handleDeleteAccount = () => {
+    playIncorrectSound(); // Use a "danger" sound
     // This is a placeholder. A real implementation would require a backend function.
     toast({
         variant: "destructive",
         title: "Account Deletion Unavailable",
         description: "This feature is not yet implemented.",
     });
+  }
+
+  const handleSignOut = () => {
+    playClickSound();
+    signOut();
   }
 
   return (
@@ -78,7 +86,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                 {isResetting ? 'Sending...' : 'Change Password'}
               </Button>
             </div>
-             <Button variant="outline" className="w-full" onClick={signOut}>Log Out</Button>
+             <Button variant="outline" className="w-full" onClick={handleSignOut}>Log Out</Button>
           </CardContent>
         </Card>
         
@@ -90,7 +98,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
           <CardContent>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full">Delete Account</Button>
+                <Button variant="destructive" className="w-full" onClick={playClickSound}>Delete Account</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -101,7 +109,7 @@ export function AccountSettings({ user }: AccountSettingsProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel onClick={playClickSound}>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
                     Delete My Account
                   </AlertDialogAction>

@@ -10,7 +10,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAuth } from '@/hooks/use-auth';
 import { saveProgress } from '@/ai/flows/save-progress-flow';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
-import { playCorrectSound } from '@/lib/audio-utils';
+import { playCorrectSound, playIncorrectSound, playClickSound } from '@/lib/audio-utils';
 
 import { lessonSaving1 } from '@/data/lesson-saving-1';
 import { lessonSaving2 } from '@/data/lesson-saving-2';
@@ -312,6 +312,7 @@ export default function LessonPage() {
 }, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, isLessonAlreadyCompleted]);
   
   const goToNextStep = useCallback(async () => {
+      playClickSound();
       if (user && refreshUserData) {
           updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' }).then(() => refreshUserData());
       }
@@ -335,6 +336,7 @@ export default function LessonPage() {
   }, [currentModule?.steps.length, handleLessonComplete, moduleIndex, stepIndex, user, refreshUserData, lesson?.modules.length]);
 
   const goToPreviousStep = useCallback(() => {
+    playClickSound();
     if (moduleIndex === 0 && stepIndex === 0) return;
 
     if (stepIndex > 0) {
@@ -393,6 +395,7 @@ export default function LessonPage() {
           }
       }
     } else {
+      playIncorrectSound();
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);
       if (newIncorrectAttempts === 1) { // Only count the first mistake per step
@@ -404,6 +407,7 @@ export default function LessonPage() {
   }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, user, refreshUserData]);
 
   const handleFooterAction = useCallback(async () => {
+    playClickSound();
     if (lives === 0) {
       toast({
         variant: "destructive",
@@ -479,9 +483,13 @@ export default function LessonPage() {
           isAnswerEmpty = false; // It's never "empty" in the traditional sense.
         }
 
-        const isInputBasedStep = currentStep && ['multiple-choice', 'fill-in-the-blank', 'goal-builder'].includes(currentStep.type);
+        const isInputBasedStep = currentStep && ['multiple-choice', 'fill-in-the-blank', 'goal-builder', 'interactive-sort'].includes(currentStep.type);
         if (isInputBasedStep && isAnswerEmpty) {
-          return; // Block enter if no answer is provided for interactive steps
+          if (currentStep?.type === 'interactive-sort') {
+              if (interactiveSortItems.every(i => i.location === 'pool')) return;
+          } else {
+              return;
+          }
         }
         
         handleFooterAction();
@@ -489,7 +497,7 @@ export default function LessonPage() {
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [handleFooterAction, currentStep, userAnswers]);
+  }, [handleFooterAction, currentStep, userAnswers, interactiveSortItems]);
 
 
   if (!lesson) {
@@ -502,6 +510,8 @@ export default function LessonPage() {
     const isCompleteAndCorrect = hasAnswered && isCorrect === true;
     if (isCompleteAndCorrect) return;
 
+    playClickSound();
+    
     // This resets the 'Try Again' state if the user changes their answer.
     if (hasAnswered && isCorrect === false) {
       setHasAnswered(false);
@@ -543,6 +553,7 @@ export default function LessonPage() {
           }
       }
     } else {
+      playIncorrectSound();
       const newIncorrectAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newIncorrectAttempts);
       if(newIncorrectAttempts === 1) { // Only count the first mistake per step

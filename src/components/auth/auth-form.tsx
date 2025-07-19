@@ -19,6 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "../logo";
+import { playClickSound } from "@/lib/audio-utils";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -84,6 +85,7 @@ export function AuthForm() {
   }
 
   const handleGoogleSignIn = async () => {
+    playClickSound();
     if (!isFirebaseConfigured) {
       showConfigErrorToast();
       return;
@@ -116,6 +118,7 @@ export function AuthForm() {
   };
 
   const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
+    playClickSound();
     if (!isFirebaseConfigured) {
       showConfigErrorToast();
       return;
@@ -132,6 +135,7 @@ export function AuthForm() {
   };
 
   const onSignupSubmit = async (values: z.infer<typeof signupSchema>) => {
+    playClickSound();
     if (!isFirebaseConfigured) {
       showConfigErrorToast();
       return;
@@ -167,8 +171,8 @@ export function AuthForm() {
       <CardContent>
         <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-background/50">
-            <TabsTrigger value="login">Log In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsTrigger value="login" onClick={playClickSound}>Log In</TabsTrigger>
+            <TabsTrigger value="signup" onClick={playClickSound}>Sign Up</TabsTrigger>
           </TabsList>
           <TabsContent value="login" className="pt-4">
             <Form {...loginForm}>
@@ -213,5 +217,3 @@ export function AuthForm() {
     </Card>
   );
 }
-
-    
