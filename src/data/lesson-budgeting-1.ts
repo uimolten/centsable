@@ -15,7 +15,6 @@ export const lessonBudgeting1: Lesson = {
         },
         {
           type: 'concept',
-          text: "Before you can tell your money where to go, you need to know where it's already going. This is called tracking your expenses.",
         },
         {
           type: 'multiple-choice',
@@ -38,11 +37,9 @@ export const lessonBudgeting1: Lesson = {
             { id: 'opt4', text: 'Compliment from a friend', image: 'https://placehold.co/200x200', imageHint: 'friendly chat' },
           ],
           correctAnswer: ['opt1', 'opt2', 'opt3'],
-          reinforcement: "Correct! Every dollar has a story.",
         },
         {
           type: 'concept',
-          text: "Tracking everything—even tiny purchases—reveals your spending habits. Sometimes the results are surprising! 🤯",
         },
         {
           type: 'complete',

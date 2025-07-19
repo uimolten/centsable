@@ -15,7 +15,6 @@ export const lessonBudgeting2: Lesson = {
         },
         {
           type: 'concept',
-          text: "The rule splits your after-tax income into three buckets: 50% for Needs, 30% for Wants, and 20% for Savings.",
           image: "https://placehold.co/400x225",
           imageHint: 'three buckets color coded'
         },
@@ -36,13 +35,13 @@ export const lessonBudgeting2: Lesson = {
           items: [
             { id: 'item-1', text: 'Rent', correctBox: 'box1' },
             { id: 'item-2', text: 'Video Games', correctBox: 'box2' },
+            { id: 'item-3', text: 'Emergency Fund', correctBox: 'box1' }, // Savings is a need
             { id: 'item-4', text: 'Groceries', correctBox: 'box1' },
             { id: 'item-5', text: 'Movie Tickets', correctBox: 'box2' },
           ],
         },
         {
           type: 'concept',
-          text: "This rule is a guideline, not a law! It's a starting point to help you balance living your life now and planning for your future.",
         },
         {
           type: 'fill-in-the-blank',

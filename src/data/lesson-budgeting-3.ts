@@ -15,11 +15,9 @@ export const lessonBudgeting3: Lesson = {
         },
         {
           type: 'concept',
-          text: "Step 1: Calculate your monthly income. This is any money you get from jobs, allowance, or side hustles.",
         },
         {
           type: 'scenario',
-          text: "You earn $100 from a part-time job and get $40 for allowance. What's your total monthly income?",
         },
         {
           type: 'fill-in-the-blank',
@@ -29,11 +27,9 @@ export const lessonBudgeting3: Lesson = {
         },
         {
           type: 'concept',
-          text: "Step 2: Plan your spending using the 50/30/20 rule as your guide. With an income of $140, your plan is: <br> • 50% Needs = $70 <br> • 30% Wants = $42 <br> • 20% Savings = $28",
         },
         {
           type: 'concept',
-          text: "Step 3: As you spend money during the month, track it against your plan. Did you stay under your 'Wants' limit? Awesome!",
         },
         {
           type: 'multiple-choice',

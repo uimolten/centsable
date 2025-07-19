@@ -15,7 +15,6 @@ export const lessonBudgeting4: Lesson = {
         },
         {
           type: 'concept',
-          text: "Sometimes you'll overspend in one category. That's okay! The goal is to adjust and get back on track next month.",
         },
         {
           type: 'multiple-choice',
@@ -29,7 +28,6 @@ export const lessonBudgeting4: Lesson = {
         },
         {
           type: 'concept',
-          text: "You should also review your budget when your income changes, like when you get a raise or a new job. Your game plan should level up with you!",
         },
         {
           type: 'complete',

@@ -18,7 +18,6 @@ export const lessonBudgetingPractice1: Lesson = {
         },
         {
           type: 'scenario',
-          text: "Your monthly income is $200. Let's create a budget using the 50/30/20 rule as a guide.",
         },
         {
           type: 'multiple-choice',
@@ -52,7 +51,6 @@ export const lessonBudgetingPractice1: Lesson = {
         },
         {
           type: 'concept',
-          text: "Great job! That's a solid game plan. Remembering these targets is the key to making smart spending decisions.",
         },
         {
           type: 'complete',
