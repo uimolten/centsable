@@ -47,9 +47,6 @@ export function ConceptCard({ step }: ConceptCardProps) {
             />
         </div>
       )}
-       {step.text && (
-        <div className="text-xl md:text-2xl font-semibold leading-relaxed" dangerouslySetInnerHTML={{ __html: step.text }} />
-      )}
     </motion.div>
   );
 }

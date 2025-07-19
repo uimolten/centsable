@@ -487,7 +487,11 @@ export default function LessonPage() {
     return <div>Lesson not found or has ended! Redirecting...</div>;
   }
   
-  const progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+  let progress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
+  if (!currentStep) {
+    // If we're on the completion screen, progress is 100%
+    progress = 100;
+  }
 
   const handleSelectAnswer = (answer: string) => {
     const isCompleteAndCorrect = hasAnswered && isCorrect === true;
@@ -548,7 +552,7 @@ export default function LessonPage() {
     if (!step) return "Congratulations!";
     switch (step.type) {
       case 'fill-in-the-blank':
-        return 'Complete the sentence:';
+        return step.question;
       case 'tap-the-pairs':
       case 'interactive-sort':
         return step.instructions;

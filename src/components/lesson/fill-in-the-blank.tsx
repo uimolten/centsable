@@ -41,7 +41,6 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
         </div>
       )}
       <div className="text-2xl md:text-3xl font-semibold leading-relaxed text-center p-8 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl">
-        <span dangerouslySetInnerHTML={{ __html: parts[0] }} />
         <Input
           type="text"
           value={userAnswer}
@@ -55,7 +54,6 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
           autoFocus
           disabled={isCompleteAndCorrect}
         />
-        <span dangerouslySetInnerHTML={{ __html: parts[1] }} />
       </div>
 
       {incorrectAttempts >= 3 && !hasAnswered && step.reinforcement && (
