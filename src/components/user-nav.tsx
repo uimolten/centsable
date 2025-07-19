@@ -14,13 +14,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
-import { LayoutDashboard, LogOut, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, LogOut, User as UserIcon, Coins } from 'lucide-react';
+import { Card } from './ui/card';
 
 export function UserNav() {
   const { user, userData, signOut } = useAuth();
   const isAdmin = userData?.role === 'admin';
 
-  if (!user) return null;
+  if (!user || !userData) return null;
 
   const handleSignOut = () => {
     signOut();
@@ -33,6 +34,10 @@ export function UserNav() {
           <Link href="/admin">Admin Panel</Link>
         </Button>
       )}
+      <Card className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
+        <Coins className="h-6 w-6 text-yellow-400" />
+        <span className="font-bold text-lg text-foreground">{userData.cents}</span>
+      </Card>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
