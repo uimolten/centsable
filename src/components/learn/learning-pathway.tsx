@@ -6,7 +6,7 @@ import React from 'react';
 
 interface LearningPathwayProps {
   units: Unit[];
-  onSelectActivity: (activity: Activity) => void;
+  onSelectActivity: (activity: Activity, element: HTMLButtonElement) => void;
   selectedActivityId?: string;
 }
 

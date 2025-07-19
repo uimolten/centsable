@@ -1,23 +1,20 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useAuth } from '@/hooks/use-auth';
 import { units as rawUnitsData, DEV_MODE_UNLOCK_ALL } from '@/data/learn-data';
-import { isUnitCompleted } from '@/lib/lesson-utils';
-import type { Activity, ActivityState, Unit } from '@/types/learn';
+import type { Activity, ActivityState } from '@/types/learn';
 
-import { AnimatePresence } from 'framer-motion';
-import { LearningPathway } from '@/components/learn/learning-pathway';
-import { RightSidebar } from '@/components/learn/right-sidebar';
 import { LeftSidebar } from '@/components/learn/left-sidebar';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetDescription } from '@/components/ui/sheet';
 import { Target } from 'lucide-react';
+import { LearningPathway } from '@/components/learn/learning-pathway';
+import { ActivityDetails } from '@/components/learn/activity-details';
 
 
 export default function LearnPage() {
@@ -27,6 +24,9 @@ export default function LearnPage() {
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [popoverPosition, setPopoverPosition] = useState<{ top: number, left?: number, right?: number }>({ top: 0 });
+  const pathwayRef = useRef<HTMLDivElement>(null);
+
 
   const units = useMemo(() => {
     if (!userData && !DEV_MODE_UNLOCK_ALL) {
@@ -85,9 +85,27 @@ export default function LearnPage() {
     }
   }, [selectedActivity, isDesktop]);
 
-  const handleSelectActivity = (activity: Activity) => {
-    if (activity.state !== 'locked') {
-      setSelectedActivity(activity);
+  const handleSelectActivity = (activity: Activity, element: HTMLButtonElement) => {
+    if (activity.state === 'locked') {
+        setSelectedActivity(null);
+        return;
+    }
+    
+    setSelectedActivity(activity);
+
+    if (pathwayRef.current && element) {
+        const pathwayRect = pathwayRef.current.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        
+        const top = elementRect.top - pathwayRect.top + window.scrollY;
+        
+        const nodePosition = element.getAttribute('data-position');
+        
+        if (nodePosition === 'left') {
+            setPopoverPosition({ top, left: elementRect.width + 20 });
+        } else {
+            setPopoverPosition({ top, right: elementRect.width + 20 });
+        }
     }
   };
 
@@ -95,6 +113,10 @@ export default function LearnPage() {
     if (activity.state !== 'locked') {
       router.push(`/learn/${activity.id}`);
     }
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedActivity(null);
   };
 
   if (loading) {
@@ -115,16 +137,18 @@ export default function LearnPage() {
   }
 
   const rightSidebarContent = (
-    <RightSidebar 
+    <ActivityDetails 
       activity={selectedActivity}
       unit={selectedUnit}
       onStart={handleStartActivity}
+      onClose={handleCloseDetails}
+      isSheet={!isDesktop}
     />
   );
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-11 gap-x-8 px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 px-8 py-8">
         {/* --- Left Sidebar (Desktop) --- */}
         <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-24">
@@ -133,28 +157,29 @@ export default function LearnPage() {
         </aside>
 
         {/* Main Lessons Column */}
-        <main className="lg:col-span-6">
-          <LearningPathway 
-              units={units}
-              onSelectActivity={handleSelectActivity}
-              selectedActivityId={selectedActivity?.id}
-          />
-        </main>
+        <main ref={pathwayRef} className="lg:col-span-9 relative">
+            <div className="max-w-xl mx-auto">
+                <LearningPathway 
+                    units={units}
+                    onSelectActivity={handleSelectActivity}
+                    selectedActivityId={selectedActivity?.id}
+                />
+            </div>
 
-        {/* --- Right Sidebar (Desktop) --- */}
-        <aside className="hidden lg:block lg:col-span-2">
-          <div className="sticky top-24">
-              <AnimatePresence>
-              {selectedActivity && (
-                <Card className="bg-card/50 backdrop-blur-lg border border-border/10">
-                    <CardContent className="p-6">
-                        {rightSidebarContent}
-                    </CardContent>
-                </Card>
-              )}
-              </AnimatePresence>
-          </div>
-        </aside>
+            {isDesktop && selectedActivity && (
+                <div 
+                    className="absolute"
+                    style={{ 
+                        top: `${popoverPosition.top}px`,
+                        left: popoverPosition.left ? `${popoverPosition.left}px` : 'auto',
+                        right: popoverPosition.right ? `${popoverPosition.right}px` : 'auto',
+                        transform: 'translateY(-50%)'
+                    }}
+                >
+                    {rightSidebarContent}
+                </div>
+            )}
+        </main>
       </div>
       
       {/* Mobile Quest Button */}
@@ -175,12 +200,12 @@ export default function LearnPage() {
       {/* Mobile/Tablet Activity Details Sheet */}
       {!isDesktop && (
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent side="bottom" className="p-6 border-none bg-card/80 backdrop-blur-lg rounded-t-2xl h-[85vh]">
+          <SheetContent side="bottom" className="p-0 border-none bg-card/80 backdrop-blur-lg rounded-t-2xl h-[85vh]">
              <SheetHeader>
                <SheetTitle className="sr-only">Lesson Details</SheetTitle>
                <SheetDescription className="sr-only">Details about the selected lesson, practice, or quiz.</SheetDescription>
              </SheetHeader>
-             <div className="h-full flex flex-col items-center justify-center">
+             <div className="h-full flex flex-col items-center justify-center p-6">
                {rightSidebarContent}
              </div>
            </SheetContent>

@@ -3,11 +3,12 @@ import type { Activity, ActivityState } from '@/types/learn';
 import { cn } from '@/lib/utils';
 import { BookOpen, Check, Trophy, Lock, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import React from 'react';
 
 interface ActivityNodeProps {
   activity: Activity;
   position: 'left' | 'right';
-  onSelect: (activity: Activity) => void;
+  onSelect: (activity: Activity, element: HTMLButtonElement) => void;
   isSelected: boolean;
 }
 
@@ -26,6 +27,7 @@ const stateStyles: Record<ActivityState, string> = {
 export function ActivityNode({ activity, position, onSelect, isSelected }: ActivityNodeProps) {
   const Icon = typeIcons[activity.type];
   const isLocked = activity.state === 'locked';
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   return (
     <div className={cn(
@@ -42,6 +44,8 @@ export function ActivityNode({ activity, position, onSelect, isSelected }: Activ
 
       <div className="relative group">
         <Button
+          ref={buttonRef}
+          data-position={position}
           variant="ghost"
           className={cn(
             "relative h-20 w-20 rounded-full border-4 transition-all duration-300",
@@ -49,7 +53,11 @@ export function ActivityNode({ activity, position, onSelect, isSelected }: Activ
             isSelected && !isLocked && "ring-4 ring-offset-2 ring-offset-background ring-primary/80",
             "hover:scale-105"
           )}
-          onClick={() => onSelect(activity)}
+          onClick={() => {
+            if (buttonRef.current) {
+                onSelect(activity, buttonRef.current);
+            }
+          }}
           disabled={isLocked}
         >
           {activity.state === 'active' && (
