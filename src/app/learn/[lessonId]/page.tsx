@@ -253,6 +253,9 @@ export default function LessonPage() {
     
     setCompletedSteps(stepsSoFar);
   }, [moduleIndex, stepIndex, lesson]);
+
+  const currentModule = lesson?.modules[moduleIndex];
+  const currentStep = currentModule?.steps[stepIndex];
   
   useEffect(() => {
     if (currentStep?.type === 'interactive-sort') {
@@ -353,9 +356,6 @@ export default function LessonPage() {
     setIsSortIncomplete(false);
   }, [moduleIndex, stepIndex, lesson]);
   
-  const currentModule = lesson?.modules[moduleIndex];
-  const currentStep = currentModule?.steps[stepIndex];
-
   const checkAnswer = useCallback(() => {
     if (!currentStep) return false;
     switch (currentStep.type) {
