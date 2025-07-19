@@ -43,6 +43,8 @@ export const lessonInvesting3: Lesson = {
           options: [
             { id: 'stock', text: 'Stock ⚔️', image: 'https://placehold.co/200x200', imageHint: 'sword icon' },
             { id: 'bond', text: 'Bond 🛡️', image: 'https://placehold.co/200x200', imageHint: 'shield icon' },
+            { id: 'mutual_fund', text: 'Mutual Fund 🎒', image: 'https://placehold.co/200x200', imageHint: 'inventory bag icon' },
+            { id: 'savings_account', text: 'Savings Account 🏦', image: 'https://placehold.co/200x200', imageHint: 'bank icon' },
           ],
           correctAnswer: 'stock',
           reinforcement: "That's it! Stocks = Ownership.",
