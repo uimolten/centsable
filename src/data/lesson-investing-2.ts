@@ -41,6 +41,8 @@ export const lessonInvesting2: Lesson = {
           options: [
             { id: 'tech', text: 'A new, unproven tech company stock ⚔️', image: 'https://placehold.co/200x200', imageHint: 'chart up' },
             { id: 'bond', text: 'A bond from the U.S. government 🛡️', image: 'https://placehold.co/200x200', imageHint: 'shield security' },
+            { id: 'opt3', text: 'A savings account' },
+            { id: 'opt4', text: 'A diversified mutual fund' },
           ],
           correctAnswer: 'tech',
           reinforcement: 'You got it! New companies are riskier but could have huge rewards.',

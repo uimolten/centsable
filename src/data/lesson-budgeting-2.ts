@@ -11,7 +11,7 @@ export const lessonBudgeting2: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "New Quest: The Ultimate Cheat Code! Budgeting doesn't have to be complicated. Let's learn a famous strategy: the 50/30/20 rule.",
+          text: "New Quest: The Ultimate Cheat Code! Budgeting doesn't have to be complicated. Let's learn a famous strategy: the <b>50/30/20 rule</b>.",
         },
         {
           type: 'concept',

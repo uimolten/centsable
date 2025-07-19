@@ -11,7 +11,7 @@ export const lessonBudgetingQuiz: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "FINAL CHALLENGE! 🧠 You've learned how to create a money game plan. Prove your skills to become a Budgeting Master!",
+          text: "<b>FINAL CHALLENGE!</b> 🧠 You've learned how to create a money game plan. Prove your skills to become a Budgeting Master!",
         },
         {
           type: 'multiple-choice',
@@ -40,7 +40,7 @@ export const lessonBudgetingQuiz: Lesson = {
         },
         {
           type: 'multiple-choice',
-          question: "If your monthly income is $300, how much should you aim to put into savings according to the 50/30/20 rule?",
+          question: "If your monthly income is <b>$300</b>, how much should you aim to put into savings according to the 50/30/20 rule?",
           options: [
             { id: 'opt1', text: '$30' },
             { id: 'opt2', text: '$60' },

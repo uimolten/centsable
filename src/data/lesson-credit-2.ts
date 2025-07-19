@@ -45,15 +45,15 @@ export const lessonCredit2: Lesson = {
       steps: [
         {
           type: 'concept',
-          text: "Let's define some key terms you'll see on credit card offers. First up: *APR*, or *Annual Percentage Rate*. This is the interest you'll pay on any money you haven't paid back after the due date.",
+          text: "Let's define some key terms you'll see on credit card offers. First up: <b>APR</b>, or <b>Annual Percentage Rate</b>. This is the interest you'll pay on any money you haven't paid back after the due date.",
         },
         {
           type: 'concept',
-          text: "The *Grace Period* is the time between the end of a billing cycle and your payment due date. If you pay your full balance during this period, you won't be charged any interest!",
+          text: "The <b>Grace Period</b> is the time between the end of a billing cycle and your payment due date. If you pay your full balance during this period, you won't be charged any interest!",
         },
         {
           type: 'concept',
-          text: "Your *Credit Limit* is the total amount you can borrow. And *Credit Utilization* is the percentage of your limit you're currently using. Lenders like to see this below 30%!",
+          text: "Your <b>Credit Limit</b> is the total amount you can borrow. And <b>Credit Utilization</b> is the percentage of your limit you're currently using. Lenders like to see this below <b>30%</b>!",
         },
         {
           type: 'fill-in-the-blank',
@@ -80,7 +80,7 @@ export const lessonCredit2: Lesson = {
       steps: [
         {
           type: 'scenario',
-          text: "Let's see how your habits affect your credit score in a simulator. You're starting with a score of 680.",
+          text: "Let's see how your habits affect your credit score in a simulator. You're starting with a score of <b>680</b>.",
         },
         {
           type: 'multiple-choice',
@@ -96,7 +96,7 @@ export const lessonCredit2: Lesson = {
         },
         {
           type: 'scenario',
-          text: "Now, your credit utilization is at 80% because you almost maxed out your card for concert tickets.",
+          text: "Now, your credit utilization is at <b>80%</b> because you almost maxed out your card for concert tickets.",
         },
         {
           type: 'multiple-choice',
@@ -121,7 +121,7 @@ export const lessonCredit2: Lesson = {
             { id: 'opt1', text: 'It goes up ✅' },
             { id: 'opt2', text: 'It goes down ❌' },
             { id: 'opt3', text: 'It stays the same' },
-            { id: 'opt4', 'text': 'The stores give you free stuff'}
+            { id: 'opt4', text: 'The stores give you free stuff'},
           ],
           correctAnswer: 'opt2',
           reinforcement: 'Correct. Opening many new accounts in a short time can temporarily lower your score.',

@@ -37,13 +37,13 @@ export const lessonCreditPractice1: Lesson = {
         },
         {
           type: 'scenario',
-          text: "Your credit card has a limit of $<b>500</b>. You've spent $<b>250</b> on it and haven't paid it off yet.",
+          text: "Your credit card has a limit of <b>$500</b>. You've spent <b>$250</b> on it and haven't paid it off yet.",
         },
         {
           type: 'fill-in-the-blank',
           question: 'Your credit utilization is <b>___%</b>.',
           correctAnswer: '50',
-          reinforcement: "Exactly! ($250 is 50% of $500). To improve your score, you'd want to get this below 30%.",
+          reinforcement: "Exactly! (<b>$250</b> is <b>50%</b> of <b>$500</b>). To improve your score, you'd want to get this below <b>30%</b>.",
         },
         {
           type: 'multiple-choice',

@@ -15,7 +15,7 @@ export const lessonCredit4: Lesson = {
         },
         {
           type: 'scenario',
-          text: "You buy a new laptop for $<b>1,000</b> on a credit card with 20% APR. The minimum payment is only $<b>25</b> a month. Seems manageable, right?",
+          text: "You buy a new laptop for <b>$1,000</b> on a credit card with <b>20% APR</b>. The minimum payment is only <b>$25</b> a month. Seems manageable, right?",
         },
         {
           type: 'multiple-choice',
@@ -51,7 +51,7 @@ export const lessonCredit4: Lesson = {
         },
         {
           type: 'scenario',
-          text: "On that $<b>1,000</b> laptop: If you paid it off in one year (about $93/month), you'd pay about $<b>110</b> in total interest. If you only paid the minimum ($25/month), you'd pay almost $<b>800</b> in interest. That's an extra $<b>690</b>!",
+          text: "On that <b>$1,000</b> laptop: If you paid it off in one year (about <b>$93/month</b>), you'd pay about <b>$110</b> in total interest. If you only paid the minimum (<b>$25/month</b>), you'd pay almost <b>$800</b> in interest. That's an extra <b>$690</b>!",
         },
         {
           type: 'multiple-choice',

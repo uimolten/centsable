@@ -69,7 +69,7 @@ export function GoalBuilderStep({ step, userAnswer, onAnswerChange }: GoalBuilde
       transition={{ duration: 0.3 }}
       className="space-y-6 text-center bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl p-8 md:p-12"
     >
-      <h2 className="text-2xl md:text-3xl font-bold">{step.instructions}</h2>
+      <h2 className="text-2xl md:text-3xl font-bold" dangerouslySetInnerHTML={{ __html: step.instructions }} />
       <div className="flex justify-center">
         {renderInput()}
       </div>

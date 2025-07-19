@@ -11,7 +11,7 @@ export const lessonRetirementQuiz1: Lesson = {
       steps: [
         {
           type: 'intro',
-          text: "THE FINAL CHALLENGE! 👑 You've learned the secrets to Financial Freedom. Prove your knowledge and claim your reward!",
+          text: "<b>THE FINAL CHALLENGE!</b> 👑 You've learned the secrets to Financial Freedom. Prove your knowledge and claim your reward!",
         },
         {
           type: 'multiple-choice',
@@ -82,7 +82,7 @@ export const lessonRetirementQuiz1: Lesson = {
         },
         {
           type: 'fill-in-the-blank',
-          question: "A special investment account a teen can open with a parent's help is called a __________ Roth IRA.",
+          question: "A special investment account a teen can open with a parent's help is called a <b>__________</b> Roth IRA.",
           correctAnswer: 'Custodial',
         },
         {

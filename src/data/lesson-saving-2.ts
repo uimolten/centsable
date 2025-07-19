@@ -15,7 +15,7 @@ export const lessonSaving2: Lesson = {
         },
         {
           type: 'concept',
-          text: "A 'wish' is saying 'I want a new computer someday.' A 'goal' is saying 'I will save <b>$1,000</b> for a new computer in 6 months.' See the difference?",
+          text: "A 'wish' is saying 'I want a new computer someday.' A 'goal' is saying 'I will save <b>$1,000</b> for a new computer in <b>6 months</b>.' See the difference?",
         },
         {
           type: 'multiple-choice',
@@ -164,7 +164,7 @@ export const lessonSaving2: Lesson = {
             { id: 'opt4', text: "It's not Time-bound." },
           ],
           correctAnswer: 'opt2',
-          reinforcement: "Exactly! We don't know how much the laptop costs.",
+          reinforcement: "Exactly! Because the goal isn't <b>Measurable</b> (we don't know the cost of the laptop), it's hard to make a real plan.",
         },
         {
           type: 'concept',
