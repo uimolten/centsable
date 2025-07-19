@@ -20,7 +20,7 @@ const rawUnitsData: Unit[] = [
   },
   {
     id: 'unit-2',
-    title: 'The Money Game Plan',
+    title: 'Budgeting',
     description: "Master the art of budgeting to take control of your income and expenses.",
     unitIcon: PieChart,
     activities: [
