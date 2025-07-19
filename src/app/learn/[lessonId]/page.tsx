@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -66,6 +67,7 @@ import { TapThePairs } from '@/components/lesson/tap-the-pairs';
 import { InteractiveSort } from '@/components/lesson/interactive-sort';
 import { GoalBuilderStep as GoalBuilderComponent } from '@/components/lesson/goal-builder-step';
 import { GoalSummary } from '@/components/lesson/goal-summary';
+import { ScenarioStep } from '@/types/lesson';
 
 import type { Step, MultipleChoiceStep, FillInTheBlankStep, GoalBuilderStep, Lesson, SortItem as BaseSortItem, CompleteStep } from '@/types/lesson';
 import { useToast } from '@/hooks/use-toast';
@@ -597,9 +599,11 @@ export default function LessonPage() {
         return <GoalSummary key={uniqueKey} {...stepProps} />;
 
       case 'intro':
+        return <IntroCard key={uniqueKey} {...stepProps} />;
       case 'concept':
-      case 'scenario':
         return <ConceptCard key={uniqueKey} {...stepProps} />;
+      case 'scenario':
+        return <ConceptCard key={uniqueKey} {...{ step: step as ScenarioStep }} />;
       
       case 'complete':
         stepProps = { ...stepProps, isReviewMode: isLessonAlreadyCompleted };

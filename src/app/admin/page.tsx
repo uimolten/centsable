@@ -3,8 +3,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import ClientLayout from "../client-layout";
 
-export default function AdminPage() {
+function AdminPageContent() {
   const { user, isAdmin, loading } = useAuth();
   const router = useRouter();
 
@@ -38,4 +39,12 @@ export default function AdminPage() {
       </p>
     </div>
   );
+}
+
+export default function AdminPage() {
+    return (
+        <ClientLayout>
+            <AdminPageContent />
+        </ClientLayout>
+    )
 }

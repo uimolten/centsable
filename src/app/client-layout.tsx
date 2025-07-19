@@ -7,11 +7,17 @@ import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Logo } from '@/components/logo';
+import { usePathname } from 'next/navigation';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { loading } = useAuth();
+  const pathname = usePathname();
 
-  if (loading) {
+  const isAuthPage = pathname.startsWith('/auth');
+  const isLearnPage = pathname.startsWith('/learn');
+  const showLayout = !isAuthPage && !isLearnPage;
+
+  if (loading && showLayout) {
      return (
         <div className="w-full h-screen flex items-center justify-center bg-background">
             <div className="flex flex-col items-center gap-4 animate-pulse">
@@ -20,6 +26,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             </div>
         </div>
       )
+  }
+
+  if (!showLayout) {
+    return <>{children}</>;
   }
 
   return (
