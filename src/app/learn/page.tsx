@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useAuth } from '@/hooks/use-auth';
@@ -16,7 +16,7 @@ import { LeftSidebar } from '@/components/learn/left-sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetDescription } from '@/components/ui/sheet';
 import { Target } from 'lucide-react';
 
 
@@ -26,6 +26,7 @@ export default function LearnPage() {
   const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const units = useMemo(() => {
     if (!userData && !DEV_MODE_UNLOCK_ALL) {
@@ -69,20 +70,20 @@ export default function LearnPage() {
       return { ...unit, activities };
     });
 
-    // Set initial selected activity
-    if (!selectedActivity) {
-      const firstActive = processedUnits.flatMap(u => u.activities).find(a => a.state === 'active');
-      if (firstActive) {
-        setSelectedActivity(firstActive);
-      }
-    }
-
     return processedUnits;
-  }, [userData, selectedActivity]);
+  }, [userData]);
 
   const selectedUnit = useMemo(() => {
     return units.find(unit => unit.activities.some(act => act.id === selectedActivity?.id));
   }, [units, selectedActivity]);
+
+  useEffect(() => {
+    if (selectedActivity && !isDesktop) {
+      setIsSheetOpen(true);
+    } else {
+      setIsSheetOpen(false);
+    }
+  }, [selectedActivity, isDesktop]);
 
   const handleSelectActivity = (activity: Activity) => {
     if (activity.state !== 'locked') {
@@ -102,20 +103,28 @@ export default function LearnPage() {
             <aside className="hidden lg:block lg:col-span-3">
                  <Skeleton className="h-[500px] w-full" />
             </aside>
-            <main className="lg:col-span-7 space-y-8">
+            <main className="lg:col-span-6 space-y-8">
                 <Skeleton className="h-48 w-full max-w-lg mx-auto" />
                 <Skeleton className="h-96 w-full" />
             </main>
-            <aside className="hidden lg:block lg:col-span-2">
+            <aside className="hidden lg:block lg:col-span-3">
                  <Skeleton className="h-64 w-full" />
             </aside>
         </div>
     )
   }
 
+  const rightSidebarContent = (
+    <RightSidebar 
+      activity={selectedActivity}
+      unit={selectedUnit}
+      onStart={handleStartActivity}
+    />
+  );
+
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-11 gap-x-8 px-8 py-8">
         {/* --- Left Sidebar (Desktop) --- */}
         <aside className="hidden lg:block lg:col-span-3">
             <div className="sticky top-24">
@@ -124,7 +133,7 @@ export default function LearnPage() {
         </aside>
 
         {/* Main Lessons Column */}
-        <main className="lg:col-span-7">
+        <main className="lg:col-span-6">
           <LearningPathway 
               units={units}
               onSelectActivity={handleSelectActivity}
@@ -135,18 +144,15 @@ export default function LearnPage() {
         {/* --- Right Sidebar (Desktop) --- */}
         <aside className="hidden lg:block lg:col-span-2">
           <div className="sticky top-24">
-              <Card className="bg-card/50 backdrop-blur-lg border border-border/10">
-                  <CardContent className="p-6">
-                      <AnimatePresence mode="wait">
-                          <RightSidebar 
-                              key={selectedActivity?.id ?? 'empty'}
-                              activity={selectedActivity}
-                              unit={selectedUnit}
-                              onStart={handleStartActivity}
-                          />
-                      </AnimatePresence>
-                  </CardContent>
-              </Card>
+              <AnimatePresence>
+              {selectedActivity && (
+                <Card className="bg-card/50 backdrop-blur-lg border border-border/10">
+                    <CardContent className="p-6">
+                        {rightSidebarContent}
+                    </CardContent>
+                </Card>
+              )}
+              </AnimatePresence>
           </div>
         </aside>
       </div>
@@ -163,6 +169,21 @@ export default function LearnPage() {
                 <SheetTitle className="sr-only">Daily Quests</SheetTitle>
                 <LeftSidebar isSheet={true} />
             </SheetContent>
+        </Sheet>
+      )}
+
+      {/* Mobile/Tablet Activity Details Sheet */}
+      {!isDesktop && (
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          <SheetContent side="bottom" className="p-6 border-none bg-card/80 backdrop-blur-lg rounded-t-2xl h-[85vh]">
+             <SheetHeader>
+               <SheetTitle className="sr-only">Lesson Details</SheetTitle>
+               <SheetDescription className="sr-only">Details about the selected lesson, practice, or quiz.</SheetDescription>
+             </SheetHeader>
+             <div className="h-full flex flex-col items-center justify-center">
+               {rightSidebarContent}
+             </div>
+           </SheetContent>
         </Sheet>
       )}
     </>
