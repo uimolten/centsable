@@ -5,13 +5,13 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
-import { School, Road, Siren, Hospital, Plane } from 'lucide-react';
+import { School, Car, Siren, Hospital, Plane } from 'lucide-react';
 import type { InteractiveTownStep, InteractiveTownItem } from '@/types/lesson';
 import { cn } from '@/lib/utils';
 
 const iconMap = {
   school: School,
-  road: Road,
+  road: Car,
   police: Siren,
   hospital: Hospital,
   jet: Plane,
