@@ -9,7 +9,7 @@ import { isEqual, shuffle } from 'lodash';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAuth } from '@/hooks/use-auth';
-import { saveProgress } from '@/ai/flows/save-progress-flow';
+import { addXp } from '@/ai/flows/add-xp-flow';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { playCorrectSound, playIncorrectSound, playClickSound } from '@/lib/audio-utils';
 
@@ -181,7 +181,7 @@ const isAnswerSimilar = (userAnswer: string, correctAnswer: string): boolean => 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, userData, refreshUserData } = useAuth();
+  const { user, userData, refreshUserData, triggerLevelUp } = useAuth();
   const { toast } = useToast();
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
   
@@ -285,21 +285,24 @@ export default function LessonPage() {
         const totalXp = lastStep.rewards.xp + calculatedBonusXp;
 
         try {
-            const operations = [
-                saveProgress({
-                    userId: user.uid,
-                    lessonId: lessonId,
-                    xpGained: totalXp,
-                    centsGained: lastStep.rewards.coins,
-                })
-            ];
+            const addXpPromise = addXp({
+                userId: user.uid,
+                amount: totalXp,
+                lessonId: lessonId,
+            });
 
-            if (actionType) {
-                operations.push(updateQuestProgress({ userId: user.uid, actionType }));
+            const questUpdatePromise = actionType 
+                ? updateQuestProgress({ userId: user.uid, actionType })
+                : Promise.resolve();
+            
+            const [xpResult] = await Promise.all([addXpPromise, questUpdatePromise]);
+            
+            await refreshUserData?.(); // Refresh user data to get new XP/Cents
+
+            if(xpResult.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+                triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
             }
 
-            await Promise.all(operations);
-            await refreshUserData?.(); // Refresh user data to get new XP/Cents
         } catch (error) {
             console.error('Failed to save progress or update quest', error);
             toast({
@@ -313,7 +316,7 @@ export default function LessonPage() {
     // This is now only a marker to show the completion UI
     setStepIndex(prev => prev + 1);
 
-}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, isLessonAlreadyCompleted]);
+}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, isLessonAlreadyCompleted, triggerLevelUp]);
   
   const goToNextStep = useCallback(async () => {
       playClickSound();
@@ -682,3 +685,5 @@ export default function LessonPage() {
     </DndProvider>
   );
 }
+
+    

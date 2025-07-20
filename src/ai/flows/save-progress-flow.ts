@@ -2,6 +2,7 @@
 'use server';
 /**
  * @fileOverview A server-side flow for saving user learning progress.
+ * @deprecated This flow is deprecated in favor of addXpFlow.
  */
 
 import { ai } from '@/ai/genkit';
@@ -19,6 +20,7 @@ const saveProgressFlow = ai.defineFlow(
     name: 'saveProgressFlow',
     inputSchema: SaveProgressInputSchema,
     outputSchema: SaveProgressOutputSchema,
+    description: 'This flow is deprecated. Use addXpFlow instead.'
   },
   async ({ userId, lessonId, xpGained, centsGained }) => {
     try {
@@ -51,3 +53,5 @@ const saveProgressFlow = ai.defineFlow(
     }
   }
 );
+
+    

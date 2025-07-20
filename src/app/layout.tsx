@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/context/auth-provider';
 import './globals.css';
 import ClientLayout from './client-layout';
+import { LevelUpManager } from '@/components/level-up-manager';
 
 export const metadata: Metadata = {
   title: 'Centsable | Your Adventure in Financial Mastery',
@@ -24,9 +25,14 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;800&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body">
-        <ClientLayout>{children}</ClientLayout>
-        <Toaster />
+        <AuthProvider>
+            <ClientLayout>{children}</ClientLayout>
+            <LevelUpManager />
+            <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
 }
+
+    

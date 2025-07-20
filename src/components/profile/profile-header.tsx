@@ -18,10 +18,12 @@ import { Logo } from '../logo';
 interface ProfileHeaderProps {
   user: UserData;
   onUpdateUser: () => Promise<void>;
-  levelXP: number;
+  xpInCurrentLevel: number;
+  xpToNextLevel: number;
+  progressPercentage: number;
 }
 
-export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProps) {
+export function ProfileHeader({ user, onUpdateUser, xpInCurrentLevel, xpToNextLevel, progressPercentage }: ProfileHeaderProps) {
   const { refreshUserData } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user.displayName ?? '');
@@ -84,8 +86,6 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
     setIsEditing(true);
   }
 
-  const progressPercentage = (user.xp / levelXP) * 100;
-
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
@@ -130,7 +130,7 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
       <div className="w-full max-w-md">
         <div className="flex justify-between items-center text-sm font-semibold text-muted-foreground mb-1">
           <span>Level {user.level}</span>
-          <span>{user.xp} / {levelXP} XP</span>
+          <span>{xpInCurrentLevel} / {xpToNextLevel} XP</span>
         </div>
         <div className="relative h-4 rounded-full bg-muted/30">
             <div className="absolute inset-0 h-full w-full overflow-hidden rounded-full">
@@ -149,3 +149,5 @@ export function ProfileHeader({ user, onUpdateUser, levelXP }: ProfileHeaderProp
     </motion.div>
   );
 }
+
+    

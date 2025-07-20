@@ -7,6 +7,12 @@ import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs, Timestamp, q
 import { auth, db } from '@/lib/firebase';
 import { UserData } from '@/types/user';
 import { Quest } from '@/types/quests';
+import { getLevelFromXP } from '@/lib/level-config';
+
+interface LevelUpData {
+    newLevel: number;
+    reward: number;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +22,9 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
   isAdmin: boolean;
+  levelUpData: LevelUpData | null;
+  triggerLevelUp: (data: LevelUpData) => void;
+  closeLevelUpModal: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(false); // For subsequent data refreshes
   const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
+  const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
 
   const fetchUserData = useCallback(async (user: User | null, isInitialLoad: boolean = false) => {
     if (isInitialLoad) {
@@ -55,6 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (userDoc.exists()) {
             const data = userDoc.data();
+            // Recalculate level on client to ensure it's always in sync with XP
+            const calculatedLevel = getLevelFromXP(data.xp ?? 0);
              setUserData({
               uid: user.uid,
               email: data.email,
@@ -62,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               photoURL: data.photoURL || user.photoURL,
               role: data.role || 'user',
               xp: data.xp ?? 0,
-              level: data.level ?? 1,
+              level: calculatedLevel,
               cents: data.cents ?? 0,
               streak: data.streak ?? 0,
               lessonsCompleted: data.lessonsCompleted ?? 0,
@@ -128,9 +140,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const isAdmin = userData?.role === 'admin';
 
+  const triggerLevelUp = (data: LevelUpData) => {
+    setLevelUpData(data);
+  };
+
+  const closeLevelUpModal = () => {
+    setLevelUpData(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, userData, loading, authLoading, isAdmin, signOut, refreshUserData }}>
+    <AuthContext.Provider value={{ user, userData, loading, authLoading, isAdmin, signOut, refreshUserData, levelUpData, triggerLevelUp, closeLevelUpModal }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+    
