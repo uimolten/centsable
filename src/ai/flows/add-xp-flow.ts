@@ -5,27 +5,11 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
 import { doc, runTransaction, arrayUnion, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { LEVEL_THRESHOLDS } from '@/lib/level-config';
 import type { UserData } from '@/types/user';
-
-export const AddXpInputSchema = z.object({
-  userId: z.string().describe('The UID of the user to grant XP to.'),
-  amount: z.number().int().positive().describe('The amount of XP to add.'),
-  lessonId: z.string().optional().describe('The optional ID of the lesson completed.'),
-});
-export type AddXpInput = z.infer<typeof AddXpInputSchema>;
-
-export const AddXpOutputSchema = z.object({
-  success: z.boolean(),
-  leveledUp: z.boolean().describe('Indicates if the user leveled up.'),
-  newLevel: z.number().optional().describe('The user\'s new level if they leveled up.'),
-  rewardCents: z.number().optional().describe('The cents awarded for leveling up.'),
-  message: z.string().optional(),
-});
-export type AddXpOutput = z.infer<typeof AddXpOutputSchema>;
+import { AddXpInputSchema, AddXpOutputSchema, type AddXpInput, type AddXpOutput } from '@/types/actions';
 
 export async function addXp(input: AddXpInput): Promise<AddXpOutput> {
   return addXpFlow(input);
@@ -104,5 +88,3 @@ const addXpFlow = ai.defineFlow(
     }
   }
 );
-
-    

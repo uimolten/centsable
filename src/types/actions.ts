@@ -27,3 +27,20 @@ export const SaveProgressOutputSchema = z.object({
     message: z.string().optional(),
 });
 export type SaveProgressOutput = z.infer<typeof SaveProgressOutputSchema>;
+
+
+export const AddXpInputSchema = z.object({
+  userId: z.string().describe('The UID of the user to grant XP to.'),
+  amount: z.number().int().positive().describe('The amount of XP to add.'),
+  lessonId: z.string().optional().describe('The optional ID of the lesson completed.'),
+});
+export type AddXpInput = z.infer<typeof AddXpInputSchema>;
+
+export const AddXpOutputSchema = z.object({
+  success: z.boolean(),
+  leveledUp: z.boolean().describe('Indicates if the user leveled up.'),
+  newLevel: z.number().optional().describe("The user's new level if they leveled up."),
+  rewardCents: z.number().optional().describe('The cents awarded for leveling up.'),
+  message: z.string().optional(),
+});
+export type AddXpOutput = z.infer<typeof AddXpOutputSchema>;
