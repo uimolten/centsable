@@ -75,7 +75,7 @@ export const lessonTaxes4: Lesson = {
           text: "You're prepared for the future. You're ready for the final quiz!",
           rewards: {
             xp: 10,
-            coins: 15,
+            coins: 0,
           },
         },
       ],

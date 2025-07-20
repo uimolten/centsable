@@ -57,7 +57,7 @@ export const lessonInvesting2: Lesson = {
           text: "You've learned the rules of Risk & Reward.",
           rewards: {
             xp: 7,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

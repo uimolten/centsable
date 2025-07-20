@@ -71,7 +71,7 @@ export const lessonCredit4: Lesson = {
           text: "You've learned how to see the true cost of borrowing. You're ready to make smart debt decisions!",
           rewards: {
             xp: 8,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

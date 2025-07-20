@@ -41,10 +41,10 @@ export const lessonInvesting3: Lesson = {
           type: 'multiple-choice',
           question: "Which one is like OWNING a piece of a company?",
           options: [
-            { id: 'stock', text: 'Stock', image: 'https://placehold.co/200x200.png', imageHint: 'sword icon' },
-            { id: 'bond', text: 'Bond', image: 'https://placehold.co/200x200.png', imageHint: 'shield icon' },
-            { id: 'mutual_fund', text: 'Mutual Fund', image: 'https://placehold.co/200x200.png', imageHint: 'inventory bag' },
-            { id: 'savings_account', text: 'Savings Account', image: 'https://placehold.co/200x200.png', imageHint: 'bank building' },
+            { id: 'stock', text: 'Stock', image: 'https://placehold.co/200x200', imageHint: 'sword icon' },
+            { id: 'bond', text: 'Bond', image: 'https://placehold.co/200x200', imageHint: 'shield icon' },
+            { id: 'mutual_fund', text: 'Mutual Fund', image: 'https://placehold.co/200x200', imageHint: 'inventory bag' },
+            { id: 'savings_account', text: 'Savings Account', image: 'https://placehold.co/200x200', imageHint: 'bank building' },
           ],
           correctAnswer: 'stock',
           reinforcement: "That's it! Stocks = Ownership.",
@@ -67,7 +67,7 @@ export const lessonInvesting3: Lesson = {
           text: "You've geared up with investment knowledge!",
           rewards: {
             xp: 8,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

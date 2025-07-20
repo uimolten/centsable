@@ -167,7 +167,7 @@ export const lessonSaving1: Lesson = {
           text: "You've mastered 'The Importance of Saving'.",
           rewards: {
             xp: 10,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

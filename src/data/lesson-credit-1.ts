@@ -97,7 +97,7 @@ export const lessonCredit1: Lesson = {
           text: "You've learned the basics of credit. Now you're ready to build a great financial reputation!",
           rewards: {
             xp: 8,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

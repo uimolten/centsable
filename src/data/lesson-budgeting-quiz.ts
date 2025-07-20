@@ -97,7 +97,7 @@ export const lessonBudgetingQuiz: Lesson = {
           text: "You've officially mastered the Money Game Plan! 🏆",
           rewards: {
             xp: 25,
-            coins: 25,
+            coins: 10,
           },
         },
       ],

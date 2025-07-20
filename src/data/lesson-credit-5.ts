@@ -78,7 +78,7 @@ export const lessonCredit5: Lesson = {
           text: "You've learned how to make smart credit choices and protect yourself. You're ready for the final quiz!",
           rewards: {
             xp: 10,
-            coins: 15,
+            coins: 0,
           },
         },
       ],

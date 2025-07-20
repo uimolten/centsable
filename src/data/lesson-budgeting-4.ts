@@ -38,7 +38,7 @@ export const lessonBudgeting4: Lesson = {
           text: "You're now a budgeting master.",
           rewards: {
             xp: 5,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

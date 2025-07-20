@@ -41,7 +41,7 @@ export const lessonTaxesPractice1: Lesson = {
           text: 'Your paycheck detective skills are sharp. Well done!',
           rewards: {
             xp: 15,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

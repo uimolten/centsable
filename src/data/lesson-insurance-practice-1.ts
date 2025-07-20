@@ -19,6 +19,8 @@ export const lessonInsurancePractice1: Lesson = {
           options: [
             { id: 'opt1', text: "Buy Renters Insurance ($15/month). It protects my stuff." },
             { id: 'opt2', text: "Skip insurance and buy that new video game ($70)." },
+            { id: 'opt3', text: "Save the full $100 for a bigger goal." },
+            { id: 'opt4', text: "Invest the $100 in an index fund." },
           ],
           correctAnswer: ['opt1','opt2'], // Both are valid choices to see consequences
           reinforcement: "Let's see what happens..."

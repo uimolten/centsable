@@ -89,7 +89,7 @@ export const lessonCreditQuiz: Lesson = {
           text: "You're officially a Credit Master! 🏆 You have the knowledge to build a strong financial future.",
           rewards: {
             xp: 25,
-            coins: 25,
+            coins: 10,
           },
         },
       ],

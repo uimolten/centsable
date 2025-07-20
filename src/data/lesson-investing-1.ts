@@ -57,7 +57,7 @@ export const lessonInvesting1: Lesson = {
           text: "You've learned about the power of compounding!",
           rewards: {
             xp: 5,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

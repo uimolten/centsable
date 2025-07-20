@@ -49,7 +49,7 @@ export const lessonInvesting5: Lesson = {
           text: 'You now know the first steps to start your investing adventure!',
           rewards: {
             xp: 5,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

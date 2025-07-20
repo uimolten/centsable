@@ -49,7 +49,7 @@ export const lessonInvesting4: Lesson = {
           text: "You've learned how to build a balanced inventory!",
           rewards: {
             xp: 7,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

@@ -85,7 +85,7 @@ export const lessonTaxes3: Lesson = {
           text: 'You understand the basics of filing taxes. Amazing!',
           rewards: {
             xp: 10,
-            coins: 15,
+            coins: 0,
           },
         },
       ],

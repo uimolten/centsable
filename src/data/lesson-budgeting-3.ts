@@ -46,6 +46,7 @@ export const lessonBudgeting3: Lesson = {
             { id: 'opt1', text: 'Set it and forget it' },
             { id: 'opt2', text: 'Track your spending against your plan' },
             { id: 'opt3', text: 'Spend all your money' },
+            { id: 'opt4', text: 'Ask for a raise' },
           ],
           correctAnswer: 'opt2',
         },
@@ -55,7 +56,7 @@ export const lessonBudgeting3: Lesson = {
           text: "You now have a powerful game plan for your money.",
           rewards: {
             xp: 7,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

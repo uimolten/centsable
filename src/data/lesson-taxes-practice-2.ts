@@ -43,7 +43,7 @@ export const lessonTaxesPractice2: Lesson = {
           text: 'You successfully filed a mini tax return! Great job.',
           rewards: {
             xp: 15,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

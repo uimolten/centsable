@@ -64,7 +64,7 @@ export const lessonCreditPractice2: Lesson = {
           text: 'You handled those scenarios like a pro. Awesome work!',
           rewards: {
             xp: 15,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

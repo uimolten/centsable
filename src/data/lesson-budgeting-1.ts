@@ -24,6 +24,7 @@ export const lessonBudgeting1: Lesson = {
             { id: 'opt1', text: 'Guessing your spending' },
             { id: 'opt2', text: 'Tracking your expenses' },
             { id: 'opt3', text: 'Asking friends for money' },
+            { id: 'opt4', text: 'Picking stocks to invest in' },
           ],
           correctAnswer: 'opt2',
           reinforcement: "Exactly! You can't make a plan without knowing the facts.",
@@ -49,7 +50,7 @@ export const lessonBudgeting1: Lesson = {
           text: "You've learned the power of being a money detective.",
           rewards: {
             xp: 5,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

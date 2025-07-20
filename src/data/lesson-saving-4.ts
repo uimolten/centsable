@@ -97,7 +97,7 @@ export const lessonSaving4: Lesson = {
           text: "You're officially a Savings Master! 🏆",
           rewards: {
             xp: 25,
-            coins: 25,
+            coins: 10,
           },
         },
       ],

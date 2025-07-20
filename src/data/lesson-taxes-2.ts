@@ -74,7 +74,7 @@ export const lessonTaxes2: Lesson = {
           text: 'You\'ve cracked the code of your paycheck!',
           rewards: {
             xp: 8,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

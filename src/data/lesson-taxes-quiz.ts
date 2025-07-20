@@ -78,7 +78,7 @@ export const lessonTaxesQuiz: Lesson = {
           text: "You're officially a Taxes Master! 🏆 You have the knowledge to navigate your financial future.",
           rewards: {
             xp: 25,
-            coins: 25,
+            coins: 10,
           },
         },
       ],

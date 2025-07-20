@@ -176,7 +176,7 @@ export const lessonSaving2: Lesson = {
           text: "You've mastered 'Creating a Savings Goal'.",
           rewards: {
             xp: 10,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

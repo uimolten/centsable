@@ -63,7 +63,7 @@ export const lessonCreditPractice1: Lesson = {
           text: 'Your credit knowledge is getting stronger. Well done!',
           rewards: {
             xp: 15,
-            coins: 5,
+            coins: 0,
           },
         },
       ],

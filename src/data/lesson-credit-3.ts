@@ -88,7 +88,7 @@ export const lessonCredit3: Lesson = {
           text: "You've demystified credit reports and scores. Knowledge is power!",
           rewards: {
             xp: 8,
-            coins: 10,
+            coins: 0,
           },
         },
       ],

@@ -57,7 +57,7 @@ export const lessonBudgeting2: Lesson = {
           text: "You've learned the 50/30/20 cheat code.",
           rewards: {
             xp: 7,
-            coins: 10,
+            coins: 0,
           },
         },
       ],
