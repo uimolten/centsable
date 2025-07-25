@@ -7,8 +7,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { GridBackground } from '../grid-background';
 import BlurText from '../ui/blur-text';
+import DarkVeil from './dark-veil';
 
 export function Hero() {
   const { user, loading } = useAuth();
@@ -19,8 +19,13 @@ export function Hero() {
   };
 
   return (
-    <GridBackground>
-      <section className="relative w-full pt-20 pb-20 md:pt-24 md:pb-24 text-center overflow-hidden">
+      <section className="relative w-full pt-20 pb-20 md:pt-24 md:pb-24 text-center overflow-hidden bg-background">
+         <div className="absolute inset-0 w-full h-full opacity-15">
+            <DarkVeil hueShift={80} />
+         </div>
+         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
+
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,6 +85,5 @@ export function Hero() {
             </div>
           </motion.div>
       </section>
-    </GridBackground>
   );
 }
