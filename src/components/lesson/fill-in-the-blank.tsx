@@ -17,7 +17,6 @@ interface FillInTheBlankProps {
 
 export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, isCorrect, incorrectAttempts }: FillInTheBlankProps) {
   const parts = step.question.split('________');
-  const isCompleteAndCorrect = hasAnswered && isCorrect === true;
 
   return (
     <motion.div
@@ -52,7 +51,7 @@ export function FillInTheBlank({ step, userAnswer, onAnswerChange, hasAnswered, 
             hasAnswered && isCorrect === false && "border-destructive bg-red-500/10 animate-shake"
           )}
           autoFocus
-          disabled={isCompleteAndCorrect}
+          disabled={hasAnswered}
         />
       </div>
 

@@ -93,10 +93,9 @@ interface InteractiveSortProps {
 }
 
 export function InteractiveSort({ step, items, onItemsChange, hasAnswered, isCorrect }: InteractiveSortProps) {
-  const isCompleteAndCorrect = hasAnswered && isCorrect === true;
 
   const handleDrop = (droppedItem: { id: string }, targetZoneId: 'pool' | 'box1' | 'box2') => {
-    if (isCompleteAndCorrect) return;
+    if (hasAnswered) return;
     const newItems = items.map(item => 
         item.id === droppedItem.id ? { ...item, location: targetZoneId } : item
     );
@@ -114,19 +113,19 @@ export function InteractiveSort({ step, items, onItemsChange, hasAnswered, isCor
       >
         <DropZone zoneId="pool" onDrop={handleDrop} className="bg-background min-h-[100px] justify-center">
             {items.filter(i => i.location === 'pool').map(item => (
-                <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />
+                <DraggableItem key={item.id} item={item} canDrag={!hasAnswered} />
             ))}
         </DropZone>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <DropZone zoneId="box1" label={step.box1Label} onDrop={handleDrop} className="min-h-[200px]">
              {items.filter(i => i.location === 'box1').map(item => (
-                <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />
+                <DraggableItem key={item.id} item={item} canDrag={!hasAnswered} />
             ))}
           </DropZone>
           <DropZone zoneId="box2" label={step.box2Label} onDrop={handleDrop} className="min-h-[200px]">
             {items.filter(i => i.location === 'box2').map(item => (
-                <DraggableItem key={item.id} item={item} canDrag={!isCompleteAndCorrect} />
+                <DraggableItem key={item.id} item={item} canDrag={!hasAnswered} />
             ))}
           </DropZone>
         </div>

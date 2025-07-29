@@ -33,8 +33,6 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
     setEliminatedOptionId(null);
   }, [step.question]);
 
-  const isCompleteAndCorrect = hasAnswered && isCorrect === true;
-
   const renderOptionContent = (option: typeof step.options[0]) => {
     if (option.image) {
       return (
@@ -89,7 +87,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
                 isEliminated && "opacity-50 bg-muted/30 border-muted-foreground/10 cursor-not-allowed"
               )}
               onClick={() => onSelectAnswer(option.id)}
-              disabled={isCompleteAndCorrect || isEliminated}
+              disabled={hasAnswered || isEliminated}
             >
               {renderOptionContent(option)}
             </Button>
