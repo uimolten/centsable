@@ -149,5 +149,3 @@ export function ProfileHeader({ user, onUpdateUser, xpInCurrentLevel, xpToNextLe
     </motion.div>
   );
 }
-
-    

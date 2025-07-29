@@ -21,7 +21,7 @@ export function Hero() {
   return (
       <section className="relative w-full pt-20 pb-20 md:pt-24 md:pb-24 text-center overflow-hidden bg-background">
          <div className="absolute inset-0 w-full h-full opacity-15">
-            <DarkVeil hueShift={80} speed={1.0} />
+            <DarkVeil hueShift={80} speed={2.1} />
          </div>
          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
 

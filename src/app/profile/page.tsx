@@ -14,6 +14,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserData } from "@/types/user";
 import { updateQuestProgress } from "@/ai/flows/update-quest-progress-flow";
+import { LEVEL_THRESHOLDS } from "@/lib/level-config";
 
 export default function ProfilePage() {
   const { user, userData: authUserData, loading: authLoading, refreshUserData } = useAuth();
@@ -72,14 +73,25 @@ export default function ProfilePage() {
     );
   }
 
-  const levelXP = Math.floor(userData.level * 1.5 * 1000);
+  const currentLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level);
+  const nextLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level + 1);
+  
+  const xpForCurrentLevel = currentLevelThreshold?.totalXPNeeded ?? 0;
+  const xpForNextLevel = nextLevelThreshold?.totalXPNeeded ?? userData.xp;
+  
+  const xpInCurrentLevel = userData.xp - xpForCurrentLevel;
+  const xpToNextLevel = xpForNextLevel - xpForCurrentLevel;
+
+  const progressPercentage = xpToNextLevel > 0 ? (xpInCurrentLevel / xpToNextLevel) * 100 : 100;
 
   return (
     <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-12">
       <ProfileHeader 
         user={userData} 
         onUpdateUser={handleUpdateUser} 
-        levelXP={levelXP}
+        xpInCurrentLevel={xpInCurrentLevel}
+        xpToNextLevel={xpToNextLevel}
+        progressPercentage={progressPercentage}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
