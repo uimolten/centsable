@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -321,7 +320,8 @@ export default function LessonPage() {
   const goToNextStep = useCallback(async () => {
       playClickSound();
       if (user && refreshUserData) {
-          updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' }).then(() => refreshUserData());
+          await updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' });
+          await refreshUserData();
       }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
@@ -686,4 +686,3 @@ export default function LessonPage() {
   );
 }
 
-    
