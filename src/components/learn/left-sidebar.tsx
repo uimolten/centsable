@@ -71,27 +71,31 @@ export function LeftSidebar({ isSheet = false }: LeftSidebarProps) {
 
   useEffect(() => {
     const generateQuestsIfNeeded = async () => {
-      if (!user || !userData) return;
+      if (!user || !userData || isGenerating) return;
 
       const pacificTimeZone = 'America/Los_Angeles';
-      const now = new Date();
-      const nowInPacific = toZonedTime(now, pacificTimeZone);
+      const nowInPacific = toZonedTime(new Date(), pacificTimeZone);
       
-      let lastGeneratedDate: Date | null = null;
-      if (userData.lastQuestGenerated) {
-        lastGeneratedDate = toZonedTime(userData.lastQuestGenerated.toDate(), pacificTimeZone);
+      const lastGeneratedDate = userData.lastQuestGenerated 
+        ? toZonedTime(userData.lastQuestGenerated.toDate(), pacificTimeZone)
+        : null;
+
+      let needsNewQuests = false;
+      if (!lastGeneratedDate) {
+        needsNewQuests = true; // First time ever.
+      } else {
+        const fiveAmTodayPacific = new Date(nowInPacific);
+        fiveAmTodayPacific.setHours(5, 0, 0, 0);
+
+        const lastGeneratedIsBeforeTodayFiveAm = isBefore(lastGeneratedDate, fiveAmTodayPacific);
+        const todayIsAfterFiveAm = isBefore(fiveAmTodayPacific, nowInPacific);
+
+        if (!isSameDay(nowInPacific, lastGeneratedDate) && lastGeneratedIsBeforeTodayFiveAm) {
+           needsNewQuests = true;
+        }
       }
-      
-      const fiveAmTodayPacific = new Date(nowInPacific);
-      fiveAmTodayPacific.setHours(5, 0, 0, 0);
 
-      const needsNewQuests = !lastGeneratedDate || 
-                             (lastGeneratedDate && !isSameDay(nowInPacific, lastGeneratedDate) && isBefore(lastGeneratedDate, fiveAmTodayPacific));
-
-      // For testing: Also generate if no quests are currently loaded.
-      const shouldGenerateForTesting = quests.length === 0;
-
-      if ((needsNewQuests || shouldGenerateForTesting) && !isGenerating) {
+      if (needsNewQuests) {
         setIsGenerating(true);
         try {
           await generateDailyQuests({ userId: user.uid });
@@ -105,7 +109,7 @@ export function LeftSidebar({ isSheet = false }: LeftSidebarProps) {
     };
 
     generateQuestsIfNeeded();
-  }, [user, userData, isGenerating, refreshUserData, quests]);
+  }, [user, userData, isGenerating, refreshUserData]);
 
   const renderContent = () => {
     if (isGenerating || !userData) {
