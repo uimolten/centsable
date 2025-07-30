@@ -3,7 +3,6 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { SavingsSorterGame } from '@/components/minigames/savings-sorter-game';
-import { BudgetBustersGame } from '@/components/minigames/budget-busters-game';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -36,8 +35,6 @@ export default function MinigamePage() {
     switch (gameId) {
       case 'savings-sorter':
         return <SavingsSorterGame />;
-      case 'budget-busters':
-        return <BudgetBustersGame />;
       default:
         return (
           <div className="text-center">

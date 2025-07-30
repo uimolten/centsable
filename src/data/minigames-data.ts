@@ -17,13 +17,6 @@ export const minigames: Minigame[] = [
     requiredUnitId: 'unit-1', // Unlocks after completing Savings unit
   },
   {
-    id: 'budget-busters',
-    title: 'Budget Busters',
-    description: 'A surprise expense has appeared! Adjust your budget to handle it without going into debt.',
-    icon: PieChart,
-    requiredUnitId: 'unit-2', // Unlocks after completing Budgeting unit
-  },
-  {
     id: 'credit-climber',
     title: 'Credit Climber',
     description: 'Make smart credit decisions to climb your credit score to the top!',
