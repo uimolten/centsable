@@ -201,20 +201,20 @@ export default function LessonPage() {
   const [streak, setStreak] = useState(0);
   const [interactiveSortItems, setInteractiveSortItems] = useState<SortItem[]>([]);
   const [isSortIncomplete, setIsSortIncomplete] = useState(false);
-  const [isLessonAlreadyCompleted, setIsLessonAlreadyCompleted] = useState(false);
+  const [initialCompletionState, setInitialCompletionState] = useState<boolean | null>(null);
   const [bonusXp, setBonusXp] = useState(0);
 
   useEffect(() => {
-    if (userData) {
-      setIsLessonAlreadyCompleted(userData.completedLessons?.includes(lessonId) ?? false);
+    if (userData && initialCompletionState === null) {
+      setInitialCompletionState(userData.completedLessons?.includes(lessonId) ?? false);
     }
-  }, [userData, lessonId]);
+  }, [userData, lessonId, initialCompletionState]);
 
 
   useEffect(() => {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
-      if (user && refreshUserData && !isLessonAlreadyCompleted) {
+      if (user && refreshUserData && initialCompletionState === false) {
         updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' }).then(() => refreshUserData());
       }
       setLesson(loadedLesson);
@@ -240,7 +240,7 @@ export default function LessonPage() {
       // Handle lesson not found, maybe redirect
       router.push('/learn');
     }
-  }, [lessonId, router, user, refreshUserData, isLessonAlreadyCompleted]);
+  }, [lessonId, router, user, refreshUserData, initialCompletionState]);
   
   const currentModule = lesson?.modules[moduleIndex];
   const currentStep = currentModule?.steps[stepIndex];
@@ -270,7 +270,7 @@ export default function LessonPage() {
         return;
     }
 
-    if (!isLessonAlreadyCompleted) {
+    if (initialCompletionState === false) {
         const isPractice = lesson.title.toLowerCase().includes('practice');
         const isQuiz = lesson.title.toLowerCase().includes('quiz');
         const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0] as CompleteStep;
@@ -315,7 +315,7 @@ export default function LessonPage() {
     // This is now only a marker to show the completion UI
     setStepIndex(prev => prev + 1);
 
-}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, isLessonAlreadyCompleted, triggerLevelUp]);
+}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, initialCompletionState, triggerLevelUp]);
   
   const goToNextStep = useCallback(async () => {
       playClickSound();
@@ -507,7 +507,7 @@ export default function LessonPage() {
   }, [handleFooterAction, currentStep, userAnswers, interactiveSortItems]);
 
 
-  if (!lesson) {
+  if (!lesson || initialCompletionState === null) {
     return <div>Lesson not found or has ended! Redirecting...</div>;
   }
   
@@ -644,7 +644,7 @@ export default function LessonPage() {
         return <ConceptCard key={uniqueKey} {...{ step: step as ScenarioStep }} />;
       
       case 'complete':
-        stepProps = { ...stepProps, isReviewMode: isLessonAlreadyCompleted, bonusXp };
+        stepProps = { ...stepProps, isReviewMode: initialCompletionState, bonusXp };
         return <LessonComplete key={uniqueKey} {...stepProps} />;
         
       default: return <div>Unknown step type</div>;
@@ -676,7 +676,7 @@ export default function LessonPage() {
             <LessonComplete 
               step={lastStepOfLesson as any} 
               onContinue={() => router.push('/learn')}
-              isReviewMode={isLessonAlreadyCompleted}
+              isReviewMode={initialCompletionState}
               bonusXp={bonusXp}
             />
           )}
@@ -685,4 +685,3 @@ export default function LessonPage() {
     </DndProvider>
   );
 }
-
