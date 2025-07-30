@@ -9,6 +9,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
 
 export default function MinigamePage() {
   const params = useParams();
@@ -35,6 +36,8 @@ export default function MinigamePage() {
     switch (gameId) {
       case 'savings-sorter':
         return <SavingsSorterGame />;
+      case 'budget-busters':
+        return <BudgetBustersGame />;
       default:
         return (
           <div className="text-center">

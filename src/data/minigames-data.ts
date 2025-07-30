@@ -1,3 +1,4 @@
+
 import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase, LucideIcon } from 'lucide-react';
 
 export interface Minigame {
@@ -15,6 +16,13 @@ export const minigames: Minigame[] = [
     description: 'Quickly sort expenses into Needs and Wants to rack up points!',
     icon: PiggyBank,
     requiredUnitId: 'unit-1', // Unlocks after completing Savings unit
+  },
+  {
+    id: 'budget-busters',
+    title: 'Budget Busters',
+    description: 'Handle surprise expenses before time runs out!',
+    icon: PieChart,
+    requiredUnitId: 'unit-2', // Unlocks after completing Budgeting unit
   },
   {
     id: 'credit-climber',
