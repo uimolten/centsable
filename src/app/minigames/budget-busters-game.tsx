@@ -21,6 +21,7 @@ export function BudgetBustersGame() {
   const [finalScore, setFinalScore] = useState(0);
   const [wasSuccess, setWasSuccess] = useState(false);
   const [highScore, setHighScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(gameLevels[levelIndex].timer);
 
   useEffect(() => {
     const savedHighScore = localStorage.getItem('budgetBustersHighScore');
@@ -28,6 +29,27 @@ export function BudgetBustersGame() {
       setHighScore(parseInt(savedHighScore, 10));
     }
   }, []);
+
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+
+    if (timeLeft <= 0) {
+      handleLevelComplete(0, false);
+      return;
+    }
+
+    const timerInterval = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [gameState, timeLeft]);
+
+
+  const startGame = () => {
+    setTimeLeft(gameLevels[levelIndex].timer);
+    setGameState('playing');
+  }
 
   const triggerQuestUpdate = async (isSuccess: boolean, newScore: number) => {
     if (!user || !refreshUserData) return;
@@ -42,30 +64,35 @@ export function BudgetBustersGame() {
   };
 
   const handleLevelComplete = (score: number, success: boolean) => {
-    setFinalScore(score);
+    const totalScore = score + (timeLeft * 50); // Add time bonus
+    setFinalScore(totalScore);
     setWasSuccess(success);
     setGameState('level-end');
     
-    const isNewHighScore = success && score > highScore;
+    const isNewHighScore = success && totalScore > highScore;
     if (isNewHighScore) {
-      setHighScore(score);
-      localStorage.setItem('budgetBustersHighScore', score.toString());
+      setHighScore(totalScore);
+      localStorage.setItem('budgetBustersHighScore', totalScore.toString());
     }
     
-    triggerQuestUpdate(success, score);
+    triggerQuestUpdate(success, totalScore);
   };
 
   const handleNext = () => {
     if (wasSuccess && levelIndex < gameLevels.length - 1) {
-      setLevelIndex(prev => prev + 1);
+      const newLevelIndex = levelIndex + 1;
+      setLevelIndex(newLevelIndex);
+      setTimeLeft(gameLevels[newLevelIndex].timer);
       setGameState('playing');
     } else {
       setLevelIndex(0);
+      setTimeLeft(gameLevels[0].timer);
       setGameState('start');
     }
   };
 
   const handleRestart = () => {
+    setTimeLeft(gameLevels[levelIndex].timer);
     setGameState('playing');
   };
 
@@ -86,7 +113,7 @@ export function BudgetBustersGame() {
              <div className="flex items-start gap-3"><Target className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Prioritize! Pulling from 'Wants' gives you a higher score bonus than pulling from 'Savings'. Needs are locked.</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
           </div>
-          <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={() => setGameState('playing')}>Start Game</Button>
+          <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
         </CardContent>
       </Card>
     );
@@ -120,7 +147,7 @@ export function BudgetBustersGame() {
       key={levelIndex}
       level={currentLevel}
       onLevelComplete={handleLevelComplete}
-      highScore={highScore}
+      timeLeft={timeLeft}
     />
   );
 }

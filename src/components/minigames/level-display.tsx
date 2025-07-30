@@ -13,7 +13,7 @@ import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audi
 interface LevelDisplayProps {
   level: Level;
   onLevelComplete: (score: number, success: boolean) => void;
-  highScore: number;
+  timeLeft: number;
 }
 
 const TankDisplay = ({ tank, onTankClick, disabled }: { tank: Tank, onTankClick: (tankId: string) => void, disabled: boolean }) => {
@@ -46,37 +46,27 @@ const TankDisplay = ({ tank, onTankClick, disabled }: { tank: Tank, onTankClick:
   );
 };
 
-export function LevelDisplay({ level, onLevelComplete }: LevelDisplayProps) {
+export function LevelDisplay({ level, onLevelComplete, timeLeft }: LevelDisplayProps) {
   const [budget, setBudget] = useState(level.tanks);
   const [expensePaid, setExpensePaid] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(level.timer);
   const [showExpense, setShowExpense] = useState(false);
-
+  
   useEffect(() => {
+    setBudget(level.tanks);
+    setExpensePaid(0);
+    setShowExpense(false);
+
     const expenseTimeout = setTimeout(() => {
       setShowExpense(true);
       playIncorrectSound();
     }, 3000);
+
     return () => clearTimeout(expenseTimeout);
-  }, []);
+  }, [level]);
 
-  useEffect(() => {
-    if (!showExpense || timeLeft <= 0) return;
-    const timerInterval = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-    return () => clearInterval(timerInterval);
-  }, [showExpense, timeLeft]);
-
-  useEffect(() => {
-    if (timeLeft === 0) {
-      onLevelComplete(calculateScore(), false);
-    }
-  }, [timeLeft]);
 
   const calculateScore = () => {
-    let score = expensePaid * 10; // Base score
-    score += timeLeft * 50; // Time bonus
+    let score = expensePaid * 10;
     return score;
   };
 
