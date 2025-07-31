@@ -5,15 +5,15 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Hand, Target, Star, AlertTriangle } from 'lucide-react';
-import { gameConfig, SurpriseExpense, MandatoryExpense } from '@/data/minigame-budget-busters-data';
+import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { gameConfig, Expense } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { shuffle } from 'lodash';
 
-type GameState = 'start' | 'playing' | 'level-end';
+type GameState = 'start' | 'playing' | 'end';
 
 export function BudgetBustersGame() {
   const { user, refreshUserData } = useAuth();
@@ -21,10 +21,14 @@ export function BudgetBustersGame() {
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(gameConfig.timer);
-  const [currentRound, setCurrentRound] = useState(0);
-  const [currentBudget, setCurrentBudget] = useState(gameConfig.tanks);
-  const [activeExpense, setActiveExpense] = useState<SurpriseExpense | MandatoryExpense | null>(null);
-  const [endGameMessage, setEndGameMessage] = useState({ title: "Time's Up!", description: "You ran out of time!" });
+  const [budget, setBudget] = useState(gameConfig.initialBudget);
+  const [spentOnNeeds, setSpentOnNeeds] = useState(0);
+  const [spentOnWants, setSpentOnWants] = useState(0);
+  const [currentExpense, setCurrentExpense] = useState<Expense | null>(null);
+  const [endGameMessage, setEndGameMessage] = useState({ title: "Time's Up!", description: "You survived! Let's see how you did." });
+
+  const allExpenses = useRef(shuffle(gameConfig.expenses));
+  const expenseIndex = useRef(0);
 
   useEffect(() => {
     const savedHighScore = localStorage.getItem('budgetBustersHighScore');
@@ -33,13 +37,13 @@ export function BudgetBustersGame() {
     }
   }, []);
   
-  const handleGameEnd = useCallback((finalScore: number, title: string, description: string) => {
+  const handleGameEnd = useCallback((title: string, description: string) => {
     setGameState('level-end');
     setEndGameMessage({ title, description });
-    const isNewHighScore = finalScore > highScore && finalScore > 0;
+    const isNewHighScore = score > highScore && score > 0;
     if (isNewHighScore) {
-        setHighScore(finalScore);
-        localStorage.setItem('budgetBustersHighScore', finalScore.toString());
+        setHighScore(score);
+        localStorage.setItem('budgetBustersHighScore', score.toString());
     }
     if (user && refreshUserData) {
       const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
@@ -48,16 +52,14 @@ export function BudgetBustersGame() {
       }
       Promise.all(updates).then(() => refreshUserData());
     }
-  }, [highScore, user, refreshUserData]);
+  }, [highScore, score, user, refreshUserData]);
 
-  // Effect to end the game when time runs out
   useEffect(() => {
     if (timeLeft === 0 && gameState === 'playing') {
-      handleGameEnd(score, "Time's Up!", "You ran out of time!");
+      handleGameEnd("Time's Up!", "You survived! Let's see how you did.");
     }
-  }, [timeLeft, gameState, score, handleGameEnd]);
+  }, [timeLeft, gameState, handleGameEnd]);
   
-  // Effect for the game timer
   useEffect(() => {
     if (gameState !== 'playing') return;
 
@@ -68,33 +70,54 @@ export function BudgetBustersGame() {
     return () => clearInterval(timerInterval);
   }, [gameState]);
 
-  const selectNextExpense = (round: number) => {
-    if ((round + 1) % gameConfig.mandatoryExpenseInterval === 0) {
-      return shuffle(gameConfig.mandatoryExpenses)[0];
+  const getNextExpense = () => {
+    if (expenseIndex.current >= allExpenses.current.length) {
+        expenseIndex.current = 0; // Loop if we run out
+        allExpenses.current = shuffle(gameConfig.expenses);
     }
-    return shuffle(gameConfig.surpriseExpenses)[0];
-  };
+    const nextExpense = allExpenses.current[expenseIndex.current];
+    expenseIndex.current += 1;
+    return nextExpense;
+  }
 
   const startGame = () => {
-    setCurrentBudget(gameConfig.tanks.map(t => ({...t})));
+    setBudget(gameConfig.initialBudget);
     setScore(0);
-    setCurrentRound(0);
-    setActiveExpense(selectNextExpense(0));
     setTimeLeft(gameConfig.timer);
+    setSpentOnNeeds(0);
+    setSpentOnWants(0);
+    expenseIndex.current = 0;
+    allExpenses.current = shuffle(gameConfig.expenses);
+    setCurrentExpense(getNextExpense());
     setGameState('playing');
   }
 
-  const handleExpenseCleared = (points: number, newBudget: typeof currentBudget) => {
-    setScore(prev => prev + points);
-    setCurrentBudget(newBudget);
-    
-    const nextRound = currentRound + 1;
-    setCurrentRound(nextRound);
-    setActiveExpense(selectNextExpense(nextRound));
-  };
-  
-  const handleCantAfford = (finalScore: number) => {
-    handleGameEnd(finalScore, "Can't Afford Needs!", "You overspent on wants and couldn't pay for an essential expense.");
+  const handleDecision = (action: 'pay' | 'dismiss') => {
+    if (!currentExpense) return;
+
+    if (action === 'pay') {
+        if (budget < currentExpense.cost) {
+            // This shouldn't happen for wants due to disabled button, so it must be a Need.
+            handleGameEnd("Can't Afford Needs!", currentExpense.consequence ?? "You couldn't afford an essential expense.");
+            return;
+        }
+
+        const newBudget = budget - currentExpense.cost;
+        setBudget(newBudget);
+
+        if (currentExpense.type === 'Need') {
+            setSpentOnNeeds(prev => prev + currentExpense.cost);
+            setScore(prev => prev + 50); // Reward for handling needs
+        } else {
+            setSpentOnWants(prev => prev + currentExpense.cost);
+            setScore(prev => prev + 25); // Smaller reward for wants
+        }
+    } else { // Dismissed a want
+        setScore(prev => prev + 10); // Reward for smart saving
+    }
+
+    // Move to next expense
+    setCurrentExpense(getNextExpense());
   };
   
   if (gameState === 'start') {
@@ -104,12 +127,12 @@ export function BudgetBustersGame() {
           <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
             <PieChart className="w-8 h-8 text-primary" /> Budget Busters
           </CardTitle>
-          <CardDescription className="text-lg">Handle surprise expenses and pay your mandatory bills before time runs out!</CardDescription>
+          <CardDescription className="text-lg">Make smart spending decisions to survive the month!</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
-             <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> Use your money tanks to cover surprise costs. Every few rounds, a mandatory expense like rent will appear—make sure you have enough to pay it!</p></div>
-             <div className="flex items-start gap-3"><Target className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Survive as long as possible! Pulling from 'Wants' gives the most points. Pulling from 'Needs' costs points. If you can't afford a mandatory bill, it's game over!</p></div>
+             <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> Events will pop up. Pay for 'Needs' to survive. Choose wisely whether to 'Pay' for or 'Dismiss' 'Wants'.</p></div>
+             <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Keep your budget afloat! If you can't afford a 'Need', it's game over. Dismissing 'Wants' is a smart move!</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
           </div>
           <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
@@ -118,16 +141,21 @@ export function BudgetBustersGame() {
     );
   }
 
-  if (gameState === 'level-end') {
+  if (gameState === 'end') {
     const isNewHighScore = score > highScore && score > 0;
+    const totalSpent = spentOnNeeds + spentOnWants;
+    const needsPercentage = totalSpent > 0 ? Math.round((spentOnNeeds / totalSpent) * 100) : 0;
+    const wantsPercentage = totalSpent > 0 ? Math.round((spentOnWants / totalSpent) * 100) : 0;
+    const savedPercentage = totalSpent > 0 ? 100 - needsPercentage - wantsPercentage : 100;
+
     return (
         <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
             <CardHeader className="p-0 mb-4">
                 <div className="flex justify-center mb-4">
-                    <Mascot isHappy={score > 0} isSad={score <= 0} />
+                    <Mascot isHappy={!endGameMessage.title.includes("Can't Afford")} />
                 </div>
                 <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-                    {endGameMessage.title === "Can't Afford Needs!" && <AlertTriangle className="w-8 h-8 text-destructive"/>}
+                    {endGameMessage.title.includes("Can't Afford") && <AlertTriangle className="w-8 h-8 text-destructive"/>}
                     {endGameMessage.title}
                 </CardTitle>
                 <CardDescription className="text-lg">{endGameMessage.description}</CardDescription>
@@ -149,14 +177,13 @@ export function BudgetBustersGame() {
     );
   }
 
-  if (gameState === 'playing' && activeExpense) {
+  if (gameState === 'playing' && currentExpense) {
     return (
       <LevelDisplay
-        key={currentRound}
-        initialBudget={currentBudget}
-        expense={activeExpense}
-        onExpenseCleared={handleExpenseCleared}
-        onCantAfford={handleCantAfford}
+        key={expenseIndex.current}
+        budget={budget}
+        expense={currentExpense}
+        onDecision={handleDecision}
         timeLeft={timeLeft}
         currentScore={score}
       />
