@@ -6,8 +6,9 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { UserData, GameSummary } from '@/types/user';
 
 const SaveGameSummaryInputSchema = z.object({
   userId: z.string().describe('The UID of the user to update.'),
@@ -35,12 +36,35 @@ const saveGameSummaryFlow = ai.defineFlow(
   async ({ userId, gameId, summaryData }) => {
     try {
       const userDocRef = doc(db, "users", userId);
-      
-      const fieldToUpdate = `gameSummaries.${gameId}`;
+      const userDoc = await getDoc(userDocRef);
 
-      await updateDoc(userDocRef, {
-        [fieldToUpdate]: summaryData
-      });
+      if (!userDoc.exists()) {
+        throw new Error('User not found.');
+      }
+      
+      const userData = userDoc.data() as UserData;
+      const gameSummaries = userData.gameSummaries ?? {};
+      
+      const currentGameData = gameSummaries[gameId] ?? {};
+      
+      const newSummary: GameSummary = summaryData;
+      
+      const updatedGameData = {
+        lastAttempt: newSummary,
+        bestAttempt: currentGameData.bestAttempt,
+      };
+
+      // Check if new score is a high score
+      if (!currentGameData.bestAttempt || newSummary.score > currentGameData.bestAttempt.score) {
+        updatedGameData.bestAttempt = newSummary;
+      }
+
+      await setDoc(userDocRef, {
+        gameSummaries: {
+          ...gameSummaries,
+          [gameId]: updatedGameData
+        }
+      }, { merge: true });
       
       return { success: true };
     } catch (error) {

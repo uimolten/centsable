@@ -34,7 +34,10 @@ export interface UserData {
   dailyQuests?: Quest[];
   dailyQuestsCompleted?: boolean;
   gameSummaries?: {
-    [gameId: string]: GameSummary;
+    [gameId: string]: {
+      lastAttempt?: GameSummary;
+      bestAttempt?: GameSummary;
+    };
   };
 }
 

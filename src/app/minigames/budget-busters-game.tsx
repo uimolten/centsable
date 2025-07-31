@@ -37,21 +37,19 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [isNewHighScore, setIsNewHighScore] = useState(false);
   
   const [lastSummary, setLastSummary] = useState<GameSummary | null>(null);
-  const [viewingLastSummary, setViewingLastSummary] = useState(false);
+  const [highScoreSummary, setHighScoreSummary] = useState<GameSummary | null>(null);
+  const [viewingSummary, setViewingSummary] = useState<GameSummary | null>(null);
   const [negativeFlags, setNegativeFlags] = useState<NegativeFlag[]>([]);
 
   const eventDeck = useRef<GameEvent[]>([]);
   const eventIndex = useRef(0);
 
   useEffect(() => {
-    // Set high score from user data if it exists
-    const savedHighScore = userData?.gameSummaries?.['budget-busters']?.highScore;
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore.toString(), 10));
-    }
-    // Set last summary from user data
-    if (userData?.gameSummaries?.['budget-busters']) {
-      setLastSummary(userData.gameSummaries['budget-busters']);
+    const gameData = userData?.gameSummaries?.['budget-busters'];
+    if (gameData) {
+        setHighScore(gameData.bestAttempt?.highScore ?? 0);
+        setLastSummary(gameData.lastAttempt ?? null);
+        setHighScoreSummary(gameData.bestAttempt ?? null);
     }
   }, [userData]);
   
@@ -78,8 +76,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
     finalScore = Math.max(0, finalScore - scorePenalty);
 
-    const newHighScore = finalScore > highScore;
-    if (newHighScore) {
+    const newHighScoreAchieved = finalScore > highScore;
+    if (newHighScoreAchieved) {
         setIsNewHighScore(true);
         setHighScore(finalScore);
     } else {
@@ -88,12 +86,12 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     
     const summaryData: GameSummary = {
         score: finalScore,
-        highScore: newHighScore ? finalScore : highScore,
+        highScore: newHighScoreAchieved ? finalScore : highScore,
         budget: finalBudget,
         spentOnNeeds: finalNeeds,
         spentOnWants: finalWants,
         incurredConsequences: finalConsequences,
-        isNewHighScore: newHighScore,
+        isNewHighScore: newHighScoreAchieved,
         spentNothingOnWants,
         missedSavingsGoal,
         scorePenalty,
@@ -105,17 +103,15 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
        await refreshUserData?.();
     }
     
-    setLastSummary(summaryData);
+    setGameState('start');
     
     if (userId) {
       const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
-      if (newHighScore) {
+      if (newHighScoreAchieved) {
         updates.push(updateQuestProgress({ userId: userId, actionType: 'beat_high_score' }));
       }
       await Promise.all(updates);
     }
-    setGameState('start');
-    setViewingLastSummary(true);
 
   }, [highScore, userId, refreshUserData]);
 
@@ -129,16 +125,12 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     });
 
     if (eligibleEvents.length === 0) {
-      // This is a fallback if no eligible events are left in the shuffled deck.
-      // A more robust system could re-shuffle non-guaranteed events.
-      // For now, we'll just grab the next item from the original deck.
       const nextEvent = eventDeck.current[eventIndex.current];
       eventIndex.current += 1;
       return nextEvent;
     }
     
     const nextEvent = eligibleEvents[0];
-    // Find the original index to advance the main pointer
     const originalIndex = eventDeck.current.findIndex(e => e.description === nextEvent.description && e.type === nextEvent.type);
     eventIndex.current = originalIndex + 1;
     
@@ -161,7 +153,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       
       const shuffledRandomEvents = shuffle(randomEvents);
 
-      // Limit windfalls
       const maxWindfalls = 3;
       let windfallCount = 0;
       const filteredShuffledEvents = shuffledRandomEvents.filter(e => {
@@ -196,7 +187,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     setActiveEvent(eventDeck.current[eventIndex.current]);
     eventIndex.current = 1;
     setIsNewHighScore(false);
-    setViewingLastSummary(false);
+    setViewingSummary(null);
     setNegativeFlags([]);
   }
 
@@ -336,13 +327,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
                         Play Again
                     </Button>
-                     <Button size="lg" variant="outline" className="text-lg" onClick={() => {
-                         if (viewingLastSummary) {
-                             setViewingLastSummary(false);
-                         } else {
-                            router.push('/minigames');
-                         }
-                     }}>
+                     <Button size="lg" variant="outline" className="text-lg" onClick={() => setViewingSummary(null)}>
                         Close Report
                     </Button>
                  </div>
@@ -351,8 +336,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     );
   }
 
-  if (viewingLastSummary && lastSummary) {
-      return renderSummaryCard(lastSummary);
+  if (viewingSummary) {
+      return renderSummaryCard(viewingSummary);
   }
 
   if (gameState === 'start') {
@@ -368,12 +353,23 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
           <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
              <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Handle expenses, make choices, and get windfalls.</p></div>
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
-             <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
+             <div className="flex items-center gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <p>
+                    <b className="text-foreground">High Score:</b> 
+                    <button 
+                        onClick={() => highScoreSummary && setViewingSummary(highScoreSummary)}
+                        disabled={!highScoreSummary}
+                        className={cn("underline ml-1", highScoreSummary ? "hover:text-primary" : "text-muted-foreground no-underline cursor-not-allowed")}
+                    >
+                      {highScore} points
+                    </button>
+                </p>
+             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
             {lastSummary && (
-                <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => setViewingLastSummary(true)}>
+                <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => setViewingSummary(lastSummary)}>
                     <History className="mr-2" /> View Last Summary
                 </Button>
             )}
@@ -399,5 +395,3 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
-
-    
