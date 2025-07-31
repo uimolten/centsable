@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
 
@@ -20,7 +20,7 @@ export default function MinigamePage() {
   const gameId = params.gameId;
   const { user, loading } = useAuth();
   
-  const renderGame = useMemo(() => {
+  const renderGame = useCallback(() => {
     if (!user) {
       return null;
     }
@@ -62,7 +62,7 @@ export default function MinigamePage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
         </Button>
-        {renderGame}
+        {renderGame()}
       </div>
     </div>
   );
