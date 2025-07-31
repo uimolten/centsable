@@ -16,8 +16,8 @@ import { useRouter } from 'next/navigation';
 
 type GameState = 'start' | 'playing' | 'end';
 
-export function BudgetBustersGame() {
-  const { user, refreshUserData } = useAuth();
+export function BudgetBustersGame({ userId }: { userId: string }) {
+  const { refreshUserData } = useAuth();
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
@@ -40,8 +40,7 @@ export function BudgetBustersGame() {
     }
   }, []);
   
-  const handleGameEnd = useCallback(() => {
-    setGameState('end');
+  const handleGameEnd = useCallback(async () => {
     const newHighScore = score > highScore;
     if (newHighScore) {
         setIsNewHighScore(true);
@@ -50,14 +49,18 @@ export function BudgetBustersGame() {
     } else {
         setIsNewHighScore(false);
     }
-    if (user && refreshUserData) {
-      const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+    
+    if (userId && refreshUserData) {
+      const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
       if (newHighScore) {
-        updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
+        updates.push(updateQuestProgress({ userId: userId, actionType: 'beat_high_score' }));
       }
-      Promise.all(updates).then(() => refreshUserData());
+      await Promise.all(updates);
+      await refreshUserData();
     }
-  }, [highScore, score, user, refreshUserData]);
+    
+    setGameState('end');
+  }, [highScore, score, userId, refreshUserData]);
 
   const getNextExpense = () => {
     if (expenseIndex.current >= allExpenses.current.length) {
@@ -69,14 +72,14 @@ export function BudgetBustersGame() {
     return nextExpense;
   }
   
-  const advanceToNextRound = () => {
+  const advanceToNextRound = useCallback(() => {
       if (round + 1 >= gameConfig.rounds) {
           handleGameEnd();
       } else {
           setRound(prev => prev + 1);
           setActiveExpense(getNextExpense());
       }
-  }
+  }, [round, handleGameEnd]);
 
   const startGame = () => {
     setBudget(gameConfig.initialBudget);

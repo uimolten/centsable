@@ -40,7 +40,7 @@ export default function MinigamePage() {
       case 'savings-sorter':
         return <MemoizedSavingsSorter />;
       case 'budget-busters':
-        return <MemoizedBudgetBusters />;
+        return <MemoizedBudgetBusters userId={user.uid} />;
       default:
         return (
           <div className="text-center">
@@ -49,7 +49,7 @@ export default function MinigamePage() {
           </div>
         );
     }
-  }, [gameId, loading, user]);
+  }, [gameId, user?.uid]);
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
@@ -57,7 +57,11 @@ export default function MinigamePage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
         </Button>
-        {gameComponent}
+        {loading || !user ? (
+          <div className="text-center">
+            <Skeleton className="h-64 w-full" />
+          </div>
+        ) : gameComponent}
       </div>
     </div>
   );
