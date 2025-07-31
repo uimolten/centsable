@@ -64,7 +64,7 @@ const ScoreFloater = ({ text, x, y }: { text: string; x: number; y: number }) =>
   );
 
 export function CreditClimberGame({ userId }: { userId: string }) {
-  const { refreshUserData } = useAuth();
+  const { userData, refreshUserData } = useAuth();
   const [gameState, setGameState] = useState<GameState>('start-screen');
   const [playerState, setPlayerState] = useState<PlayerState>({ y: 300, vy: 0 });
   const [gameElements, setGameElements] = useState<GameElement[]>([]);
@@ -80,23 +80,35 @@ export function CreditClimberGame({ userId }: { userId: string }) {
 
   const score = Math.floor(850 - (playerState.y / 600) * 550);
 
+  useEffect(() => {
+    const savedHighScore = userData?.gameSummaries?.['credit-climber']?.highScore;
+    if (savedHighScore) {
+      setHighScore(parseInt(savedHighScore.toString(), 10));
+    }
+  }, [userData]);
+
+
   const startGame = useCallback(() => {
     setPlayerState({ y: 300, vy: 0 });
     setGameElements([]);
     setGameState('playing');
     spawnTimer.current = 0;
+    nextElementId.current = 0;
+    setScoreFloaters([]);
   }, []);
 
-  const endGame = useCallback(async () => {
+  const endGame = useCallback(async (currentScore: number) => {
+    if (gameState === 'game-over') return;
     setGameState('game-over');
-    setFinalScore(score);
-    const isNewHighScore = score > highScore;
+    setFinalScore(currentScore);
+    const isNewHighScore = currentScore > highScore;
     if (isNewHighScore) {
-        setHighScore(score);
+        setHighScore(currentScore);
     }
     
     if (userId) {
-        await saveGameSummary({ userId, gameId: 'credit-climber', summaryData: { score, highScore: isNewHighScore ? score : highScore } as any});
+        const summaryData = { score: currentScore, highScore: isNewHighScore ? currentScore : highScore };
+        await saveGameSummary({ userId, gameId: 'credit-climber', summaryData });
         const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
         if (isNewHighScore) {
             updates.push(updateQuestProgress({ userId: userId, actionType: 'beat_high_score' }));
@@ -104,7 +116,7 @@ export function CreditClimberGame({ userId }: { userId: string }) {
         await Promise.all(updates);
         await refreshUserData?.();
     }
-  }, [score, highScore, userId, refreshUserData]);
+  }, [highScore, userId, refreshUserData, gameState]);
 
   const handlePlayerJump = useCallback(() => {
     if (gameState === 'playing') {
@@ -113,20 +125,31 @@ export function CreditClimberGame({ userId }: { userId: string }) {
   }, [gameState]);
 
   const gameLoop = useCallback(() => {
-    if (gameState !== 'playing' || !gameAreaRef.current) return;
+    if (!gameAreaRef.current) {
+        gameLoopRef.current = requestAnimationFrame(gameLoop);
+        return;
+    };
     
     const gameHeight = gameAreaRef.current.offsetHeight;
 
     // Update player
     setPlayerState(prevState => {
       const newVy = prevState.vy + gameConfig.gravity;
-      const newY = Math.max(0, prevState.y + newVy);
+      let newY = prevState.y + newVy;
 
+      if (newY >= gameHeight - PLAYER_HEIGHT) {
+        newY = gameHeight - PLAYER_HEIGHT;
+      }
+       if (newY <= 0) {
+        newY = 0;
+        // Optional: stop upward movement if they hit the ceiling
+        // return { y: newY, vy: 0 };
+      }
       return { y: newY, vy: newVy };
     });
 
     if (playerState.y >= gameHeight - PLAYER_HEIGHT) {
-      endGame();
+      endGame(score);
       return;
     }
 
@@ -168,10 +191,10 @@ export function CreditClimberGame({ userId }: { userId: string }) {
             collided = true;
             if (el.config.type === 'good') {
               playCorrectSound();
-              setPlayerState(p => ({...p, vy: p.vy + el.config.boost}));
+              setPlayerState(p => ({...p, y: p.y + el.config.boost})); // Use Y for boost
             } else {
               playIncorrectSound();
-              setPlayerState(p => ({...p, vy: p.vy + el.config.boost}));
+              setPlayerState(p => ({...p, y: p.y + el.config.boost})); // Use Y for boost
               setIsHit(true);
               setTimeout(() => setIsHit(false), 200);
             }
@@ -187,7 +210,7 @@ export function CreditClimberGame({ userId }: { userId: string }) {
     });
 
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [gameState, playerState.y, endGame]);
+  }, [playerState.y, endGame, score]);
   
   useEffect(() => {
     if (gameState === 'playing') {
@@ -222,6 +245,7 @@ export function CreditClimberGame({ userId }: { userId: string }) {
                         <div className="flex items-start gap-3"><ShieldCheck className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>Good Items:</b> Collect green items like on-time payments to climb higher.</p></div>
                         <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0 mt-1" /><p><b>Bad Items:</b> Avoid red items like missed payments that make you fall.</p></div>
                         <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>Goal:</b> Climb as high as you can! Your altitude is your score.</p></div>
+                        {highScore > 0 && <div className="flex items-start gap-3"><History className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>High Score:</b> {highScore}</p></div>}
                     </div>
                     <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Climbing</Button>
                 </CardContent>
