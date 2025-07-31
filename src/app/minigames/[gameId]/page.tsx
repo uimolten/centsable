@@ -7,9 +7,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { useEffect, useCallback } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
+
+// Memoize the game components to prevent re-renders on auth state changes
+const MemoizedBudgetBusters = React.memo(BudgetBustersGame);
+const MemoizedSavingsSorter = React.memo(SavingsSorterGame);
 
 export default function MinigamePage() {
   const params = useParams();
@@ -23,21 +27,20 @@ export default function MinigamePage() {
     }
   }, [user, loading, router]);
 
-
-  const renderGame = useCallback(() => {
+  const gameComponent = useMemo(() => {
     if (loading || !user) {
         return (
              <div className="text-center">
                 <Skeleton className="h-64 w-full" />
              </div>
-        )
+        );
     }
 
     switch (gameId) {
       case 'savings-sorter':
-        return <SavingsSorterGame />;
+        return <MemoizedSavingsSorter />;
       case 'budget-busters':
-        return <BudgetBustersGame />;
+        return <MemoizedBudgetBusters />;
       default:
         return (
           <div className="text-center">
@@ -54,7 +57,7 @@ export default function MinigamePage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
         </Button>
-        {renderGame()}
+        {gameComponent}
       </div>
     </div>
   );
