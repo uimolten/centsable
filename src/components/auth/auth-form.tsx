@@ -19,6 +19,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Logo } from "../logo";
+import { useAuth } from "@/hooks/use-auth";
+import { updateQuestProgress } from "@/ai/flows/update-quest-progress-flow";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -45,6 +47,7 @@ export function AuthForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
+  const { refreshUserData } = useAuth();
   const [loading, setLoading] = useState<null | 'google' | 'email'>(null);
   
   const defaultTab = searchParams.get("view") === "signup" ? "signup" : "login";
@@ -83,6 +86,14 @@ export function AuthForm() {
     });
   }
 
+  const handleSuccessfulLogin = async (user: any) => {
+    if (user && refreshUserData) {
+      await updateQuestProgress({ userId: user.uid, actionType: 'login' });
+      await refreshUserData();
+    }
+    router.push("/learn");
+  };
+
   const handleGoogleSignIn = async () => {
     if (!isFirebaseConfigured) {
       showConfigErrorToast();
@@ -107,7 +118,8 @@ export function AuthForm() {
         });
       }
       
-      router.push("/learn");
+      await handleSuccessfulLogin(user);
+
     } catch (error: any) {
         const description = getAuthErrorMessage(error);
         if (description) {
@@ -125,8 +137,8 @@ export function AuthForm() {
     }
     setLoading('email');
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/learn");
+      const result = await signInWithEmailAndPassword(auth, values.email, values.password);
+      await handleSuccessfulLogin(result.user);
     } catch (error: any) {
       toast({ variant: "destructive", title: "Login failed", description: getAuthErrorMessage(error) });
     } finally {
@@ -150,7 +162,7 @@ export function AuthForm() {
         createdAt: serverTimestamp(),
       });
 
-      router.push("/learn");
+      await handleSuccessfulLogin(user);
     } catch (error: any) {
       toast({ variant: "destructive", title: "Sign up failed", description: getAuthErrorMessage(error) });
     } finally {

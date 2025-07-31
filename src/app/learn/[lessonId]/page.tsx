@@ -215,7 +215,7 @@ export default function LessonPage() {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
       if (user && refreshUserData && initialCompletionState === false) {
-        updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' }).then(() => refreshUserData());
+        updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' });
       }
       setLesson(loadedLesson);
       const allSteps = loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0);
@@ -240,7 +240,7 @@ export default function LessonPage() {
       // Handle lesson not found, maybe redirect
       router.push('/learn');
     }
-  }, [lessonId, router, user, refreshUserData, initialCompletionState]);
+  }, [lessonId, router, user, initialCompletionState]);
   
   const currentModule = lesson?.modules[moduleIndex];
   const currentStep = currentModule?.steps[stepIndex];
@@ -266,6 +266,7 @@ export default function LessonPage() {
 
   const handleLessonComplete = useCallback(async () => {
     if (!user || !lessonId || !lesson) {
+        // Fallback navigation if something is wrong
         router.push(`/learn`);
         return;
     }
@@ -312,16 +313,20 @@ export default function LessonPage() {
         }
     }
     
-    // This is now only a marker to show the completion UI
-    setStepIndex(prev => prev + 1);
+    // This now only happens after all the logic above
+    if (currentStep?.type === 'complete') {
+      router.push('/learn');
+    } else {
+       // This is now only a marker to show the completion UI
+      setStepIndex(prev => prev + 1);
+    }
 
-}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, initialCompletionState, triggerLevelUp]);
+}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, initialCompletionState, triggerLevelUp, currentStep]);
   
   const goToNextStep = useCallback(async () => {
       playClickSound();
       if (user && refreshUserData) {
           await updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' });
-          await refreshUserData();
       }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
@@ -398,7 +403,7 @@ export default function LessonPage() {
       if (user && refreshUserData) {
           const isQuiz = lesson?.title.toLowerCase().includes('quiz');
           if (isQuiz) {
-              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' }).then(() => refreshUserData());
+              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
           }
       }
     } else {
@@ -425,24 +430,24 @@ export default function LessonPage() {
       return;
     }
     
-    if (!currentStep) {
-        // This case is for the final completion screen.
-        router.push('/learn');
+    // Logic for the final completion screen's "Continue" button
+    if (currentStep?.type === 'complete') {
+        await handleLessonComplete(); // This now saves progress then navigates
         return;
     }
 
-    if (currentStep.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
+    if (currentStep?.type === 'interactive-sort' && interactiveSortItems.some(item => item.location === 'pool')) {
       setIsSortIncomplete(true);
       handleCheck(); // This will register as an incorrect answer
       return;
     }
     
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'goal-builder', 'interactive-town'].includes(currentStep.type);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'goal-summary', 'goal-builder', 'interactive-town'].includes(currentStep?.type ?? '');
     
-    if (currentStep.type === 'goal-builder') {
+    if (currentStep?.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
         if (user && refreshUserData && step.storageKey === 'item') { // Assume goal creation quest updates on first step
-            updateQuestProgress({ userId: user.uid, actionType: 'create_goal' }).then(() => refreshUserData());
+            updateQuestProgress({ userId: user.uid, actionType: 'create_goal' });
         }
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
         goToNextStep();
@@ -464,11 +469,11 @@ export default function LessonPage() {
       setHasAnswered(false);
       setIsCorrect(null);
       setIsSortIncomplete(false);
-      if (currentStep.type !== 'fill-in-the-blank' && currentStep.type !== 'interactive-sort') {
+      if (currentStep?.type !== 'fill-in-the-blank' && currentStep?.type !== 'interactive-sort') {
           setUserAnswers([]);
       }
       
-      if (currentStep.type === 'tap-the-pairs' || currentStep.type === 'interactive-sort') {
+      if (currentStep?.type === 'tap-the-pairs' || currentStep?.type === 'interactive-sort') {
           setTryAgainCounter(count => count + 1);
       }
       return;
@@ -476,7 +481,7 @@ export default function LessonPage() {
     
     handleCheck();
 
-  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, user, refreshUserData]);
+  }, [currentStep, hasAnswered, isCorrect, userAnswers, goToNextStep, lives, router, toast, handleCheck, interactiveSortItems, user, refreshUserData, handleLessonComplete]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -553,10 +558,10 @@ export default function LessonPage() {
     if (correct) {
       playCorrectSound();
       setStreak(prev => prev + 1);
-      if (user && refreshUserData) {
+      if (user) {
           const isQuiz = lesson?.title.toLowerCase().includes('quiz');
           if (isQuiz) {
-              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' }).then(() => refreshUserData());
+              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
           }
       }
     } else {
@@ -604,7 +609,7 @@ export default function LessonPage() {
     const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
     let stepProps: any = {
       step: step as any,
-      onContinue: () => router.push('/learn'),
+      onContinue: () => handleLessonComplete(), // Pass the saving function
     };
 
     switch (step.type) {
@@ -675,7 +680,7 @@ export default function LessonPage() {
           {currentStep ? renderStepContent(currentStep) : (
             <LessonComplete 
               step={lastStepOfLesson as any} 
-              onContinue={() => router.push('/learn')}
+              onContinue={() => handleLessonComplete()}
               isReviewMode={initialCompletionState}
               bonusXp={bonusXp}
             />
