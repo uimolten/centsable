@@ -2,10 +2,9 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertCircle, ShieldCheck, Wallet, X } from 'lucide-react';
+import { Wallet, X } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Expense } from '@/data/minigame-budget-busters-data';
-import { cn } from '@/lib/utils';
 import { playClickSound } from '@/lib/audio-utils';
 import { Button } from '../ui/button';
 
@@ -41,7 +40,7 @@ export function LevelDisplay({ budget, expense, onDecision, round, totalRounds, 
             <span className="text-foreground">${budget.toFixed(2)}</span>
         </div>
         <div className="flex flex-col items-center">
-             <h2 className="text-xl font-bold">Round</h2>
+             <h2 className="text-xl font-bold">Event</h2>
              <span className="text-primary text-xl font-bold">{round} / {totalRounds}</span>
         </div>
          <div className="flex flex-col items-center">
@@ -90,7 +89,6 @@ export function LevelDisplay({ budget, expense, onDecision, round, totalRounds, 
                 </Button>
               </div>
                {!canAfford && <p className="text-center text-destructive font-bold">You cannot afford this!</p>}
-               {expense.type === "Need" && <p className="text-center text-yellow-400 font-bold">Dismissing this might have consequences...</p>}
             </motion.div>
         </AnimatePresence>
       </div>

@@ -23,9 +23,9 @@ export function BudgetBustersGame() {
   const [budget, setBudget] = useState(gameConfig.initialBudget);
   const [spentOnNeeds, setSpentOnNeeds] = useState(0);
   const [spentOnWants, setSpentOnWants] = useState(0);
-  const [currentExpense, setCurrentExpense] = useState<Expense | null>(null);
+  const [activeExpense, setActiveExpense] = useState<Expense | null>(null);
   const [round, setRound] = useState(0);
-  const [endGameMessage, setEndGameMessage] = useState({ title: "Round Over!", description: "Let's see how you did." });
+  const [incurredConsequences, setIncurredConsequences] = useState<string[]>([]);
 
   const allExpenses = useRef(shuffle(gameConfig.expenses));
   const expenseIndex = useRef(0);
@@ -37,10 +37,9 @@ export function BudgetBustersGame() {
     }
   }, []);
   
-  const handleGameEnd = useCallback((title: string, description: string) => {
+  const handleGameEnd = useCallback(() => {
     setGameState('end');
-    setEndGameMessage({ title, description });
-    const isNewHighScore = score > highScore && score > 0;
+    const isNewHighScore = score > highScore;
     if (isNewHighScore) {
         setHighScore(score);
         localStorage.setItem('budgetBustersHighScore', score.toString());
@@ -66,10 +65,10 @@ export function BudgetBustersGame() {
   
   const advanceToNextRound = () => {
       if (round + 1 >= gameConfig.rounds) {
-          handleGameEnd("Game Over!", "You survived! Let's see how your budget held up.");
+          handleGameEnd();
       } else {
           setRound(prev => prev + 1);
-          setCurrentExpense(getNextExpense());
+          setActiveExpense(getNextExpense());
       }
   }
 
@@ -78,36 +77,43 @@ export function BudgetBustersGame() {
     setScore(0);
     setSpentOnNeeds(0);
     setSpentOnWants(0);
+    setIncurredConsequences([]);
     setRound(0);
     expenseIndex.current = 0;
     allExpenses.current = shuffle(gameConfig.expenses);
-    setCurrentExpense(getNextExpense());
+    setActiveExpense(getNextExpense());
     setGameState('playing');
   }
 
   const handleDecision = (action: 'pay' | 'dismiss') => {
-    if (!currentExpense) return;
+    if (!activeExpense) return;
 
     if (action === 'pay') {
-        if (budget < currentExpense.cost) {
-            handleGameEnd("Game Over!", `You couldn't afford a critical expense: ${currentExpense.description}`);
-            return;
-        }
-
-        const newBudget = budget - currentExpense.cost;
-        setBudget(newBudget);
-
-        if (currentExpense.type === 'Need') {
-            setSpentOnNeeds(prev => prev + currentExpense.cost);
-            setScore(prev => prev + 50); // Reward for handling needs
+        if (budget < activeExpense.cost) {
+            // This case should ideally be prevented by disabling the pay button
+            // but as a fallback, we treat it as a dismissal of a need.
+            if (activeExpense.consequence) {
+              setIncurredConsequences(prev => [...prev, activeExpense.consequence!]);
+            }
+            setScore(prev => prev - 200);
         } else {
-            setSpentOnWants(prev => prev + currentExpense.cost);
-            setScore(prev => prev + 25); // Smaller reward for wants
+            const newBudget = budget - activeExpense.cost;
+            setBudget(newBudget);
+
+            if (activeExpense.type === 'Need') {
+                setSpentOnNeeds(prev => prev + activeExpense.cost);
+                setScore(prev => prev + 50); // Reward for handling needs
+            } else {
+                setSpentOnWants(prev => prev + activeExpense.cost);
+                setScore(prev => prev + 25); // Smaller reward for wants
+            }
         }
     } else { // Dismissed
-        if (currentExpense.type === 'Need') {
+        if (activeExpense.type === 'Need') {
              setScore(prev => prev - 200); // Big penalty for dismissing a need
-             // Optionally show consequence message here before advancing
+             if (activeExpense.consequence) {
+               setIncurredConsequences(prev => [...prev, activeExpense.consequence]);
+             }
         } else { // Dismissed a want
             setScore(prev => prev + 75); // Reward for smart saving
         }
@@ -128,7 +134,7 @@ export function BudgetBustersGame() {
         <CardContent className="space-y-6">
           <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
              <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Decide to 'Pay' for or 'Dismiss' each one.</p></div>
-             <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> End with the highest score! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings). Dismissing wants is smart, but dismissing needs has serious consequences!</p></div>
+             <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
           </div>
           <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
@@ -138,40 +144,42 @@ export function BudgetBustersGame() {
   }
 
   if (gameState === 'end') {
-    const isNewHighScore = score > highScore && score > 0;
     const totalSpent = spentOnNeeds + spentOnWants;
     const needsPercentage = totalSpent > 0 ? Math.round((spentOnNeeds / totalSpent) * 100) : 0;
     const wantsPercentage = totalSpent > 0 ? Math.round((spentOnWants / totalSpent) * 100) : 0;
-    const savedAmount = gameConfig.initialBudget - totalSpent;
+    const savedAmount = budget;
     const savedPercentage = Math.round((savedAmount / gameConfig.initialBudget) * 100);
-    const savedSuccessfully = savedPercentage >= 20;
+    const didSaveEnough = savedPercentage >= 20;
 
     return (
         <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
             <CardHeader className="p-0 mb-4">
                 <div className="flex justify-center mb-4">
-                    <Mascot isHappy={!endGameMessage.title.includes("Game Over!")} />
+                    <Mascot isHappy={incurredConsequences.length === 0} isSad={incurredConsequences.length > 0} />
                 </div>
                 <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-                    {endGameMessage.title.includes("Game Over!") && <AlertTriangle className="w-8 h-8 text-destructive"/>}
-                    {endGameMessage.title}
+                    Round Over!
                 </CardTitle>
-                <CardDescription className="text-lg">{endGameMessage.description}</CardDescription>
+                <CardDescription className="text-lg">Here's your financial report card.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 p-0">
-                {isNewHighScore && (
-                    <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-2xl font-bold text-yellow-400 p-3 bg-yellow-400/10 rounded-lg">
-                    🎉 New High Score! 🎉
-                    </motion.div>
-                )}
                 <div className="text-6xl font-black text-primary">{score}</div>
 
                  <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
                     <h3 className="font-bold text-center text-lg mb-2">Your 50/30/20 Breakdown</h3>
-                    <p><b>Needs:</b> {needsPercentage}%</p>
-                    <p><b>Wants:</b> {wantsPercentage}%</p>
-                    <p><b>Saved:</b> {savedPercentage}% ({savedSuccessfully ? 'Great job! ✅' : 'Try to save more! ❌'})</p>
+                    <p><b>Needs ({needsPercentage}%):</b> ${spentOnNeeds.toFixed(2)}</p>
+                    <p><b>Wants ({wantsPercentage}%):</b> ${spentOnWants.toFixed(2)}</p>
+                    <p><b>Saved ({savedPercentage}%):</b> ${savedAmount.toFixed(2)} {didSaveEnough ? '✅' : '❌'}</p>
                  </div>
+
+                {incurredConsequences.length > 0 && (
+                    <div className="space-y-2 text-left p-4 bg-destructive/20 rounded-lg">
+                        <h3 className="font-bold text-center text-lg mb-2 text-destructive-foreground">Consequences</h3>
+                        <ul className="list-disc list-inside text-destructive-foreground">
+                            {incurredConsequences.map((con, i) => <li key={i}>{con}</li>)}
+                        </ul>
+                    </div>
+                )}
 
                  <div className="flex justify-center gap-4">
                     <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
@@ -183,12 +191,12 @@ export function BudgetBustersGame() {
     );
   }
 
-  if (gameState === 'playing' && currentExpense) {
+  if (gameState === 'playing' && activeExpense) {
     return (
       <LevelDisplay
         key={expenseIndex.current}
         budget={budget}
-        expense={currentExpense}
+        expense={activeExpense}
         onDecision={handleDecision}
         round={round + 1}
         totalRounds={gameConfig.rounds}
