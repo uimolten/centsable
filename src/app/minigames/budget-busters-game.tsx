@@ -5,18 +5,20 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { gameConfig, Expense } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { shuffle } from 'lodash';
+import { useRouter } from 'next/navigation';
 
 type GameState = 'start' | 'playing' | 'end';
 
 export function BudgetBustersGame() {
   const { user, refreshUserData } = useAuth();
+  const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -26,6 +28,7 @@ export function BudgetBustersGame() {
   const [activeExpense, setActiveExpense] = useState<Expense | null>(null);
   const [round, setRound] = useState(0);
   const [incurredConsequences, setIncurredConsequences] = useState<string[]>([]);
+  const [isNewHighScore, setIsNewHighScore] = useState(false);
 
   const allExpenses = useRef(shuffle(gameConfig.expenses));
   const expenseIndex = useRef(0);
@@ -39,14 +42,17 @@ export function BudgetBustersGame() {
   
   const handleGameEnd = useCallback(() => {
     setGameState('end');
-    const isNewHighScore = score > highScore;
-    if (isNewHighScore) {
+    const newHighScore = score > highScore;
+    if (newHighScore) {
+        setIsNewHighScore(true);
         setHighScore(score);
         localStorage.setItem('budgetBustersHighScore', score.toString());
+    } else {
+        setIsNewHighScore(false);
     }
     if (user && refreshUserData) {
       const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
-      if (isNewHighScore) {
+      if (newHighScore) {
         updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
       }
       Promise.all(updates).then(() => refreshUserData());
@@ -92,7 +98,7 @@ export function BudgetBustersGame() {
         if (budget < activeExpense.cost) {
             // This case should ideally be prevented by disabling the pay button
             // but as a fallback, we treat it as a dismissal of a need.
-            if (activeExpense.consequence) {
+            if (activeExpense.type === 'Need' && activeExpense.consequence) {
               setIncurredConsequences(prev => [...prev, activeExpense.consequence!]);
             }
             setScore(prev => prev - 200);
@@ -145,8 +151,8 @@ export function BudgetBustersGame() {
 
   if (gameState === 'end') {
     const totalSpent = spentOnNeeds + spentOnWants;
-    const needsPercentage = totalSpent > 0 ? Math.round((spentOnNeeds / totalSpent) * 100) : 0;
-    const wantsPercentage = totalSpent > 0 ? Math.round((spentOnWants / totalSpent) * 100) : 0;
+    const needsPercentage = totalSpent > 0 ? Math.round((spentOnNeeds / gameConfig.initialBudget) * 100) : 0;
+    const wantsPercentage = totalSpent > 0 ? Math.round((spentOnWants / gameConfig.initialBudget) * 100) : 0;
     const savedAmount = budget;
     const savedPercentage = Math.round((savedAmount / gameConfig.initialBudget) * 100);
     const didSaveEnough = savedPercentage >= 20;
@@ -164,12 +170,14 @@ export function BudgetBustersGame() {
             </CardHeader>
             <CardContent className="space-y-6 p-0">
                 <div className="text-6xl font-black text-primary">{score}</div>
+                {isNewHighScore && <p className="font-bold text-yellow-400">🎉 New High Score! 🎉</p>}
+
 
                  <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
                     <h3 className="font-bold text-center text-lg mb-2">Your 50/30/20 Breakdown</h3>
                     <p><b>Needs ({needsPercentage}%):</b> ${spentOnNeeds.toFixed(2)}</p>
                     <p><b>Wants ({wantsPercentage}%):</b> ${spentOnWants.toFixed(2)}</p>
-                    <p><b>Saved ({savedPercentage}%):</b> ${savedAmount.toFixed(2)} {didSaveEnough ? '✅' : '❌'}</p>
+                    <p><b>Saved ({savedPercentage}%):</b> ${savedAmount.toFixed(2)} {didSaveEnough ? '✅ Well done!' : '❌ Missed 20% savings goal'}</p>
                  </div>
 
                 {incurredConsequences.length > 0 && (
@@ -181,9 +189,12 @@ export function BudgetBustersGame() {
                     </div>
                 )}
 
-                 <div className="flex justify-center gap-4">
+                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
                         Play Again
+                    </Button>
+                     <Button size="lg" variant="outline" className="text-lg" onClick={() => router.push('/minigames')}>
+                        <ArrowLeft className="mr-2"/> Back to Arcade
                     </Button>
                  </div>
             </CardContent>
