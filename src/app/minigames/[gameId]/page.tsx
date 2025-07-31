@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
 
@@ -27,13 +27,13 @@ export default function MinigamePage() {
     }
   }, [user, loading, router]);
 
-  const gameComponent = useMemo(() => {
+  const renderGame = useCallback(() => {
     if (loading || !user) {
-        return (
-             <div className="text-center">
-                <Skeleton className="h-64 w-full" />
-             </div>
-        );
+      return (
+        <div className="text-center">
+          <Skeleton className="h-64 w-full" />
+        </div>
+      );
     }
 
     switch (gameId) {
@@ -49,7 +49,7 @@ export default function MinigamePage() {
           </div>
         );
     }
-  }, [gameId, user?.uid]);
+  }, [gameId, user, loading]);
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
@@ -57,11 +57,7 @@ export default function MinigamePage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
         </Button>
-        {loading || !user ? (
-          <div className="text-center">
-            <Skeleton className="h-64 w-full" />
-          </div>
-        ) : gameComponent}
+        {renderGame()}
       </div>
     </div>
   );
