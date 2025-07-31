@@ -5,18 +5,18 @@ export interface Expense {
   type: ExpenseType;
   description: string;
   cost: number;
-  consequence?: string; // Specific consequence for failing a 'Need'
+  consequence?: string; // Specific consequence for failing or dismissing a 'Need'
 }
 
 export interface GameConfig {
-  timer: number;
   initialBudget: number;
   expenses: Expense[];
+  rounds: number;
 }
 
 export const gameConfig: GameConfig = {
-  timer: 90, // Longer timer for more events
   initialBudget: 1500,
+  rounds: 10,
   expenses: [
     // --- Wants ---
     {
@@ -43,6 +43,16 @@ export const gameConfig: GameConfig = {
       type: 'Want',
       description: "You found a limited-edition pair of sneakers online.",
       cost: 250,
+    },
+    {
+      type: 'Want',
+      description: "Upgrade your phone to the latest model.",
+      cost: 400,
+    },
+    {
+      type: 'Want',
+      description: "A spontaneous weekend trip.",
+      cost: 300,
     },
     
     // --- Needs ---

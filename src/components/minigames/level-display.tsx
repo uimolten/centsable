@@ -13,12 +13,13 @@ interface LevelDisplayProps {
   budget: number;
   expense: Expense;
   onDecision: (action: 'pay' | 'dismiss') => void;
-  timeLeft: number;
+  round: number;
+  totalRounds: number;
   currentScore: number;
 }
 
 
-export function LevelDisplay({ budget, expense, onDecision, timeLeft, currentScore }: LevelDisplayProps) {
+export function LevelDisplay({ budget, expense, onDecision, round, totalRounds, currentScore }: LevelDisplayProps) {
   
   const handlePay = () => {
     playClickSound();
@@ -31,7 +32,6 @@ export function LevelDisplay({ budget, expense, onDecision, timeLeft, currentSco
   }
 
   const canAfford = budget >= expense.cost;
-  const isNeed = expense.type === 'Need';
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-between p-4">
@@ -41,11 +41,12 @@ export function LevelDisplay({ budget, expense, onDecision, timeLeft, currentSco
             <span className="text-foreground">${budget.toFixed(2)}</span>
         </div>
         <div className="flex flex-col items-center">
-             <h2 className="text-2xl font-bold">Score</h2>
-             <span className="text-primary text-2xl font-bold">{currentScore}</span>
+             <h2 className="text-xl font-bold">Round</h2>
+             <span className="text-primary text-xl font-bold">{round} / {totalRounds}</span>
         </div>
-        <div className={cn("text-3xl font-bold", timeLeft <= 10 && "text-destructive animate-pulse")}>
-          {timeLeft}s
+         <div className="flex flex-col items-center">
+             <h2 className="text-xl font-bold">Score</h2>
+             <span className="text-primary text-xl font-bold">{currentScore}</span>
         </div>
       </div>
 
@@ -58,18 +59,12 @@ export function LevelDisplay({ budget, expense, onDecision, timeLeft, currentSco
               exit={{ opacity: 0, scale: 0.5 }}
               className="absolute top-0 z-10 w-full max-w-lg space-y-4"
             >
-              <Card className={cn(
-                  "text-center border-4",
-                  isNeed
-                   ? "bg-yellow-500/20 border-yellow-400 text-yellow-300"
-                   : "bg-purple-500/20 border-purple-400 text-purple-300"
-                )}>
+              <Card className="text-center border-4 bg-card/80 border-border/20">
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-center gap-2 font-black text-2xl">
-                    {isNeed ? <ShieldCheck className="w-8 h-8"/> : <AlertCircle className="w-8 h-8"/>}
-                     {isNeed ? "MANDATORY NEED" : "SURPRISE WANT"}
+                  <CardTitle className="flex items-center justify-center gap-2 font-black text-2xl text-primary">
+                     A WILD EXPENSE APPEARS!
                   </CardTitle>
-                  <CardDescription className={cn("text-lg", isNeed ? "text-yellow-300/80" : "text-purple-300/80")}>
+                  <CardDescription className="text-xl text-foreground/80 font-bold py-4">
                     {expense.description}
                   </CardDescription>
                 </CardHeader>
@@ -89,13 +84,13 @@ export function LevelDisplay({ budget, expense, onDecision, timeLeft, currentSco
                     variant="destructive" 
                     className="h-24 text-2xl font-black bg-red-600/80 hover:bg-red-600"
                     onClick={handleDismiss}
-                    disabled={isNeed}
                 >
                     <X className="w-8 h-8 mr-2"/>
                     Dismiss
                 </Button>
               </div>
-
+               {!canAfford && <p className="text-center text-destructive font-bold">You cannot afford this!</p>}
+               {expense.type === "Need" && <p className="text-center text-yellow-400 font-bold">Dismissing this might have consequences...</p>}
             </motion.div>
         </AnimatePresence>
       </div>
