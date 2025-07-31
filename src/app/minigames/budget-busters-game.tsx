@@ -33,17 +33,19 @@ export function BudgetBustersGame() {
   useEffect(() => {
     if (gameState !== 'playing') return;
 
-    if (timeLeft <= 0) {
-      handleLevelComplete(0, false);
-      return;
-    }
-
     const timerInterval = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerInterval);
+          handleLevelComplete(0, false);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [gameState, timeLeft]);
+  }, [gameState]);
 
 
   const startGame = () => {
