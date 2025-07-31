@@ -90,7 +90,7 @@ const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget:
                  <Button
                     size="lg"
                     variant="outline"
-                    className="h-32 text-xl font-bold flex flex-col items-center justify-center gap-2 p-4"
+                    className="h-32 text-xl font-bold flex flex-col items-center justify-center gap-2 p-4 whitespace-normal"
                     onClick={() => { playClickSound(); onDecision('choose_a'); }}
                     disabled={!canAffordA}
                 >
@@ -100,7 +100,7 @@ const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget:
                  <Button
                     size="lg"
                     variant="outline"
-                    className="h-32 text-xl font-bold flex flex-col items-center justify-center gap-2 p-4"
+                    className="h-32 text-xl font-bold flex flex-col items-center justify-center gap-2 p-4 whitespace-normal"
                     onClick={() => { playClickSound(); onDecision('choose_b'); }}
                     disabled={!canAffordB}
                 >
@@ -193,5 +193,3 @@ export function LevelDisplay({ budget, event, onDecision, round, totalRounds, cu
     </div>
   );
 }
-
-    

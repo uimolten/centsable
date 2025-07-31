@@ -19,6 +19,7 @@ import type { GameSummary } from '@/types/user';
 
 
 type GameState = 'start' | 'playing';
+type NegativeFlag = 'missed_work';
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
   const { userData, refreshUserData } = useAuth();
@@ -37,6 +38,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   
   const [lastSummary, setLastSummary] = useState<GameSummary | null>(null);
   const [viewingLastSummary, setViewingLastSummary] = useState(false);
+  const [negativeFlags, setNegativeFlags] = useState<NegativeFlag[]>([]);
 
   const allEvents = useRef(shuffle(gameConfig.events));
   const eventIndex = useRef(0);
@@ -117,22 +119,39 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   }, [highScore, userId, refreshUserData]);
 
-  const getNextEvent = () => {
+  const getNextEvent = (currentFlags: NegativeFlag[]): GameEvent => {
     if (eventIndex.current >= allEvents.current.length) {
         eventIndex.current = 0;
         allEvents.current = shuffle(gameConfig.events);
     }
-    const nextEvent = allEvents.current[eventIndex.current];
+
+    // Filter out events that are forbidden by current flags
+    const eligibleEvents = allEvents.current.filter(event => {
+        if (event.type === 'windfall' && event.prerequisites?.forbiddenFlags) {
+            return !event.prerequisites.forbiddenFlags.some(flag => currentFlags.includes(flag));
+        }
+        return true;
+    });
+
+    // If filtering results in no eligible events from the current point, reset and try again
+    if (eventIndex.current >= eligibleEvents.length) {
+        eventIndex.current = 0;
+        allEvents.current = shuffle(gameConfig.events); // reshuffle all
+        // This is a fallback, ideally the pool is large enough to not hit this often
+        return getNextEvent(currentFlags); 
+    }
+    
+    const nextEvent = eligibleEvents[eventIndex.current];
     eventIndex.current += 1;
     return nextEvent;
   }
   
-  const advanceToNextRound = useCallback((currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[], startingBudget: number) => {
+  const advanceToNextRound = useCallback((currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[], currentFlags: NegativeFlag[], startingBudget: number) => {
       if (round + 1 >= gameConfig.rounds) {
           handleGameEnd(currentScore, currentBudget, currentNeeds, currentWants, currentConsequences, startingBudget);
       } else {
           setRound(prev => prev + 1);
-          setActiveEvent(getNextEvent());
+          setActiveEvent(getNextEvent(currentFlags));
       }
   }, [round, handleGameEnd]);
 
@@ -148,9 +167,10 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     setRound(0);
     eventIndex.current = 0;
     allEvents.current = shuffle(gameConfig.events);
-    setActiveEvent(getNextEvent());
+    setActiveEvent(getNextEvent([]));
     setIsNewHighScore(false);
     setViewingLastSummary(false);
+    setNegativeFlags([]);
   }
 
   const handleDecision = (action: 'pay' | 'dismiss' | 'choose_a' | 'choose_b' | 'skip_choice' | 'collect_windfall') => {
@@ -161,6 +181,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     let newSpentOnNeeds = spentOnNeeds;
     let newSpentOnWants = spentOnWants;
     let newConsequences = [...incurredConsequences];
+    let newNegativeFlags = [...negativeFlags];
 
     switch(activeEvent.type) {
         case 'expense':
@@ -187,14 +208,22 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         case 'choice':
             if (action === 'choose_a' && budget >= activeEvent.optionA.cost) {
                 newBudget -= activeEvent.optionA.cost;
-                newSpentOnWants += activeEvent.optionA.cost;
+                activeEvent.category === 'Need' ? newSpentOnNeeds += activeEvent.optionA.cost : newSpentOnWants += activeEvent.optionA.cost;
                 newScore += 25;
             } else if (action === 'choose_b' && budget >= activeEvent.optionB.cost) {
                 newBudget -= activeEvent.optionB.cost;
-                newSpentOnWants += activeEvent.optionB.cost;
+                activeEvent.category === 'Need' ? newSpentOnNeeds += activeEvent.optionB.cost : newSpentOnWants += activeEvent.optionB.cost;
                 newScore += 25;
             } else if (action === 'skip_choice') {
-                newScore += 75; // Rewarded for saving
+                if (activeEvent.category === 'Need' && activeEvent.consequence) {
+                    newScore -= 200;
+                    newConsequences.push(activeEvent.consequence.text);
+                    if (activeEvent.consequence.flag) {
+                        newNegativeFlags.push(activeEvent.consequence.flag);
+                    }
+                } else { // Skipped a want
+                    newScore += 75; 
+                }
             }
             break;
         case 'windfall':
@@ -210,7 +239,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     setSpentOnNeeds(newSpentOnNeeds);
     setSpentOnWants(newSpentOnWants);
     setIncurredConsequences(newConsequences);
-    advanceToNextRound(newScore, newBudget, newSpentOnNeeds, newSpentOnWants, newConsequences, initialBudget);
+    setNegativeFlags(newNegativeFlags);
+    advanceToNextRound(newScore, newBudget, newSpentOnNeeds, newSpentOnWants, newConsequences, newNegativeFlags, initialBudget);
   };
   
   const renderSummaryCard = (summary: GameSummary) => {
@@ -342,5 +372,3 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
-
-    

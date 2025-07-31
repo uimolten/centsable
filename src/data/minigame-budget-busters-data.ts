@@ -1,4 +1,6 @@
 
+type NegativeFlag = 'missed_work';
+
 export type EventType = 'expense' | 'choice' | 'windfall';
 
 export interface BaseEvent {
@@ -15,13 +17,21 @@ export interface ExpenseEvent extends BaseEvent {
 
 export interface ChoiceEvent extends BaseEvent {
     type: 'choice';
+    category: 'Need' | 'Want';
     optionA: { description: string; cost: number };
     optionB: { description:string; cost: number };
+    consequence?: {
+        text: string;
+        flag?: NegativeFlag;
+    }
 }
 
 export interface WindfallEvent extends BaseEvent {
     type: 'windfall';
     income: number;
+    prerequisites?: {
+        forbiddenFlags: NegativeFlag[];
+    }
 }
 
 export type GameEvent = ExpenseEvent | ChoiceEvent | WindfallEvent;
@@ -161,33 +171,49 @@ export const gameConfig: GameConfig = {
     // === CHOICE EVENTS ===
     {
         type: 'choice',
+        category: 'Want',
         description: 'Time for a fun night! What do you choose?',
         optionA: { description: 'Go bowling with friends', cost: 35 },
         optionB: { description: 'Go to a fancy movie premiere', cost: 75 },
     },
     {
         type: 'choice',
+        category: 'Want',
         description: 'You want to upgrade your entertainment setup.',
         optionA: { description: 'A new gaming headset', cost: 120 },
         optionB: { description: 'A new 4K monitor', cost: 300 },
     },
      {
         type: 'choice',
+        category: 'Want',
         description: 'You need a new outfit for an event.',
         optionA: { description: 'A stylish thrift-store find', cost: 40 },
         optionB: { description: 'A brand-new designer outfit', cost: 180 },
     },
     {
         type: 'choice',
+        category: 'Need',
         description: 'How will you get to work this week?',
         optionA: { description: 'Buy a monthly transit pass', cost: 100 },
         optionB: { description: 'Take a rideshare every day', cost: 250 },
+        consequence: {
+            text: "You couldn't get to work and lost out on pay.",
+            flag: 'missed_work',
+        }
     },
     {
         type: 'choice',
+        category: 'Want',
         description: "It's time to treat yourself to a coffee.",
         optionA: { description: 'A simple drip coffee', cost: 3 },
         optionB: { description: 'A fancy seasonal latte', cost: 7 },
+    },
+    {
+        type: 'choice',
+        category: 'Want',
+        description: "A friend's birthday is coming up.",
+        optionA: { description: 'A thoughtful, homemade gift', cost: 15 },
+        optionB: { description: 'An expensive gadget they wanted', cost: 100 },
     },
 
     // === WINDFALL EVENTS ===
@@ -215,8 +241,19 @@ export const gameConfig: GameConfig = {
         type: 'windfall',
         description: "You got a small work bonus for being a great employee.",
         income: 200,
+        prerequisites: {
+            forbiddenFlags: ['missed_work']
+        }
+    },
+    {
+        type: 'windfall',
+        description: "You dog-sat for a neighbor over the weekend.",
+        income: 75,
+    },
+    {
+        type: 'windfall',
+        description: "You found $20 on the sidewalk!",
+        income: 20,
     },
   ],
 };
-
-    
