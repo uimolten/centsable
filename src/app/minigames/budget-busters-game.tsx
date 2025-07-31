@@ -83,7 +83,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         setIsNewHighScore(true);
         setHighScore(finalScore);
     } else {
-        setIsNewHighScore(false;
+        setIsNewHighScore(false);
     }
     
     const summaryData: GameSummary = {
@@ -399,3 +399,5 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
+
+    
