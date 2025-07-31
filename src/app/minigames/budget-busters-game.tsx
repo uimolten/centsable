@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { shuffle } from 'lodash';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 type GameState = 'start' | 'playing' | 'end';
 
@@ -41,6 +42,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   }, []);
   
   const handleGameEnd = useCallback(async () => {
+    setGameState('end');
     const newHighScore = score > highScore;
     if (newHighScore) {
         setIsNewHighScore(true);
@@ -58,8 +60,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await Promise.all(updates);
       await refreshUserData();
     }
-    
-    setGameState('end');
   }, [highScore, score, userId, refreshUserData]);
 
   const getNextExpense = () => {
@@ -121,7 +121,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         if (activeExpense.type === 'Need') {
              setScore(prev => prev - 200); // Big penalty for dismissing a need
              if (activeExpense.consequence) {
-               setIncurredConsequences(prev => [...prev, activeExpense.consequence]);
+               setIncurredConsequences(prev => [...prev, activeExpense.consequence!]);
              }
         } else { // Dismissed a want
             setScore(prev => prev + 75); // Reward for smart saving
@@ -167,9 +167,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     <Mascot isHappy={incurredConsequences.length === 0} isSad={incurredConsequences.length > 0} />
                 </div>
                 <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-                    Round Over!
+                    Financial Report
                 </CardTitle>
-                <CardDescription className="text-lg">Here's your financial report card.</CardDescription>
+                <CardDescription className="text-lg">Here's your performance breakdown.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 p-0">
                 <div className="text-6xl font-black text-primary">{score}</div>
@@ -178,9 +178,15 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
                  <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
                     <h3 className="font-bold text-center text-lg mb-2">Your 50/30/20 Breakdown</h3>
-                    <p><b>Needs ({needsPercentage}%):</b> ${spentOnNeeds.toFixed(2)}</p>
-                    <p><b>Wants ({wantsPercentage}%):</b> ${spentOnWants.toFixed(2)}</p>
-                    <p><b>Saved ({savedPercentage}%):</b> ${savedAmount.toFixed(2)} {didSaveEnough ? '✅ Well done!' : '❌ Missed 20% savings goal'}</p>
+                    <p className="flex justify-between"><span><b>Needs:</b></span> <span>${spentOnNeeds.toFixed(2)} <span className="text-muted-foreground">({needsPercentage}%)</span></span></p>
+                    <p className="flex justify-between"><span><b>Wants:</b></span> <span>${spentOnWants.toFixed(2)} <span className="text-muted-foreground">({wantsPercentage}%)</span></span></p>
+                    <p className="flex justify-between">
+                        <span><b>Savings:</b></span> 
+                        <span className={cn(didSaveEnough ? "text-green-400" : "text-destructive")}>${savedAmount.toFixed(2)} <span className="text-muted-foreground">({savedPercentage}%)</span></span>
+                    </p>
+                    <p className={cn("text-center font-bold pt-2", didSaveEnough ? "text-green-400" : "text-destructive")}>
+                        {didSaveEnough ? '✅ Great job hitting your 20% savings goal!' : '❌ You missed the 20% savings goal.'}
+                    </p>
                  </div>
 
                 {incurredConsequences.length > 0 && (
@@ -197,7 +203,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                         Play Again
                     </Button>
                      <Button size="lg" variant="outline" className="text-lg" onClick={() => router.push('/minigames')}>
-                        <ArrowLeft className="mr-2"/> Back to Arcade
+                        Close Report
                     </Button>
                  </div>
             </CardContent>

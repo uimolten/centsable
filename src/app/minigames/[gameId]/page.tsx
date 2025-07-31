@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { SavingsSorterGame } from '@/components/minigames/savings-sorter-game';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import React, { useEffect, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
 
@@ -19,16 +19,9 @@ export default function MinigamePage() {
   const params = useParams();
   const gameId = params.gameId;
   const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth');
-    }
-  }, [user, loading, router]);
-
-  const renderGame = useCallback(() => {
-    if (!user) { // Skeleton will be shown by the loading check below
+  
+  const renderGame = useMemo(() => {
+    if (!user) {
       return null;
     }
 
@@ -36,6 +29,7 @@ export default function MinigamePage() {
       case 'savings-sorter':
         return <MemoizedSavingsSorter />;
       case 'budget-busters':
+        // Pass only the stable UID to prevent re-renders on user object changes
         return <MemoizedBudgetBusters userId={user.uid} />;
       default:
         return (
@@ -45,7 +39,7 @@ export default function MinigamePage() {
           </div>
         );
     }
-  }, [gameId, user]);
+  }, [gameId, user?.uid]); // Depend only on stable values
 
   if (loading || !user) {
     return (
@@ -68,7 +62,7 @@ export default function MinigamePage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
         </Button>
-        {renderGame()}
+        {renderGame}
       </div>
     </div>
   );
