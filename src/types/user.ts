@@ -11,6 +11,8 @@ export interface GameSummary {
   incurredConsequences: string[];
   isNewHighScore: boolean;
   spentNothingOnWants?: boolean;
+  missedSavingsGoal?: boolean;
+  scorePenalty?: number;
   initialBudget?: number;
 }
 
@@ -35,3 +37,5 @@ export interface UserData {
     [gameId: string]: GameSummary;
   };
 }
+
+    

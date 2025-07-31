@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh } from 'lucide-react';
+import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh, Frown } from 'lucide-react';
 import { gameConfig, GameEvent } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
@@ -55,11 +55,26 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   
   const handleGameEnd = useCallback(async (currentScore: number, finalBudget: number, finalNeeds: number, finalWants: number, finalConsequences: string[], startingBudget: number) => {
     let finalScore = currentScore;
+    let scorePenalty = 0;
     const spentNothingOnWants = finalWants === 0;
 
     if (spentNothingOnWants) {
-        finalScore -= 100; // Penalty for no wants
+        scorePenalty += 100;
     }
+    
+    const savedAmount = finalBudget;
+    const savingsPercentage = startingBudget > 0 ? (savedAmount / startingBudget) * 100 : 0;
+    const missedSavingsGoal = savingsPercentage < 20;
+    
+    if (missedSavingsGoal) {
+        scorePenalty += 150;
+    }
+
+    if(finalConsequences.length > 0) {
+        scorePenalty += finalConsequences.length * 50; // Add 50 penalty points per consequence
+    }
+
+    finalScore -= scorePenalty;
 
     const newHighScore = finalScore > highScore;
     if (newHighScore) {
@@ -78,6 +93,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         incurredConsequences: finalConsequences,
         isNewHighScore: newHighScore,
         spentNothingOnWants,
+        missedSavingsGoal,
+        scorePenalty,
         initialBudget: startingBudget,
     };
 
@@ -85,7 +102,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
     }
     
-    setLastSummary(summaryData); // Update state for immediate viewing
+    setLastSummary(summaryData);
     
     if (userId && refreshUserData) {
       const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
@@ -95,15 +112,14 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await Promise.all(updates);
       await refreshUserData();
     }
-    // Instead of setting gameState to 'end', we now reset to 'start'
     setGameState('start');
-    setViewingLastSummary(true); // Automatically show the summary
+    setViewingLastSummary(true);
 
   }, [highScore, userId, refreshUserData]);
 
   const getNextEvent = () => {
     if (eventIndex.current >= allEvents.current.length) {
-        eventIndex.current = 0; // Loop if we run out
+        eventIndex.current = 0;
         allEvents.current = shuffle(gameConfig.events);
     }
     const nextEvent = allEvents.current[eventIndex.current];
@@ -198,19 +214,17 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   };
   
   const renderSummaryCard = (summary: GameSummary) => {
-    const totalSpent = summary.spentOnNeeds + summary.spentOnWants;
     const baseBudget = summary.initialBudget || gameConfig.initialBudget;
     const needsPercentage = baseBudget > 0 ? Math.round((summary.spentOnNeeds / baseBudget) * 100) : 0;
     const wantsPercentage = baseBudget > 0 ? Math.round((summary.spentOnWants / baseBudget) * 100) : 0;
     const savedAmount = summary.budget;
     const savedPercentage = baseBudget > 0 ? Math.round((savedAmount / baseBudget) * 100) : 0;
-    const didSaveEnough = savedPercentage >= 20;
 
     return (
         <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
             <CardHeader className="p-0 mb-4">
                 <div className="flex justify-center mb-4">
-                    <Mascot isHappy={summary.incurredConsequences.length === 0 && !summary.spentNothingOnWants} isSad={summary.incurredConsequences.length > 0 || summary.spentNothingOnWants} />
+                    <Mascot isHappy={!summary.missedSavingsGoal && !summary.spentNothingOnWants && summary.incurredConsequences.length === 0} isSad={summary.missedSavingsGoal || summary.spentNothingOnWants || summary.incurredConsequences.length > 0} />
                 </div>
                 <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
                     Financial Report
@@ -220,6 +234,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
             <CardContent className="space-y-6 p-0">
                 <div className="text-6xl font-black text-primary">{summary.score}</div>
                 {summary.isNewHighScore && <p className="font-bold text-yellow-400">🎉 New High Score! 🎉</p>}
+                {summary.scorePenalty > 0 && <p className="font-bold text-destructive">Total Penalties: -{summary.scorePenalty} points</p>}
 
                  <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
                     <h3 className="font-bold text-center text-lg mb-2">Your 50/30/20 Breakdown</h3>
@@ -227,12 +242,18 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     <p className="flex justify-between"><span><b>Wants:</b></span> <span>${summary.spentOnWants.toFixed(2)} <span className="text-muted-foreground">({wantsPercentage}%)</span></span></p>
                     <p className="flex justify-between">
                         <span><b>Savings:</b></span> 
-                        <span className={cn(didSaveEnough ? "text-green-400" : "text-destructive")}>${savedAmount.toFixed(2)} <span className="text-muted-foreground">({savedPercentage}%)</span></span>
-                    </p>
-                    <p className={cn("text-center font-bold pt-2", didSaveEnough ? "text-green-400" : "text-destructive")}>
-                        {didSaveEnough ? '✅ Great job hitting your 20% savings goal!' : '❌ You missed the 20% savings goal.'}
+                        <span className={cn(summary.missedSavingsGoal ? "text-destructive" : "text-green-400")}>${savedAmount.toFixed(2)} <span className="text-muted-foreground">({savedPercentage}%)</span></span>
                     </p>
                  </div>
+                
+                 {summary.missedSavingsGoal && (
+                    <div className="space-y-2 text-left p-4 bg-red-500/20 rounded-lg">
+                        <h3 className="font-bold text-center text-lg mb-2 text-destructive flex items-center justify-center gap-2"><Frown /> Missed Savings Goal</h3>
+                        <p className="text-center text-red-400/80">
+                           You saved less than 20% of your income. This is a key part of a healthy budget. You lost <b>150 points</b> for missing this target.
+                        </p>
+                    </div>
+                 )}
 
                 {summary.spentNothingOnWants && (
                     <div className="space-y-2 text-left p-4 bg-yellow-500/20 rounded-lg">
@@ -246,8 +267,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
                 {summary.incurredConsequences.length > 0 && (
                     <div className="space-y-2 text-left p-4 bg-destructive/20 rounded-lg">
-                        <h3 className="font-bold text-center text-lg mb-2 text-destructive-foreground">Consequences</h3>
-                        <ul className="list-disc list-inside text-destructive-foreground">
+                        <h3 className="font-bold text-center text-lg mb-2 text-destructive flex items-center justify-center gap-2"><AlertTriangle /> Consequences</h3>
+                        <p className="text-center text-destructive/80 mb-2">You lost <b>{summary.incurredConsequences.length * 50} points</b> for dismissing these critical needs:</p>
+                        <ul className="list-disc list-inside text-destructive/90 text-center">
                             {summary.incurredConsequences.map((con, i) => <li key={i}>{con}</li>)}
                         </ul>
                     </div>
@@ -320,3 +342,5 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
+
+    

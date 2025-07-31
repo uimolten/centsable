@@ -34,7 +34,7 @@ export interface GameConfig {
 }
 
 export const gameConfig: GameConfig = {
-  initialBudget: 2500, // Increased for 15 rounds
+  initialBudget: 2500,
   rounds: 15,
   events: [
     // === EXPENSE EVENTS ===
@@ -43,7 +43,7 @@ export const gameConfig: GameConfig = {
       type: 'expense',
       category: 'Need',
       description: "Rent is due! You must pay it.",
-      cost: 750,
+      cost: 800,
       consequence: "You failed to pay rent and have been evicted!",
     },
     {
@@ -58,7 +58,7 @@ export const gameConfig: GameConfig = {
       category: 'Need',
       description: "It's time to buy groceries for the month.",
       cost: 350,
-      consequence: "You don't have enough money for groceries.",
+      consequence: "You don't have enough money for food and had to borrow from a friend.",
     },
     {
         type: 'expense',
@@ -94,6 +94,13 @@ export const gameConfig: GameConfig = {
       description: "Your car needs new tires.",
       cost: 400,
       consequence: "Your car is unsafe to drive, and you got a fine.",
+    },
+    {
+        type: 'expense',
+        category: 'Need',
+        description: "Your pet is sick and needs to see the vet.",
+        cost: 250,
+        consequence: "Your pet's health worsened because you delayed care."
     },
     // --- Wants ---
     {
@@ -144,6 +151,12 @@ export const gameConfig: GameConfig = {
       description: "A subscription box for snacks and goodies.",
       cost: 30,
     },
+    {
+        type: 'expense',
+        category: 'Want',
+        description: "You feel like redecorating your room.",
+        cost: 120,
+    },
     
     // === CHOICE EVENTS ===
     {
@@ -164,6 +177,18 @@ export const gameConfig: GameConfig = {
         optionA: { description: 'A stylish thrift-store find', cost: 40 },
         optionB: { description: 'A brand-new designer outfit', cost: 180 },
     },
+    {
+        type: 'choice',
+        description: 'How will you get to work this week?',
+        optionA: { description: 'Buy a monthly transit pass', cost: 100 },
+        optionB: { description: 'Take a rideshare every day', cost: 250 },
+    },
+    {
+        type: 'choice',
+        description: "It's time to treat yourself to a coffee.",
+        optionA: { description: 'A simple drip coffee', cost: 3 },
+        optionB: { description: 'A fancy seasonal latte', cost: 7 },
+    },
 
     // === WINDFALL EVENTS ===
     {
@@ -181,5 +206,17 @@ export const gameConfig: GameConfig = {
         description: "You sold some of your old clothes online.",
         income: 60,
     },
+    {
+        type: 'windfall',
+        description: "You won a small prize from a scratch-off ticket.",
+        income: 25,
+    },
+    {
+        type: 'windfall',
+        description: "You got a small work bonus for being a great employee.",
+        income: 200,
+    },
   ],
 };
+
+    
