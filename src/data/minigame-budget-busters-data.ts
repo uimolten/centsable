@@ -130,6 +130,20 @@ export const gameConfig: GameConfig = {
         cost: 120,
         consequence: "You made a poor impression at your interview due to unprofessional attire."
     },
+     {
+        type: 'expense',
+        category: 'Need',
+        description: "Your internet bill is due.",
+        cost: 60,
+        consequence: "Your internet has been cut off."
+    },
+    {
+        type: 'expense',
+        category: 'Need',
+        description: "You need to refill a prescription medication.",
+        cost: 50,
+        consequence: "You missed a dose of important medication."
+    },
 
     // --- Wants ---
     {
@@ -192,6 +206,18 @@ export const gameConfig: GameConfig = {
         description: "Take a new online course for a hobby.",
         cost: 100
     },
+    {
+        type: 'expense',
+        category: 'Want',
+        description: 'Go to an amusement park.',
+        cost: 90,
+    },
+    {
+        type: 'expense',
+        category: 'Want',
+        description: 'Buy a new plant for your apartment.',
+        cost: 25,
+    },
     
     // === CHOICE EVENTS ===
     {
@@ -250,6 +276,13 @@ export const gameConfig: GameConfig = {
             text: "You didn't get groceries and had no food at home."
         }
     },
+    {
+        type: 'choice',
+        category: 'Want',
+        description: 'You want to start exercising.',
+        optionA: { description: 'A high-end gym membership', cost: 80 },
+        optionB: { description: 'A new pair of running shoes', cost: 130 },
+    },
 
     // === WINDFALL EVENTS ===
     {
@@ -302,3 +335,5 @@ export const gameConfig: GameConfig = {
     },
   ],
 };
+
+    

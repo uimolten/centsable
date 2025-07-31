@@ -20,6 +20,7 @@ import type { GameSummary } from '@/types/user';
 
 type GameState = 'start' | 'playing';
 type NegativeFlag = 'missed_work';
+type SummaryViewType = 'last' | 'high' | null;
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
   const { userData, refreshUserData } = useAuth();
@@ -39,6 +40,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [lastSummary, setLastSummary] = useState<GameSummary | null>(null);
   const [highScoreSummary, setHighScoreSummary] = useState<GameSummary | null>(null);
   const [viewingSummary, setViewingSummary] = useState<GameSummary | null>(null);
+  const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
   const [negativeFlags, setNegativeFlags] = useState<NegativeFlag[]>([]);
 
   const eventDeck = useRef<GameEvent[]>([]);
@@ -188,6 +190,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     eventIndex.current = 1;
     setIsNewHighScore(false);
     setViewingSummary(null);
+    setSummaryViewType(null);
     setNegativeFlags([]);
   }
 
@@ -281,7 +284,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
             </CardHeader>
             <CardContent className="space-y-6 p-0">
                 <div className="text-6xl font-black text-primary">{summary.score}</div>
-                {summary.isNewHighScore && <p className="font-bold text-yellow-400">🎉 New High Score! 🎉</p>}
+                {summary.isNewHighScore && summaryViewType === 'last' && <p className="font-bold text-yellow-400">🎉 New High Score! 🎉</p>}
                 {summary.scorePenalty > 0 && <p className="font-bold text-destructive">Total Penalties: -{summary.scorePenalty} points</p>}
 
                  <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
@@ -327,7 +330,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
                         Play Again
                     </Button>
-                     <Button size="lg" variant="outline" className="text-lg" onClick={() => setViewingSummary(null)}>
+                     <Button size="lg" variant="outline" className="text-lg" onClick={() => { setViewingSummary(null); setSummaryViewType(null); }}>
                         Close Report
                     </Button>
                  </div>
@@ -355,18 +358,18 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
              <div className="flex items-center gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <button 
-                    onClick={() => highScoreSummary && setViewingSummary(highScoreSummary)}
+                    onClick={() => {if (highScoreSummary) { setViewingSummary(highScoreSummary); setSummaryViewType('high');}}}
                     disabled={!highScoreSummary}
                     className={cn("text-left", highScoreSummary ? "hover:text-primary" : "text-muted-foreground cursor-not-allowed")}
                 >
-                  <b className="text-foreground underline">High Score: {highScore} points</b>
+                  <b className="text-foreground underline">High Score: {highScore}</b>
                 </button>
              </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
             {lastSummary && (
-                <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => setViewingSummary(lastSummary)}>
+                <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => { setViewingSummary(lastSummary); setSummaryViewType('last'); }}>
                     <History className="mr-2" /> View Last Summary
                 </Button>
             )}
