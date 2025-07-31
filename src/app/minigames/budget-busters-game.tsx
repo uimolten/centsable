@@ -68,9 +68,12 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const handleGameEnd = useCallback(async (currentScore: number, finalBudget: number, finalNeeds: number, finalWants: number, finalConsequences: string[], startingBudget: number) => {
     let finalScore = currentScore;
     let scorePenalty = 0;
-    const spentNothingOnWants = finalWants === 0;
-
-    if (spentNothingOnWants) {
+    
+    // Check if wants spending is too low (e.g., less than 10% of budget)
+    const wantsPercentage = startingBudget > 0 ? (finalWants / startingBudget) * 100 : 0;
+    const spentTooLittleOnWants = wantsPercentage < 10;
+    
+    if (spentTooLittleOnWants) {
         scorePenalty += 100;
     }
     
@@ -104,7 +107,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         spentOnWants: finalWants,
         incurredConsequences: finalConsequences,
         isNewHighScore: newHighScoreAchieved,
-        spentNothingOnWants,
+        spentNothingOnWants: spentTooLittleOnWants, // Re-using this flag for the new logic
         missedSavingsGoal,
         scorePenalty,
         initialBudget: startingBudget,
@@ -322,7 +325,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     <div className="space-y-2 text-left p-4 bg-yellow-500/20 rounded-lg">
                         <h3 className="font-bold text-center text-lg mb-2 text-yellow-400 flex items-center justify-center gap-2"><Meh /> A Life Un-Lived (-100 Points)</h3>
                         <p className="text-center text-yellow-400/80">
-                           You saved a lot, but spent nothing on wants! A good budget includes room for fun and enjoyment. It's all about balance.
+                           You spent less than 10% of your budget on wants! A good budget includes room for fun and enjoyment. It's all about balance.
                         </p>
                     </div>
                 )}
@@ -369,16 +372,14 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
              <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Handle expenses, make choices, and get windfalls.</p></div>
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
              <div className="flex items-center gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <button 
+                <Button 
+                    variant="link"
                     onClick={() => {if (highScoreSummary) { setViewingSummary(highScoreSummary); setSummaryViewType('high');}}}
                     disabled={!highScoreSummary}
-                    className={cn(
-                        "text-left underline", 
-                        highScoreSummary ? "hover:text-primary" : "text-muted-foreground cursor-not-allowed"
-                    )}
+                    className="p-0 h-auto text-lg text-foreground"
                 >
                   <b className="text-foreground">High Score: {highScore}</b>
-                </button>
+                </Button>
              </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">

@@ -172,6 +172,20 @@ export const gameConfig: GameConfig = {
       cost: 150,
       consequence: "The chipped tooth got infected, leading to a more painful and expensive procedure.",
     },
+    {
+      type: 'expense',
+      category: 'Need',
+      description: "You need to get a new set of professional work clothes.",
+      cost: 200,
+      consequence: "You weren't able to adhere to the company's dress code."
+    },
+    {
+      type: 'expense',
+      category: 'Need',
+      description: "Your annual gym membership is up for renewal.",
+      cost: 400,
+      consequence: "You skipped your renewal and lost your motivation to exercise."
+    },
 
     // --- Wants ---
     {
@@ -276,6 +290,24 @@ export const gameConfig: GameConfig = {
       description: 'Tickets to a local sports game.',
       cost: 55,
     },
+     {
+      type: 'expense',
+      category: 'Want',
+      description: 'A new set of noise-cancelling headphones.',
+      cost: 280,
+    },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'A high-quality backpack for school.',
+      cost: 90,
+    },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'A weekend streaming service marathon with all the snacks.',
+      cost: 50,
+    },
     
     // === CHOICE EVENTS ===
     {
@@ -362,6 +394,20 @@ export const gameConfig: GameConfig = {
       optionA: { description: 'Watch free tutorials online', cost: 0 },
       optionB: { description: 'Sign up for a premium online masterclass', cost: 180 },
     },
+    {
+      type: 'choice',
+      category: 'Want',
+      description: 'Your current phone is fine, but the new one is tempting.',
+      optionA: { description: 'Keep your current phone', cost: 0 },
+      optionB: { description: 'Upgrade to the latest model', cost: 400 },
+    },
+    {
+      type: 'choice',
+      category: 'Need',
+      description: "It's lunch time at work.",
+      optionA: { description: 'Pack a lunch from home', cost: 5 },
+      optionB: { description: 'Buy lunch from a fancy cafe', cost: 25 },
+    },
 
     // === WINDFALL EVENTS ===
     {
@@ -421,6 +467,11 @@ export const gameConfig: GameConfig = {
       type: 'windfall',
       description: "You returned some items you bought last month and got a store credit.",
       income: 40,
+    },
+    {
+      type: 'windfall',
+      description: "A freelance project paid more than you expected.",
+      income: 250,
     },
   ],
 };
