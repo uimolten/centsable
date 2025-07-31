@@ -12,7 +12,6 @@ import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
-import { shuffle } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { GameSummary } from '@/types/user';
@@ -21,6 +20,17 @@ import type { GameSummary } from '@/types/user';
 type GameState = 'start' | 'playing';
 type NegativeFlag = 'missed_work';
 type SummaryViewType = 'last' | 'high' | null;
+
+// Fisher-Yates shuffle algorithm
+const shuffle = (array: any[]) => {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+};
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
   const { userData, refreshUserData } = useAuth();
@@ -127,6 +137,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     });
 
     if (eligibleEvents.length === 0) {
+      // If no eligible events are left, just grab the next one from the original deck
+      // This is a fallback to prevent crashing, though it shouldn't be hit with a large event pool.
       const nextEvent = eventDeck.current[eventIndex.current];
       eventIndex.current += 1;
       return nextEvent;
@@ -360,9 +372,12 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                 <button 
                     onClick={() => {if (highScoreSummary) { setViewingSummary(highScoreSummary); setSummaryViewType('high');}}}
                     disabled={!highScoreSummary}
-                    className={cn("text-left", highScoreSummary ? "hover:text-primary" : "text-muted-foreground cursor-not-allowed")}
+                    className={cn(
+                        "text-left underline", 
+                        highScoreSummary ? "hover:text-primary" : "text-muted-foreground cursor-not-allowed"
+                    )}
                 >
-                  <b className="text-foreground underline">High Score: {highScore}</b>
+                  <b className="text-foreground">High Score: {highScore}</b>
                 </button>
              </div>
           </div>

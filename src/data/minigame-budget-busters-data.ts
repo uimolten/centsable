@@ -144,6 +144,20 @@ export const gameConfig: GameConfig = {
         cost: 50,
         consequence: "You missed a dose of important medication."
     },
+    {
+      type: 'expense',
+      category: 'Need',
+      description: "Your car's registration is expiring soon.",
+      cost: 75,
+      consequence: "You were pulled over and fined for having an expired registration."
+    },
+    {
+      type: 'expense',
+      category: 'Need',
+      description: "A textbook required for a class is not available at the library.",
+      cost: 85,
+      consequence: "You fell behind in your class because you didn't have the required textbook."
+    },
 
     // --- Wants ---
     {
@@ -218,6 +232,24 @@ export const gameConfig: GameConfig = {
         description: 'Buy a new plant for your apartment.',
         cost: 25,
     },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'Tickets to a 3D movie.',
+      cost: 22,
+    },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'A fancy coffee maker.',
+      cost: 130,
+    },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'Go out for brunch with friends.',
+      cost: 45,
+    },
     
     // === CHOICE EVENTS ===
     {
@@ -282,6 +314,13 @@ export const gameConfig: GameConfig = {
         description: 'You want to start exercising.',
         optionA: { description: 'A high-end gym membership', cost: 80 },
         optionB: { description: 'A new pair of running shoes', cost: 130 },
+    },
+    {
+        type: 'choice',
+        category: 'Want',
+        description: 'You have a free afternoon. How do you spend it?',
+        optionA: { description: 'Visit a free museum', cost: 0 },
+        optionB: { description: 'Go to a trampoline park', cost: 30 },
     },
 
     // === WINDFALL EVENTS ===
