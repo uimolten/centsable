@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History } from 'lucide-react';
+import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh } from 'lucide-react';
 import { gameConfig, Expense } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import type { GameSummary } from '@/types/user';
 
 
-type GameState = 'start' | 'playing' | 'end';
+type GameState = 'start' | 'playing';
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
   const { userData, refreshUserData } = useAuth();
@@ -41,8 +41,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const expenseIndex = useRef(0);
 
   useEffect(() => {
-    // Set high score from user data if it exists, otherwise check local storage
-    const savedHighScore = userData?.gameSummaries?.['budget-busters']?.highScore ?? localStorage.getItem('budgetBustersHighScore');
+    // Set high score from user data if it exists
+    const savedHighScore = userData?.gameSummaries?.['budget-busters']?.highScore;
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore.toString(), 10));
     }
@@ -52,23 +52,31 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     }
   }, [userData]);
   
-  const handleGameEnd = useCallback(async () => {
-    const newHighScore = score > highScore;
+  const handleGameEnd = useCallback(async (currentScore: number, finalBudget: number, finalNeeds: number, finalWants: number, finalConsequences: string[]) => {
+    let finalScore = currentScore;
+    const spentNothingOnWants = finalWants === 0;
+
+    if (spentNothingOnWants) {
+        finalScore -= 100; // Penalty for no wants
+    }
+
+    const newHighScore = finalScore > highScore;
     if (newHighScore) {
         setIsNewHighScore(true);
-        setHighScore(score);
+        setHighScore(finalScore);
     } else {
         setIsNewHighScore(false);
     }
     
     const summaryData: GameSummary = {
-        score,
-        highScore: newHighScore ? score : highScore,
-        budget,
-        spentOnNeeds,
-        spentOnWants,
-        incurredConsequences,
-        isNewHighScore: newHighScore
+        score: finalScore,
+        highScore: newHighScore ? finalScore : highScore,
+        budget: finalBudget,
+        spentOnNeeds: finalNeeds,
+        spentOnWants: finalWants,
+        incurredConsequences: finalConsequences,
+        isNewHighScore: newHighScore,
+        spentNothingOnWants,
     };
 
     if(userId) {
@@ -87,8 +95,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     }
     // Instead of setting gameState to 'end', we now reset to 'start'
     setGameState('start');
+    setViewingLastSummary(true); // Automatically show the summary
 
-  }, [highScore, score, userId, refreshUserData, budget, spentOnNeeds, spentOnWants, incurredConsequences]);
+  }, [highScore, userId, refreshUserData]);
 
   const getNextExpense = () => {
     if (expenseIndex.current >= allExpenses.current.length) {
@@ -100,9 +109,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     return nextExpense;
   }
   
-  const advanceToNextRound = useCallback(() => {
+  const advanceToNextRound = useCallback((currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[]) => {
       if (round + 1 >= gameConfig.rounds) {
-          handleGameEnd();
+          handleGameEnd(currentScore, currentBudget, currentNeeds, currentWants, currentConsequences);
       } else {
           setRound(prev => prev + 1);
           setActiveExpense(getNextExpense());
@@ -126,39 +135,49 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   const handleDecision = (action: 'pay' | 'dismiss') => {
     if (!activeExpense) return;
+    
+    let newScore = score;
+    let newBudget = budget;
+    let newSpentOnNeeds = spentOnNeeds;
+    let newSpentOnWants = spentOnWants;
+    let newConsequences = [...incurredConsequences];
 
     if (action === 'pay') {
         if (budget < activeExpense.cost) {
             // This case should ideally be prevented by disabling the pay button
             // but as a fallback, we treat it as a dismissal of a need.
             if (activeExpense.type === 'Need' && activeExpense.consequence) {
-              setIncurredConsequences(prev => [...prev, activeExpense.consequence!]);
+              newConsequences.push(activeExpense.consequence);
             }
-            setScore(prev => prev - 200);
+            newScore -= 200;
         } else {
-            const newBudget = budget - activeExpense.cost;
-            setBudget(newBudget);
+            newBudget -= activeExpense.cost;
 
             if (activeExpense.type === 'Need') {
-                setSpentOnNeeds(prev => prev + activeExpense.cost);
-                setScore(prev => prev + 50); // Reward for handling needs
+                newSpentOnNeeds += activeExpense.cost;
+                newScore += 50; // Reward for handling needs
             } else {
-                setSpentOnWants(prev => prev + activeExpense.cost);
-                setScore(prev => prev + 25); // Smaller reward for wants
+                newSpentOnWants += activeExpense.cost;
+                newScore += 25; // Smaller reward for wants
             }
         }
     } else { // Dismissed
         if (activeExpense.type === 'Need') {
-             setScore(prev => prev - 200); // Big penalty for dismissing a need
+             newScore -= 200; // Big penalty for dismissing a need
              if (activeExpense.consequence) {
-               setIncurredConsequences(prev => [...prev, activeExpense.consequence!]);
+               newConsequences.push(activeExpense.consequence);
              }
         } else { // Dismissed a want
-            setScore(prev => prev + 75); // Reward for smart saving
+            newScore += 75; // Reward for smart saving
         }
     }
 
-    advanceToNextRound();
+    setScore(newScore);
+    setBudget(newBudget);
+    setSpentOnNeeds(newSpentOnNeeds);
+    setSpentOnWants(newSpentOnWants);
+    setIncurredConsequences(newConsequences);
+    advanceToNextRound(newScore, newBudget, newSpentOnNeeds, newSpentOnWants, newConsequences);
   };
   
   const renderSummaryCard = (summary: GameSummary) => {
@@ -173,7 +192,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
             <CardHeader className="p-0 mb-4">
                 <div className="flex justify-center mb-4">
-                    <Mascot isHappy={summary.incurredConsequences.length === 0} isSad={summary.incurredConsequences.length > 0} />
+                    <Mascot isHappy={summary.incurredConsequences.length === 0 && !summary.spentNothingOnWants} isSad={summary.incurredConsequences.length > 0 || summary.spentNothingOnWants} />
                 </div>
                 <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
                     Financial Report
@@ -196,6 +215,16 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                         {didSaveEnough ? '✅ Great job hitting your 20% savings goal!' : '❌ You missed the 20% savings goal.'}
                     </p>
                  </div>
+
+                {summary.spentNothingOnWants && (
+                    <div className="space-y-2 text-left p-4 bg-yellow-500/20 rounded-lg">
+                        <h3 className="font-bold text-center text-lg mb-2 text-yellow-400 flex items-center justify-center gap-2"><Meh /> A Life Un-Lived</h3>
+                        <p className="text-center text-yellow-400/80">
+                           You saved a lot, but spent nothing on wants! A good budget includes room for fun. You lost <b>100 points</b> for not living a little.
+                        </p>
+                    </div>
+                )}
+
 
                 {summary.incurredConsequences.length > 0 && (
                     <div className="space-y-2 text-left p-4 bg-destructive/20 rounded-lg">
@@ -257,13 +286,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     );
   }
 
-  if (gameState === 'end') {
-      // This state should no longer be reachable as handleGameEnd now resets to 'start'
-      // But as a fallback, we show the start screen.
-      // The user can then click "View Last Summary"
-      router.push('/minigames/budget-busters');
-  }
-
   if (gameState === 'playing' && activeExpense) {
     return (
       <LevelDisplay
@@ -280,3 +302,5 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
+
+    

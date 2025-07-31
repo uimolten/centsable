@@ -10,6 +10,7 @@ export interface GameSummary {
   spentOnWants: number;
   incurredConsequences: string[];
   isNewHighScore: boolean;
+  spentNothingOnWants?: boolean;
 }
 
 export interface UserData {
@@ -33,3 +34,5 @@ export interface UserData {
     [gameId: string]: GameSummary;
   };
 }
+
+    
