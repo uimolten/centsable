@@ -15,14 +15,22 @@ export interface Tank {
     cost: number;
   }
 
+  export interface MandatoryExpense {
+    description: string;
+    cost: number;
+    isMandatory: true;
+  }
+
   export interface GameConfig {
     timer: number;
     tanks: Tank[];
     surpriseExpenses: SurpriseExpense[];
+    mandatoryExpenses: MandatoryExpense[];
+    mandatoryExpenseInterval: number; // A mandatory expense appears every N rounds
   }
   
   export const gameConfig: GameConfig = {
-    timer: 60, // Longer game time for continuous play
+    timer: 60,
     tanks: [
         { id: 'needs', label: 'Needs', amount: 500, capacity: 500, color: 'bg-red-500', isNeeds: true, locked: false },
         { id: 'wants', label: 'Wants', amount: 300, capacity: 300, color: 'bg-purple-500' },
@@ -34,32 +42,47 @@ export interface Tank {
         cost: 150,
       },
       {
-        description: 'Emergency vet visit for your dog!',
-        cost: 300,
-      },
-      {
         description: 'Last-minute concert tickets with a friend!',
         cost: 200,
-      },
-      {
-        description: 'Your laptop needs an urgent repair for school!',
-        cost: 450,
-      },
-      {
-        description: 'Surprise car trouble! Needs new tires.',
-        cost: 600,
       },
       {
         description: 'Your favorite artist dropped new merch!',
         cost: 100,
       },
       {
-        description: 'Your friend is raising money for a charity run.',
+        description: "A new must-have video game just released!",
+        cost: 70,
+      },
+      {
+        description: "Your friends are all going out for expensive pizza.",
         cost: 50,
       },
       {
-        description: 'The sink in your apartment is leaking and needs a plumber.',
+        description: "You found a limited-edition pair of sneakers online.",
         cost: 250,
-      }
+      },
     ],
+    mandatoryExpenses: [
+        {
+          description: "Rent is due! You must pay it.",
+          cost: 400,
+          isMandatory: true,
+        },
+        {
+          description: "Your car insurance premium is due.",
+          cost: 180,
+          isMandatory: true,
+        },
+        {
+          description: "Emergency vet visit for your dog!",
+          cost: 300,
+          isMandatory: true,
+        },
+        {
+          description: "Your laptop needs an urgent repair for school!",
+          cost: 450,
+          isMandatory: true,
+        },
+    ],
+    mandatoryExpenseInterval: 4,
   };
