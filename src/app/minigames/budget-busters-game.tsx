@@ -53,23 +53,17 @@ export function BudgetBustersGame() {
     triggerQuestUpdate(isNewHighScore);
   }, [score, highScore, user, refreshUserData]);
 
-  const handleGameEndRef = useRef(handleGameEnd);
   useEffect(() => {
-    handleGameEndRef.current = handleGameEnd;
-  }, [handleGameEnd]);
+    if (gameState === 'playing' && timeLeft === 0) {
+      handleGameEnd();
+    }
+  }, [timeLeft, gameState, handleGameEnd]);
 
   useEffect(() => {
     if (gameState !== 'playing') return;
 
     const timerInterval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timerInterval);
-          handleGameEndRef.current();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(timerInterval);
