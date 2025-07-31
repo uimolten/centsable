@@ -153,15 +153,19 @@ export function BudgetBustersGame() {
     );
   }
 
-  return (
-    <LevelDisplay
-      key={currentRound}
-      initialBudget={currentBudget}
-      expense={activeExpense!}
-      onExpenseCleared={handleExpenseCleared}
-      onCantAfford={handleCantAfford}
-      timeLeft={timeLeft}
-      currentScore={score}
-    />
-  );
+  if (gameState === 'playing' && activeExpense) {
+    return (
+      <LevelDisplay
+        key={currentRound}
+        initialBudget={currentBudget}
+        expense={activeExpense}
+        onExpenseCleared={handleExpenseCleared}
+        onCantAfford={handleCantAfford}
+        timeLeft={timeLeft}
+        currentScore={score}
+      />
+    );
+  }
+
+  return null;
 }

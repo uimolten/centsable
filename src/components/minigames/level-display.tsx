@@ -51,21 +51,13 @@ const TankDisplay = ({ tank, onTankClick, disabled }: { tank: Tank, onTankClick:
 export function LevelDisplay({ initialBudget, expense, onExpenseCleared, onCantAfford, timeLeft, currentScore }: LevelDisplayProps) {
   const [budget, setBudget] = useState(initialBudget);
   const [expensePaid, setExpensePaid] = useState(0);
-  const [showExpense, setShowExpense] = useState(false);
   const [points, setPoints] = useState(0);
 
   useEffect(() => {
-    const expenseTimeout = setTimeout(() => {
-      setShowExpense(true);
-      playIncorrectSound();
-    }, 1500); 
-
     const totalFunds = budget.reduce((sum, tank) => sum + tank.amount, 0);
     if ('isMandatory' in expense && expense.isMandatory && totalFunds < expense.cost) {
         onCantAfford(currentScore);
     }
-
-    return () => clearTimeout(expenseTimeout);
   }, [expense, budget, onCantAfford, currentScore]);
 
 
@@ -112,7 +104,7 @@ export function LevelDisplay({ initialBudget, expense, onExpenseCleared, onCantA
 
       <div className="relative w-full flex-grow flex items-center justify-center">
         <AnimatePresence>
-          {showExpense && (
+          {expense && (
             <motion.div
               initial={{ opacity: 0, y: -50, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -145,13 +137,13 @@ export function LevelDisplay({ initialBudget, expense, onExpenseCleared, onCantA
                     key={tank.id} 
                     tank={tank} 
                     onTankClick={handleTankClick} 
-                    disabled={!showExpense || expensePaid >= expense.cost}
+                    disabled={expensePaid >= expense.cost}
                 />
             ))}
         </div>
       </div>
       
-      {showExpense && (
+      {expense && (
          <div className="mt-4 p-4 rounded-lg bg-card/50 w-full max-w-xl text-center">
             <p className="text-lg text-muted-foreground">Amount needed to cover expense:</p>
             <p className="text-4xl font-black text-primary">${Math.max(0, amountLeft).toFixed(2)}</p>
