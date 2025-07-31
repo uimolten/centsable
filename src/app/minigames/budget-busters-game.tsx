@@ -47,7 +47,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   useEffect(() => {
     const gameData = userData?.gameSummaries?.['budget-busters'];
     if (gameData) {
-        setHighScore(gameData.bestAttempt?.highScore ?? 0);
+        setHighScore(gameData.bestAttempt?.score ?? 0);
         setLastSummary(gameData.lastAttempt ?? null);
         setHighScoreSummary(gameData.bestAttempt ?? null);
     }
@@ -74,7 +74,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         scorePenalty += finalConsequences.length * 75; // Increased penalty per consequence
     }
 
-    finalScore = Math.max(0, finalScore - scorePenalty);
+    finalScore = finalScore - scorePenalty;
 
     const newHighScoreAchieved = finalScore > highScore;
     if (newHighScoreAchieved) {
@@ -354,16 +354,13 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
              <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Handle expenses, make choices, and get windfalls.</p></div>
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
              <div className="flex items-center gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <p>
-                    <b className="text-foreground">High Score:</b> 
-                    <button 
-                        onClick={() => highScoreSummary && setViewingSummary(highScoreSummary)}
-                        disabled={!highScoreSummary}
-                        className={cn("underline ml-1", highScoreSummary ? "hover:text-primary" : "text-muted-foreground no-underline cursor-not-allowed")}
-                    >
-                      {highScore} points
-                    </button>
-                </p>
+                <button 
+                    onClick={() => highScoreSummary && setViewingSummary(highScoreSummary)}
+                    disabled={!highScoreSummary}
+                    className={cn("text-left", highScoreSummary ? "hover:text-primary" : "text-muted-foreground cursor-not-allowed")}
+                >
+                  <b className="text-foreground underline">High Score: {highScore} points</b>
+                </button>
              </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -395,3 +392,5 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
+
+    
