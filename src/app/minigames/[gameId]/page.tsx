@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
 
@@ -24,7 +24,7 @@ export default function MinigamePage() {
   }, [user, loading, router]);
 
 
-  const renderGame = () => {
+  const renderGame = useCallback(() => {
     if (loading || !user) {
         return (
              <div className="text-center">
@@ -46,7 +46,7 @@ export default function MinigamePage() {
           </div>
         );
     }
-  };
+  }, [gameId, loading, user]);
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
