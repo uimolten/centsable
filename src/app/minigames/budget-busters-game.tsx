@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh } from 'lucide-react';
-import { gameConfig, Expense } from '@/data/minigame-budget-busters-data';
+import { gameConfig, GameEvent } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
@@ -26,10 +26,11 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const [initialBudget, setInitialBudget] = useState(gameConfig.initialBudget);
   const [budget, setBudget] = useState(gameConfig.initialBudget);
   const [spentOnNeeds, setSpentOnNeeds] = useState(0);
   const [spentOnWants, setSpentOnWants] = useState(0);
-  const [activeExpense, setActiveExpense] = useState<Expense | null>(null);
+  const [activeEvent, setActiveEvent] = useState<GameEvent | null>(null);
   const [round, setRound] = useState(0);
   const [incurredConsequences, setIncurredConsequences] = useState<string[]>([]);
   const [isNewHighScore, setIsNewHighScore] = useState(false);
@@ -37,8 +38,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [lastSummary, setLastSummary] = useState<GameSummary | null>(null);
   const [viewingLastSummary, setViewingLastSummary] = useState(false);
 
-  const allExpenses = useRef(shuffle(gameConfig.expenses));
-  const expenseIndex = useRef(0);
+  const allEvents = useRef(shuffle(gameConfig.events));
+  const eventIndex = useRef(0);
 
   useEffect(() => {
     // Set high score from user data if it exists
@@ -52,7 +53,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     }
   }, [userData]);
   
-  const handleGameEnd = useCallback(async (currentScore: number, finalBudget: number, finalNeeds: number, finalWants: number, finalConsequences: string[]) => {
+  const handleGameEnd = useCallback(async (currentScore: number, finalBudget: number, finalNeeds: number, finalWants: number, finalConsequences: string[], startingBudget: number) => {
     let finalScore = currentScore;
     const spentNothingOnWants = finalWants === 0;
 
@@ -77,6 +78,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         incurredConsequences: finalConsequences,
         isNewHighScore: newHighScore,
         spentNothingOnWants,
+        initialBudget: startingBudget,
     };
 
     if(userId) {
@@ -99,42 +101,44 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   }, [highScore, userId, refreshUserData]);
 
-  const getNextExpense = () => {
-    if (expenseIndex.current >= allExpenses.current.length) {
-        expenseIndex.current = 0; // Loop if we run out
-        allExpenses.current = shuffle(gameConfig.expenses);
+  const getNextEvent = () => {
+    if (eventIndex.current >= allEvents.current.length) {
+        eventIndex.current = 0; // Loop if we run out
+        allEvents.current = shuffle(gameConfig.events);
     }
-    const nextExpense = allExpenses.current[expenseIndex.current];
-    expenseIndex.current += 1;
-    return nextExpense;
+    const nextEvent = allEvents.current[eventIndex.current];
+    eventIndex.current += 1;
+    return nextEvent;
   }
   
-  const advanceToNextRound = useCallback((currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[]) => {
+  const advanceToNextRound = useCallback((currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[], startingBudget: number) => {
       if (round + 1 >= gameConfig.rounds) {
-          handleGameEnd(currentScore, currentBudget, currentNeeds, currentWants, currentConsequences);
+          handleGameEnd(currentScore, currentBudget, currentNeeds, currentWants, currentConsequences, startingBudget);
       } else {
           setRound(prev => prev + 1);
-          setActiveExpense(getNextExpense());
+          setActiveEvent(getNextEvent());
       }
   }, [round, handleGameEnd]);
 
   const startGame = () => {
+    const newInitialBudget = gameConfig.initialBudget;
+    setInitialBudget(newInitialBudget);
     setGameState('playing');
     setScore(0);
-    setBudget(gameConfig.initialBudget);
+    setBudget(newInitialBudget);
     setSpentOnNeeds(0);
     setSpentOnWants(0);
     setIncurredConsequences([]);
     setRound(0);
-    expenseIndex.current = 0;
-    allExpenses.current = shuffle(gameConfig.expenses);
-    setActiveExpense(getNextExpense());
+    eventIndex.current = 0;
+    allEvents.current = shuffle(gameConfig.events);
+    setActiveEvent(getNextEvent());
     setIsNewHighScore(false);
     setViewingLastSummary(false);
   }
 
-  const handleDecision = (action: 'pay' | 'dismiss') => {
-    if (!activeExpense) return;
+  const handleDecision = (action: 'pay' | 'dismiss' | 'choose_a' | 'choose_b' | 'skip_choice' | 'collect_windfall') => {
+    if (!activeEvent) return;
     
     let newScore = score;
     let newBudget = budget;
@@ -142,34 +146,47 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     let newSpentOnWants = spentOnWants;
     let newConsequences = [...incurredConsequences];
 
-    if (action === 'pay') {
-        if (budget < activeExpense.cost) {
-            // This case should ideally be prevented by disabling the pay button
-            // but as a fallback, we treat it as a dismissal of a need.
-            if (activeExpense.type === 'Need' && activeExpense.consequence) {
-              newConsequences.push(activeExpense.consequence);
+    switch(activeEvent.type) {
+        case 'expense':
+            if (action === 'pay') {
+                if (budget >= activeEvent.cost) {
+                    newBudget -= activeEvent.cost;
+                    if (activeEvent.category === 'Need') {
+                        newSpentOnNeeds += activeEvent.cost;
+                        newScore += 50;
+                    } else {
+                        newSpentOnWants += activeEvent.cost;
+                        newScore += 25;
+                    }
+                }
+            } else { // Dismissed
+                if (activeEvent.category === 'Need') {
+                    newScore -= 200;
+                    if (activeEvent.consequence) newConsequences.push(activeEvent.consequence);
+                } else { // Dismissed a want
+                    newScore += 75;
+                }
             }
-            newScore -= 200;
-        } else {
-            newBudget -= activeExpense.cost;
-
-            if (activeExpense.type === 'Need') {
-                newSpentOnNeeds += activeExpense.cost;
-                newScore += 50; // Reward for handling needs
-            } else {
-                newSpentOnWants += activeExpense.cost;
-                newScore += 25; // Smaller reward for wants
+            break;
+        case 'choice':
+            if (action === 'choose_a' && budget >= activeEvent.optionA.cost) {
+                newBudget -= activeEvent.optionA.cost;
+                newSpentOnWants += activeEvent.optionA.cost;
+                newScore += 25;
+            } else if (action === 'choose_b' && budget >= activeEvent.optionB.cost) {
+                newBudget -= activeEvent.optionB.cost;
+                newSpentOnWants += activeEvent.optionB.cost;
+                newScore += 25;
+            } else if (action === 'skip_choice') {
+                newScore += 75; // Rewarded for saving
             }
-        }
-    } else { // Dismissed
-        if (activeExpense.type === 'Need') {
-             newScore -= 200; // Big penalty for dismissing a need
-             if (activeExpense.consequence) {
-               newConsequences.push(activeExpense.consequence);
-             }
-        } else { // Dismissed a want
-            newScore += 75; // Reward for smart saving
-        }
+            break;
+        case 'windfall':
+            if (action === 'collect_windfall') {
+                newBudget += activeEvent.income;
+                newScore += 50;
+            }
+            break;
     }
 
     setScore(newScore);
@@ -177,15 +194,16 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     setSpentOnNeeds(newSpentOnNeeds);
     setSpentOnWants(newSpentOnWants);
     setIncurredConsequences(newConsequences);
-    advanceToNextRound(newScore, newBudget, newSpentOnNeeds, newSpentOnWants, newConsequences);
+    advanceToNextRound(newScore, newBudget, newSpentOnNeeds, newSpentOnWants, newConsequences, initialBudget);
   };
   
   const renderSummaryCard = (summary: GameSummary) => {
     const totalSpent = summary.spentOnNeeds + summary.spentOnWants;
-    const needsPercentage = gameConfig.initialBudget > 0 ? Math.round((summary.spentOnNeeds / gameConfig.initialBudget) * 100) : 0;
-    const wantsPercentage = gameConfig.initialBudget > 0 ? Math.round((summary.spentOnWants / gameConfig.initialBudget) * 100) : 0;
+    const baseBudget = summary.initialBudget || gameConfig.initialBudget;
+    const needsPercentage = baseBudget > 0 ? Math.round((summary.spentOnNeeds / baseBudget) * 100) : 0;
+    const wantsPercentage = baseBudget > 0 ? Math.round((summary.spentOnWants / baseBudget) * 100) : 0;
     const savedAmount = summary.budget;
-    const savedPercentage = gameConfig.initialBudget > 0 ? Math.round((savedAmount / gameConfig.initialBudget) * 100) : 0;
+    const savedPercentage = baseBudget > 0 ? Math.round((savedAmount / baseBudget) * 100) : 0;
     const didSaveEnough = savedPercentage >= 20;
 
     return (
@@ -269,7 +287,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
-             <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Decide to 'Pay' for or 'Dismiss' each one.</p></div>
+             <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Handle expenses, make choices, and get windfalls.</p></div>
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
           </div>
@@ -286,12 +304,12 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     );
   }
 
-  if (gameState === 'playing' && activeExpense) {
+  if (gameState === 'playing' && activeEvent) {
     return (
       <LevelDisplay
-        key={expenseIndex.current}
+        key={eventIndex.current}
         budget={budget}
-        expense={activeExpense}
+        event={activeEvent}
         onDecision={handleDecision}
         round={round + 1}
         totalRounds={gameConfig.rounds}
@@ -302,5 +320,3 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
-
-    

@@ -11,6 +11,7 @@ export interface GameSummary {
   incurredConsequences: string[];
   isNewHighScore: boolean;
   spentNothingOnWants?: boolean;
+  initialBudget?: number;
 }
 
 export interface UserData {
@@ -34,5 +35,3 @@ export interface UserData {
     [gameId: string]: GameSummary;
   };
 }
-
-    
