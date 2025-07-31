@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History } from 'lucide-react';
 import { gameConfig, Expense } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
@@ -16,6 +16,16 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 type GameState = 'start' | 'playing' | 'end';
+
+interface GameSummary {
+  score: number;
+  highScore: number;
+  budget: number;
+  spentOnNeeds: number;
+  spentOnWants: number;
+  incurredConsequences: string[];
+  isNewHighScore: boolean;
+}
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
   const { refreshUserData } = useAuth();
@@ -30,6 +40,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [round, setRound] = useState(0);
   const [incurredConsequences, setIncurredConsequences] = useState<string[]>([]);
   const [isNewHighScore, setIsNewHighScore] = useState(false);
+  
+  const [lastSummary, setLastSummary] = useState<GameSummary | null>(null);
+  const [viewingLastSummary, setViewingLastSummary] = useState(false);
 
   const allExpenses = useRef(shuffle(gameConfig.expenses));
   const expenseIndex = useRef(0);
@@ -38,6 +51,10 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     const savedHighScore = localStorage.getItem('budgetBustersHighScore');
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore, 10));
+    }
+    const savedSummary = localStorage.getItem('budgetBustersLastSummary');
+    if (savedSummary) {
+      setLastSummary(JSON.parse(savedSummary));
     }
   }, []);
   
@@ -51,6 +68,19 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         setIsNewHighScore(false);
     }
     
+    // Save the summary for later viewing
+    const summaryData: GameSummary = {
+        score,
+        highScore: newHighScore ? score : highScore,
+        budget,
+        spentOnNeeds,
+        spentOnWants,
+        incurredConsequences,
+        isNewHighScore: newHighScore
+    };
+    localStorage.setItem('budgetBustersLastSummary', JSON.stringify(summaryData));
+    setLastSummary(summaryData); // Update state for immediate viewing
+    
     if (userId && refreshUserData) {
       const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
       if (newHighScore) {
@@ -60,7 +90,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await refreshUserData();
     }
     setGameState('end');
-  }, [highScore, score, userId, refreshUserData]);
+  }, [highScore, score, userId, refreshUserData, budget, spentOnNeeds, spentOnWants, incurredConsequences]);
 
   const getNextExpense = () => {
     if (expenseIndex.current >= allExpenses.current.length) {
@@ -93,6 +123,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     allExpenses.current = shuffle(gameConfig.expenses);
     setActiveExpense(getNextExpense());
     setIsNewHighScore(false);
+    setViewingLastSummary(false);
   }
 
   const handleDecision = (action: 'pay' | 'dismiss') => {
@@ -132,6 +163,74 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     advanceToNextRound();
   };
   
+  const renderSummaryCard = (summary: GameSummary) => {
+    const totalSpent = summary.spentOnNeeds + summary.spentOnWants;
+    const needsPercentage = gameConfig.initialBudget > 0 ? Math.round((summary.spentOnNeeds / gameConfig.initialBudget) * 100) : 0;
+    const wantsPercentage = gameConfig.initialBudget > 0 ? Math.round((summary.spentOnWants / gameConfig.initialBudget) * 100) : 0;
+    const savedAmount = summary.budget;
+    const savedPercentage = gameConfig.initialBudget > 0 ? Math.round((savedAmount / gameConfig.initialBudget) * 100) : 0;
+    const didSaveEnough = savedPercentage >= 20;
+
+    return (
+        <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
+            <CardHeader className="p-0 mb-4">
+                <div className="flex justify-center mb-4">
+                    <Mascot isHappy={summary.incurredConsequences.length === 0} isSad={summary.incurredConsequences.length > 0} />
+                </div>
+                <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
+                    Financial Report
+                </CardTitle>
+                <CardDescription className="text-lg">Here's your performance breakdown.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 p-0">
+                <div className="text-6xl font-black text-primary">{summary.score}</div>
+                {summary.isNewHighScore && <p className="font-bold text-yellow-400">🎉 New High Score! 🎉</p>}
+
+                 <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
+                    <h3 className="font-bold text-center text-lg mb-2">Your 50/30/20 Breakdown</h3>
+                    <p className="flex justify-between"><span><b>Needs:</b></span> <span>${summary.spentOnNeeds.toFixed(2)} <span className="text-muted-foreground">({needsPercentage}%)</span></span></p>
+                    <p className="flex justify-between"><span><b>Wants:</b></span> <span>${summary.spentOnWants.toFixed(2)} <span className="text-muted-foreground">({wantsPercentage}%)</span></span></p>
+                    <p className="flex justify-between">
+                        <span><b>Savings:</b></span> 
+                        <span className={cn(didSaveEnough ? "text-green-400" : "text-destructive")}>${savedAmount.toFixed(2)} <span className="text-muted-foreground">({savedPercentage}%)</span></span>
+                    </p>
+                    <p className={cn("text-center font-bold pt-2", didSaveEnough ? "text-green-400" : "text-destructive")}>
+                        {didSaveEnough ? '✅ Great job hitting your 20% savings goal!' : '❌ You missed the 20% savings goal.'}
+                    </p>
+                 </div>
+
+                {summary.incurredConsequences.length > 0 && (
+                    <div className="space-y-2 text-left p-4 bg-destructive/20 rounded-lg">
+                        <h3 className="font-bold text-center text-lg mb-2 text-destructive-foreground">Consequences</h3>
+                        <ul className="list-disc list-inside text-destructive-foreground">
+                            {summary.incurredConsequences.map((con, i) => <li key={i}>{con}</li>)}
+                        </ul>
+                    </div>
+                )}
+
+                 <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
+                        Play Again
+                    </Button>
+                     <Button size="lg" variant="outline" className="text-lg" onClick={() => {
+                         if (viewingLastSummary) {
+                             setViewingLastSummary(false);
+                         } else {
+                            router.push('/minigames');
+                         }
+                     }}>
+                        Close Report
+                    </Button>
+                 </div>
+            </CardContent>
+        </Card>
+    );
+  }
+
+  if (viewingLastSummary && lastSummary) {
+      return renderSummaryCard(lastSummary);
+  }
+
   if (gameState === 'start') {
     return (
       <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center">
@@ -147,69 +246,22 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">High Score:</b> {highScore} points</p></div>
           </div>
-          <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
+            {lastSummary && (
+                <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => setViewingLastSummary(true)}>
+                    <History className="mr-2" /> View Last Summary
+                </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   if (gameState === 'end') {
-    const totalSpent = spentOnNeeds + spentOnWants;
-    const needsPercentage = gameConfig.initialBudget > 0 ? Math.round((spentOnNeeds / gameConfig.initialBudget) * 100) : 0;
-    const wantsPercentage = gameConfig.initialBudget > 0 ? Math.round((spentOnWants / gameConfig.initialBudget) * 100) : 0;
-    const savedAmount = budget;
-    const savedPercentage = gameConfig.initialBudget > 0 ? Math.round((savedAmount / gameConfig.initialBudget) * 100) : 0;
-    const didSaveEnough = savedPercentage >= 20;
-
-    return (
-        <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
-            <CardHeader className="p-0 mb-4">
-                <div className="flex justify-center mb-4">
-                    <Mascot isHappy={incurredConsequences.length === 0} isSad={incurredConsequences.length > 0} />
-                </div>
-                <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-                    Financial Report
-                </CardTitle>
-                <CardDescription className="text-lg">Here's your performance breakdown.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 p-0">
-                <div className="text-6xl font-black text-primary">{score}</div>
-                {isNewHighScore && <p className="font-bold text-yellow-400">🎉 New High Score! 🎉</p>}
-
-
-                 <div className="space-y-2 text-left p-4 bg-background/50 rounded-lg">
-                    <h3 className="font-bold text-center text-lg mb-2">Your 50/30/20 Breakdown</h3>
-                    <p className="flex justify-between"><span><b>Needs:</b></span> <span>${spentOnNeeds.toFixed(2)} <span className="text-muted-foreground">({needsPercentage}%)</span></span></p>
-                    <p className="flex justify-between"><span><b>Wants:</b></span> <span>${spentOnWants.toFixed(2)} <span className="text-muted-foreground">({wantsPercentage}%)</span></span></p>
-                    <p className="flex justify-between">
-                        <span><b>Savings:</b></span> 
-                        <span className={cn(didSaveEnough ? "text-green-400" : "text-destructive")}>${savedAmount.toFixed(2)} <span className="text-muted-foreground">({savedPercentage}%)</span></span>
-                    </p>
-                    <p className={cn("text-center font-bold pt-2", didSaveEnough ? "text-green-400" : "text-destructive")}>
-                        {didSaveEnough ? '✅ Great job hitting your 20% savings goal!' : '❌ You missed the 20% savings goal.'}
-                    </p>
-                 </div>
-
-                {incurredConsequences.length > 0 && (
-                    <div className="space-y-2 text-left p-4 bg-destructive/20 rounded-lg">
-                        <h3 className="font-bold text-center text-lg mb-2 text-destructive-foreground">Consequences</h3>
-                        <ul className="list-disc list-inside text-destructive-foreground">
-                            {incurredConsequences.map((con, i) => <li key={i}>{con}</li>)}
-                        </ul>
-                    </div>
-                )}
-
-                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
-                        Play Again
-                    </Button>
-                     <Button size="lg" variant="outline" className="text-lg" onClick={() => router.push('/minigames')}>
-                        Close Report
-                    </Button>
-                 </div>
-            </CardContent>
-        </Card>
-    );
+    const summary: GameSummary = { score, highScore, budget, spentOnNeeds, spentOnWants, incurredConsequences, isNewHighScore };
+    return renderSummaryCard(summary);
   }
 
   if (gameState === 'playing' && activeExpense) {
@@ -228,3 +280,5 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
+
+    
