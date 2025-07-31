@@ -158,6 +158,20 @@ export const gameConfig: GameConfig = {
       cost: 85,
       consequence: "You fell behind in your class because you didn't have the required textbook."
     },
+    {
+      type: 'expense',
+      category: 'Need',
+      description: "Your public transportation pass needs to be renewed for the month.",
+      cost: 100,
+      consequence: "You had to pay expensive single-ride fares, wasting money.",
+    },
+    {
+      type: 'expense',
+      category: 'Need',
+      description: "You chipped a tooth and need to see a dentist.",
+      cost: 150,
+      consequence: "The chipped tooth got infected, leading to a more painful and expensive procedure.",
+    },
 
     // --- Wants ---
     {
@@ -250,6 +264,18 @@ export const gameConfig: GameConfig = {
       description: 'Go out for brunch with friends.',
       cost: 45,
     },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'A high-end skincare product you saw online.',
+      cost: 65,
+    },
+    {
+      type: 'expense',
+      category: 'Want',
+      description: 'Tickets to a local sports game.',
+      cost: 55,
+    },
     
     // === CHOICE EVENTS ===
     {
@@ -322,6 +348,20 @@ export const gameConfig: GameConfig = {
         optionA: { description: 'Visit a free museum', cost: 0 },
         optionB: { description: 'Go to a trampoline park', cost: 30 },
     },
+    {
+      type: 'choice',
+      category: 'Want',
+      description: 'Your friends are planning a weekend camping trip.',
+      optionA: { description: 'Borrow gear from a friend', cost: 20 },
+      optionB: { description: 'Buy all new camping equipment', cost: 300 },
+    },
+    {
+      type: 'choice',
+      category: 'Want',
+      description: 'You want to learn a new skill.',
+      optionA: { description: 'Watch free tutorials online', cost: 0 },
+      optionB: { description: 'Sign up for a premium online masterclass', cost: 180 },
+    },
 
     // === WINDFALL EVENTS ===
     {
@@ -372,7 +412,15 @@ export const gameConfig: GameConfig = {
         description: "You got a tax refund!",
         income: 300,
     },
+    {
+        type: 'windfall',
+        description: "You participated in a paid research study.",
+        income: 50,
+    },
+    {
+      type: 'windfall',
+      description: "You returned some items you bought last month and got a store credit.",
+      income: 40,
+    },
   ],
 };
-
-    
