@@ -42,7 +42,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   }, []);
   
   const handleGameEnd = useCallback(async () => {
-    setGameState('end');
     const newHighScore = score > highScore;
     if (newHighScore) {
         setIsNewHighScore(true);
@@ -60,6 +59,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await Promise.all(updates);
       await refreshUserData();
     }
+    setGameState('end');
   }, [highScore, score, userId, refreshUserData]);
 
   const getNextExpense = () => {
@@ -82,8 +82,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   }, [round, handleGameEnd]);
 
   const startGame = () => {
-    setBudget(gameConfig.initialBudget);
+    setGameState('playing');
     setScore(0);
+    setBudget(gameConfig.initialBudget);
     setSpentOnNeeds(0);
     setSpentOnWants(0);
     setIncurredConsequences([]);
@@ -91,7 +92,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     expenseIndex.current = 0;
     allExpenses.current = shuffle(gameConfig.expenses);
     setActiveExpense(getNextExpense());
-    setGameState('playing');
+    setIsNewHighScore(false);
   }
 
   const handleDecision = (action: 'pay' | 'dismiss') => {
@@ -154,10 +155,10 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   if (gameState === 'end') {
     const totalSpent = spentOnNeeds + spentOnWants;
-    const needsPercentage = totalSpent > 0 ? Math.round((spentOnNeeds / gameConfig.initialBudget) * 100) : 0;
-    const wantsPercentage = totalSpent > 0 ? Math.round((spentOnWants / gameConfig.initialBudget) * 100) : 0;
+    const needsPercentage = gameConfig.initialBudget > 0 ? Math.round((spentOnNeeds / gameConfig.initialBudget) * 100) : 0;
+    const wantsPercentage = gameConfig.initialBudget > 0 ? Math.round((spentOnWants / gameConfig.initialBudget) * 100) : 0;
     const savedAmount = budget;
-    const savedPercentage = Math.round((savedAmount / gameConfig.initialBudget) * 100);
+    const savedPercentage = gameConfig.initialBudget > 0 ? Math.round((savedAmount / gameConfig.initialBudget) * 100) : 0;
     const didSaveEnough = savedPercentage >= 20;
 
     return (
