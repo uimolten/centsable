@@ -11,24 +11,17 @@ import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
+import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
 import { shuffle } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import type { GameSummary } from '@/types/user';
+
 
 type GameState = 'start' | 'playing' | 'end';
 
-interface GameSummary {
-  score: number;
-  highScore: number;
-  budget: number;
-  spentOnNeeds: number;
-  spentOnWants: number;
-  incurredConsequences: string[];
-  isNewHighScore: boolean;
-}
-
 export function BudgetBustersGame({ userId }: { userId: string }) {
-  const { refreshUserData } = useAuth();
+  const { userData, refreshUserData } = useAuth();
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
@@ -48,27 +41,26 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const expenseIndex = useRef(0);
 
   useEffect(() => {
-    const savedHighScore = localStorage.getItem('budgetBustersHighScore');
+    // Set high score from user data if it exists, otherwise check local storage
+    const savedHighScore = userData?.gameSummaries?.['budget-busters']?.highScore ?? localStorage.getItem('budgetBustersHighScore');
     if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore, 10));
+      setHighScore(parseInt(savedHighScore.toString(), 10));
     }
-    const savedSummary = localStorage.getItem('budgetBustersLastSummary');
-    if (savedSummary) {
-      setLastSummary(JSON.parse(savedSummary));
+    // Set last summary from user data
+    if (userData?.gameSummaries?.['budget-busters']) {
+      setLastSummary(userData.gameSummaries['budget-busters']);
     }
-  }, []);
+  }, [userData]);
   
   const handleGameEnd = useCallback(async () => {
     const newHighScore = score > highScore;
     if (newHighScore) {
         setIsNewHighScore(true);
         setHighScore(score);
-        localStorage.setItem('budgetBustersHighScore', score.toString());
     } else {
         setIsNewHighScore(false);
     }
     
-    // Save the summary for later viewing
     const summaryData: GameSummary = {
         score,
         highScore: newHighScore ? score : highScore,
@@ -78,7 +70,11 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         incurredConsequences,
         isNewHighScore: newHighScore
     };
-    localStorage.setItem('budgetBustersLastSummary', JSON.stringify(summaryData));
+
+    if(userId) {
+       await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
+    }
+    
     setLastSummary(summaryData); // Update state for immediate viewing
     
     if (userId && refreshUserData) {
@@ -89,7 +85,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await Promise.all(updates);
       await refreshUserData();
     }
-    setGameState('end');
+    // Instead of setting gameState to 'end', we now reset to 'start'
+    setGameState('start');
+
   }, [highScore, score, userId, refreshUserData, budget, spentOnNeeds, spentOnWants, incurredConsequences]);
 
   const getNextExpense = () => {
@@ -260,8 +258,10 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   }
 
   if (gameState === 'end') {
-    const summary: GameSummary = { score, highScore, budget, spentOnNeeds, spentOnWants, incurredConsequences, isNewHighScore };
-    return renderSummaryCard(summary);
+      // This state should no longer be reachable as handleGameEnd now resets to 'start'
+      // But as a fallback, we show the start screen.
+      // The user can then click "View Last Summary"
+      router.push('/minigames/budget-busters');
   }
 
   if (gameState === 'playing' && activeExpense) {
@@ -280,5 +280,3 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
   return null;
 }
-
-    

@@ -5,5 +5,6 @@ import './flows/save-progress-flow';
 import './flows/generate-daily-quests-flow';
 import './flows/update-quest-progress-flow';
 import './flows/add-xp-flow';
+import './flows/save-game-summary-flow';
 
     

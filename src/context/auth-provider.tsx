@@ -84,10 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: data.createdAt,
               dailyQuests: quests,
               dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
+              gameSummaries: data.gameSummaries ?? {},
             });
         } else {
             // If the user exists in Auth but not Firestore, create their record
-            const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests'> = {
+            const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests' | 'gameSummaries'> = {
                 email: user.email!,
                 displayName: user.displayName || 'New Adventurer',
                 photoURL: user.photoURL,
@@ -106,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: serverTimestamp(),
             });
             const createdDoc = await getDoc(userDocRef);
-            setUserData({ uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [] });
+            setUserData({ uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], gameSummaries: {} });
         }
 
     } catch (error) {
@@ -154,5 +155,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-    

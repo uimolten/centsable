@@ -2,6 +2,16 @@
 import type { Timestamp } from "firebase/firestore";
 import type { Quest } from './quests';
 
+export interface GameSummary {
+  score: number;
+  highScore: number;
+  budget: number;
+  spentOnNeeds: number;
+  spentOnWants: number;
+  incurredConsequences: string[];
+  isNewHighScore: boolean;
+}
+
 export interface UserData {
   uid: string;
   email: string;
@@ -19,4 +29,7 @@ export interface UserData {
   createdAt: Timestamp;
   dailyQuests?: Quest[];
   dailyQuestsCompleted?: boolean;
+  gameSummaries?: {
+    [gameId: string]: GameSummary;
+  };
 }
