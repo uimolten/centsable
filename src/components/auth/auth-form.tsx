@@ -66,7 +66,7 @@ export function AuthForm() {
       case 'auth/invalid-credential':
         return 'Invalid email or password. Please try again.';
       case 'auth/popup-closed-by-user':
-        return 'Sign-in popup was closed before completing. Please try again.';
+        return ''; // Return empty to prevent toast for this specific case
       case 'auth/unauthorized-domain':
         return 'This domain is not authorized for authentication. Please add it to the Firebase console.';
       default:
@@ -109,7 +109,10 @@ export function AuthForm() {
       
       router.push("/learn");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Sign in failed", description: getAuthErrorMessage(error) });
+        const description = getAuthErrorMessage(error);
+        if (description) {
+            toast({ variant: "destructive", title: "Sign in failed", description });
+        }
     } finally {
         setLoading(null);
     }
