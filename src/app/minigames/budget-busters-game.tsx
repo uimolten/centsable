@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,12 +23,46 @@ export function BudgetBustersGame() {
   const [highScore, setHighScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(gameLevels[levelIndex].timer);
 
+  const handleLevelCompleteRef = useRef<(score: number, success: boolean) => void>();
+
   useEffect(() => {
     const savedHighScore = localStorage.getItem('budgetBustersHighScore');
     if (savedHighScore) {
       setHighScore(parseInt(savedHighScore, 10));
     }
   }, []);
+
+  const triggerQuestUpdate = async (isSuccess: boolean, newScore: number) => {
+    if (!user || !refreshUserData) return;
+    
+    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+    if (isSuccess && newScore > highScore) {
+      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
+    }
+    
+    await Promise.all(updates);
+    await refreshUserData();
+  };
+
+  const handleLevelComplete = useCallback((score: number, success: boolean) => {
+    const timeBonus = success ? timeLeft * 50 : 0;
+    const totalScore = score + timeBonus; 
+    setFinalScore(totalScore);
+    setWasSuccess(success);
+    setGameState('level-end');
+    
+    const isNewHighScore = success && totalScore > highScore;
+    if (isNewHighScore) {
+      setHighScore(totalScore);
+      localStorage.setItem('budgetBustersHighScore', totalScore.toString());
+    }
+    
+    triggerQuestUpdate(success, totalScore);
+  }, [timeLeft, highScore, user, refreshUserData]);
+
+  useEffect(() => {
+    handleLevelCompleteRef.current = handleLevelComplete;
+  }, [handleLevelComplete]);
 
   useEffect(() => {
     if (gameState !== 'playing') return;
@@ -37,7 +71,7 @@ export function BudgetBustersGame() {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timerInterval);
-          handleLevelComplete(0, false);
+          handleLevelCompleteRef.current?.(0, false);
           return 0;
         }
         return prev - 1;
@@ -52,33 +86,6 @@ export function BudgetBustersGame() {
     setTimeLeft(gameLevels[levelIndex].timer);
     setGameState('playing');
   }
-
-  const triggerQuestUpdate = async (isSuccess: boolean, newScore: number) => {
-    if (!user || !refreshUserData) return;
-    
-    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
-    if (isSuccess && newScore > highScore) {
-      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
-    }
-    
-    await Promise.all(updates);
-    await refreshUserData();
-  };
-
-  const handleLevelComplete = (score: number, success: boolean) => {
-    const totalScore = score + (timeLeft * 50); // Add time bonus
-    setFinalScore(totalScore);
-    setWasSuccess(success);
-    setGameState('level-end');
-    
-    const isNewHighScore = success && totalScore > highScore;
-    if (isNewHighScore) {
-      setHighScore(totalScore);
-      localStorage.setItem('budgetBustersHighScore', totalScore.toString());
-    }
-    
-    triggerQuestUpdate(success, totalScore);
-  };
 
   const handleNext = () => {
     if (wasSuccess && levelIndex < gameLevels.length - 1) {

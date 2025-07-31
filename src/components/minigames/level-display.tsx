@@ -32,7 +32,7 @@ const TankDisplay = ({ tank, onTankClick, disabled }: { tank: Tank, onTankClick:
         <div className="absolute bottom-0 left-0 w-full bg-background/50" style={{ height: '100%' }}></div>
         <motion.div
           className={cn("absolute bottom-0 left-0 w-full", tank.color)}
-          initial={{ height: 0 }}
+          initial={{ height: `${fillPercentage}%` }}
           animate={{ height: `${fillPercentage}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         />
@@ -65,9 +65,9 @@ export function LevelDisplay({ level, onLevelComplete, timeLeft }: LevelDisplayP
   }, [level]);
 
 
-  const calculateScore = () => {
-    let score = expensePaid * 10;
-    return score;
+  const calculateScore = (fromTank: Tank) => {
+    // Wants are worth more points than savings
+    return fromTank.isSavings ? 5 : 10;
   };
 
   const handleTankClick = (tankId: string) => {
@@ -88,7 +88,8 @@ export function LevelDisplay({ level, onLevelComplete, timeLeft }: LevelDisplayP
 
     if (newExpensePaid >= level.surpriseExpense.cost) {
       playCorrectSound();
-      onLevelComplete(calculateScore(), true);
+      let score = calculateScore(clickedTank);
+      onLevelComplete(score, true);
     }
   };
 
