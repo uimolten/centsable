@@ -122,12 +122,13 @@ export function CreditClimberGame({ userId }: { userId: string }) {
       const newVy = prevState.vy + gameConfig.gravity;
       const newY = Math.max(0, prevState.y + newVy);
 
-      if (newY >= gameHeight - PLAYER_HEIGHT) {
-        endGame();
-        return prevState;
-      }
       return { y: newY, vy: newVy };
     });
+
+    if (playerState.y >= gameHeight - PLAYER_HEIGHT) {
+      endGame();
+      return;
+    }
 
     // Spawn elements
     spawnTimer.current += 1;
