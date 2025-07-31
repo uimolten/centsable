@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
 
@@ -28,12 +28,8 @@ export default function MinigamePage() {
   }, [user, loading, router]);
 
   const renderGame = useCallback(() => {
-    if (loading || !user) {
-      return (
-        <div className="text-center">
-          <Skeleton className="h-64 w-full" />
-        </div>
-      );
+    if (!user) { // Skeleton will be shown by the loading check below
+      return null;
     }
 
     switch (gameId) {
@@ -49,7 +45,22 @@ export default function MinigamePage() {
           </div>
         );
     }
-  }, [gameId, user, loading]);
+  }, [gameId, user]);
+
+  if (loading || !user) {
+    return (
+       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+            <div className="w-full max-w-4xl">
+                 <Button variant="ghost" asChild className="mb-4">
+                  <Link href="/minigames"><ArrowLeft className="mr-2" /> Back to Arcade</Link>
+                </Button>
+                <div className="text-center">
+                  <Skeleton className="h-64 w-full" />
+                </div>
+            </div>
+       </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
