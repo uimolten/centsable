@@ -50,27 +50,23 @@ export function BudgetBustersGame() {
     }
   }, [highScore, user, refreshUserData]);
 
-  const timerCallbackRef = useRef(handleGameEnd);
+  // Effect to end the game when time runs out
   useEffect(() => {
-    timerCallbackRef.current = (finalScore: number) => handleGameEnd(finalScore, "Time's Up!", "You ran out of time!");
-  }, [handleGameEnd]);
+    if (timeLeft === 0 && gameState === 'playing') {
+      handleGameEnd(score, "Time's Up!", "You ran out of time!");
+    }
+  }, [timeLeft, gameState, score, handleGameEnd]);
   
+  // Effect for the game timer
   useEffect(() => {
     if (gameState !== 'playing') return;
 
     const timerInterval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timerInterval);
-          timerCallbackRef.current(score);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft(prev => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [gameState, score]);
+  }, [gameState]);
 
   const selectNextExpense = (round: number) => {
     if ((round + 1) % gameConfig.mandatoryExpenseInterval === 0) {
