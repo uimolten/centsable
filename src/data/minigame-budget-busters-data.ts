@@ -41,19 +41,20 @@ export interface GameConfig {
   initialBudget: number;
   events: GameEvent[];
   rounds: number;
+  guaranteedNeeds: string[];
 }
 
 export const gameConfig: GameConfig = {
-  initialBudget: 2500,
-  rounds: 15,
+  initialBudget: 3000,
+  rounds: 20,
+  guaranteedNeeds: ["Rent is due! You must pay it.", "Your car insurance premium is due."],
   events: [
-    // === EXPENSE EVENTS ===
-    // --- Needs ---
+    // === GUARANTEED EXPENSE EVENTS ===
     {
       type: 'expense',
       category: 'Need',
       description: "Rent is due! You must pay it.",
-      cost: 800,
+      cost: 950,
       consequence: "You failed to pay rent and have been evicted!",
     },
     {
@@ -63,6 +64,9 @@ export const gameConfig: GameConfig = {
       cost: 150,
       consequence: "You missed your insurance payment, and your policy was canceled. You can't legally drive!",
     },
+    
+    // === OTHER EXPENSE EVENTS ===
+    // --- Needs ---
     {
       type: 'expense',
       category: 'Need',
@@ -112,6 +116,21 @@ export const gameConfig: GameConfig = {
         cost: 250,
         consequence: "Your pet's health worsened because you delayed care."
     },
+     {
+        type: 'expense',
+        category: 'Need',
+        description: "Your laptop for school broke and needs an urgent repair.",
+        cost: 220,
+        consequence: "You couldn't complete your schoolwork, and your grades suffered."
+    },
+    {
+        type: 'expense',
+        category: 'Need',
+        description: "You need to buy a professional outfit for a job interview.",
+        cost: 120,
+        consequence: "You made a poor impression at your interview due to unprofessional attire."
+    },
+
     // --- Wants ---
     {
       type: 'expense',
@@ -167,6 +186,12 @@ export const gameConfig: GameConfig = {
         description: "You feel like redecorating your room.",
         cost: 120,
     },
+    {
+        type: 'expense',
+        category: 'Want',
+        description: "Take a new online course for a hobby.",
+        cost: 100
+    },
     
     // === CHOICE EVENTS ===
     {
@@ -215,6 +240,16 @@ export const gameConfig: GameConfig = {
         optionA: { description: 'A thoughtful, homemade gift', cost: 15 },
         optionB: { description: 'An expensive gadget they wanted', cost: 100 },
     },
+    {
+        type: 'choice',
+        category: 'Need',
+        description: 'Your refrigerator is empty. How do you restock?',
+        optionA: { description: 'Careful meal planning and grocery shopping', cost: 250 },
+        optionB: { description: 'Get takeout and delivery for the rest of the month', cost: 600 },
+        consequence: {
+            text: "You didn't get groceries and had no food at home."
+        }
+    },
 
     // === WINDFALL EVENTS ===
     {
@@ -254,6 +289,16 @@ export const gameConfig: GameConfig = {
         type: 'windfall',
         description: "You found $20 on the sidewalk!",
         income: 20,
+    },
+    {
+        type: 'windfall',
+        description: "You received a small scholarship for your studies.",
+        income: 500,
+    },
+    {
+        type: 'windfall',
+        description: "You got a tax refund!",
+        income: 300,
     },
   ],
 };

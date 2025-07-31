@@ -40,7 +40,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [viewingLastSummary, setViewingLastSummary] = useState(false);
   const [negativeFlags, setNegativeFlags] = useState<NegativeFlag[]>([]);
 
-  const allEvents = useRef(shuffle(gameConfig.events));
+  const eventDeck = useRef<GameEvent[]>([]);
   const eventIndex = useRef(0);
 
   useEffect(() => {
@@ -73,17 +73,17 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     }
 
     if(finalConsequences.length > 0) {
-        scorePenalty += finalConsequences.length * 50; // Add 50 penalty points per consequence
+        scorePenalty += finalConsequences.length * 75; // Increased penalty per consequence
     }
 
-    finalScore -= scorePenalty;
+    finalScore = Math.max(0, finalScore - scorePenalty);
 
     const newHighScore = finalScore > highScore;
     if (newHighScore) {
         setIsNewHighScore(true);
         setHighScore(finalScore);
     } else {
-        setIsNewHighScore(false);
+        setIsNewHighScore(false;
     }
     
     const summaryData: GameSummary = {
@@ -102,17 +102,17 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
     if(userId) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
+       await refreshUserData?.();
     }
     
     setLastSummary(summaryData);
     
-    if (userId && refreshUserData) {
+    if (userId) {
       const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
       if (newHighScore) {
         updates.push(updateQuestProgress({ userId: userId, actionType: 'beat_high_score' }));
       }
       await Promise.all(updates);
-      await refreshUserData();
     }
     setGameState('start');
     setViewingLastSummary(true);
@@ -120,29 +120,28 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   }, [highScore, userId, refreshUserData]);
 
   const getNextEvent = (currentFlags: NegativeFlag[]): GameEvent => {
-    if (eventIndex.current >= allEvents.current.length) {
-        eventIndex.current = 0;
-        allEvents.current = shuffle(gameConfig.events);
-    }
-
-    // Filter out events that are forbidden by current flags
-    const eligibleEvents = allEvents.current.filter(event => {
+    // Filter the current deck for eligible events
+    const eligibleEvents = eventDeck.current.slice(eventIndex.current).filter(event => {
         if (event.type === 'windfall' && event.prerequisites?.forbiddenFlags) {
             return !event.prerequisites.forbiddenFlags.some(flag => currentFlags.includes(flag));
         }
         return true;
     });
 
-    // If filtering results in no eligible events from the current point, reset and try again
-    if (eventIndex.current >= eligibleEvents.length) {
-        eventIndex.current = 0;
-        allEvents.current = shuffle(gameConfig.events); // reshuffle all
-        // This is a fallback, ideally the pool is large enough to not hit this often
-        return getNextEvent(currentFlags); 
+    if (eligibleEvents.length === 0) {
+      // This is a fallback if no eligible events are left in the shuffled deck.
+      // A more robust system could re-shuffle non-guaranteed events.
+      // For now, we'll just grab the next item from the original deck.
+      const nextEvent = eventDeck.current[eventIndex.current];
+      eventIndex.current += 1;
+      return nextEvent;
     }
     
-    const nextEvent = eligibleEvents[eventIndex.current];
-    eventIndex.current += 1;
+    const nextEvent = eligibleEvents[0];
+    // Find the original index to advance the main pointer
+    const originalIndex = eventDeck.current.findIndex(e => e.description === nextEvent.description && e.type === nextEvent.type);
+    eventIndex.current = originalIndex + 1;
+    
     return nextEvent;
   }
   
@@ -155,6 +154,34 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       }
   }, [round, handleGameEnd]);
 
+  const createEventDeck = () => {
+      const { events, guaranteedNeeds } = gameConfig;
+      const guaranteedEvents = events.filter(e => guaranteedNeeds.includes(e.description));
+      const randomEvents = events.filter(e => !guaranteedNeeds.includes(e.description));
+      
+      const shuffledRandomEvents = shuffle(randomEvents);
+
+      // Limit windfalls
+      const maxWindfalls = 3;
+      let windfallCount = 0;
+      const filteredShuffledEvents = shuffledRandomEvents.filter(e => {
+        if (e.type === 'windfall') {
+            if (windfallCount < maxWindfalls) {
+                windfallCount++;
+                return true;
+            }
+            return false;
+        }
+        return true;
+      });
+
+      const deck = [...guaranteedEvents, ...filteredShuffledEvents];
+      
+      eventDeck.current = shuffle(deck).slice(0, gameConfig.rounds);
+      eventIndex.current = 0;
+  }
+
+
   const startGame = () => {
     const newInitialBudget = gameConfig.initialBudget;
     setInitialBudget(newInitialBudget);
@@ -165,9 +192,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     setSpentOnWants(0);
     setIncurredConsequences([]);
     setRound(0);
-    eventIndex.current = 0;
-    allEvents.current = shuffle(gameConfig.events);
-    setActiveEvent(getNextEvent([]));
+    createEventDeck();
+    setActiveEvent(eventDeck.current[eventIndex.current]);
+    eventIndex.current = 1;
     setIsNewHighScore(false);
     setViewingLastSummary(false);
     setNegativeFlags([]);
@@ -278,18 +305,18 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                 
                  {summary.missedSavingsGoal && (
                     <div className="space-y-2 text-left p-4 bg-red-500/20 rounded-lg">
-                        <h3 className="font-bold text-center text-lg mb-2 text-destructive flex items-center justify-center gap-2"><Frown /> Missed Savings Goal</h3>
+                        <h3 className="font-bold text-center text-lg mb-2 text-destructive flex items-center justify-center gap-2"><Frown /> Missed Savings Goal (-150 Points)</h3>
                         <p className="text-center text-red-400/80">
-                           You saved less than 20% of your income. This is a key part of a healthy budget. You lost <b>150 points</b> for missing this target.
+                           You saved less than 20% of your income. This is a key part of a healthy budget. The goal is to balance today's needs with tomorrow's goals.
                         </p>
                     </div>
                  )}
 
                 {summary.spentNothingOnWants && (
                     <div className="space-y-2 text-left p-4 bg-yellow-500/20 rounded-lg">
-                        <h3 className="font-bold text-center text-lg mb-2 text-yellow-400 flex items-center justify-center gap-2"><Meh /> A Life Un-Lived</h3>
+                        <h3 className="font-bold text-center text-lg mb-2 text-yellow-400 flex items-center justify-center gap-2"><Meh /> A Life Un-Lived (-100 Points)</h3>
                         <p className="text-center text-yellow-400/80">
-                           You saved a lot, but spent nothing on wants! A good budget includes room for fun. You lost <b>100 points</b> for not living a little.
+                           You saved a lot, but spent nothing on wants! A good budget includes room for fun and enjoyment. It's all about balance.
                         </p>
                     </div>
                 )}
@@ -297,8 +324,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
                 {summary.incurredConsequences.length > 0 && (
                     <div className="space-y-2 text-left p-4 bg-destructive/20 rounded-lg">
-                        <h3 className="font-bold text-center text-lg mb-2 text-destructive flex items-center justify-center gap-2"><AlertTriangle /> Consequences</h3>
-                        <p className="text-center text-destructive/80 mb-2">You lost <b>{summary.incurredConsequences.length * 50} points</b> for dismissing these critical needs:</p>
+                        <h3 className="font-bold text-center text-lg mb-2 text-destructive flex items-center justify-center gap-2"><AlertTriangle /> Consequences (-{summary.incurredConsequences.length * 75} Points)</h3>
+                        <p className="text-center text-destructive/80 mb-2">Dismissing critical needs has real-world consequences and hurts your score:</p>
                         <ul className="list-disc list-inside text-destructive/90 text-center">
                             {summary.incurredConsequences.map((con, i) => <li key={i}>{con}</li>)}
                         </ul>
