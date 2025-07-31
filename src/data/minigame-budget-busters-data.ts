@@ -18,7 +18,7 @@ export const gameConfig: GameConfig = {
   initialBudget: 2000,
   rounds: 10,
   expenses: [
-    // --- Wants (Aim for around 30% of budget: ~$600) ---
+    // --- Wants (Player should have room for ~30% -> $600) ---
     {
       type: 'Want',
       description: 'Last-minute concert tickets with a friend!',
@@ -64,36 +64,46 @@ export const gameConfig: GameConfig = {
       description: "Fancy dinner at a trendy new restaurant.",
       cost: 75,
     },
+    {
+      type: 'Want',
+      description: "New headphones to replace your old ones.",
+      cost: 120,
+    },
+    {
+      type: 'Want',
+      description: "Decorations for your apartment.",
+      cost: 50,
+    },
     
-    // --- Needs (Aim for around 50% of budget: ~$1000) ---
+    // --- Needs (Total needs should be around 50% -> $1000) ---
     {
       type: 'Need',
       description: "Rent is due! You must pay it.",
-      cost: 750,
+      cost: 600, // Reduced from 750
       consequence: "You failed to pay rent and have been evicted!",
     },
     {
       type: 'Need',
       description: "Your car insurance premium is due.",
-      cost: 150,
+      cost: 120, // Reduced from 150
       consequence: "You missed your insurance payment, and your policy was canceled. You can't legally drive!",
     },
     {
       type: 'Need',
       description: "Emergency vet visit for your dog!",
-      cost: 250,
+      cost: 200, // Reduced from 250
       consequence: "You couldn't afford the vet. A tough lesson about emergency funds.",
     },
     {
       type: 'Need',
       description: "Your laptop needs an urgent repair for school!",
-      cost: 300,
+      cost: 250, // Reduced from 300
       consequence: "You couldn't fix your laptop and are now falling behind in your classes.",
     },
     {
       type: 'Need',
       description: "It's time to buy groceries for the month.",
-      cost: 200,
+      cost: 300, // Increased from 200 to be more realistic, but other costs are lower
       consequence: "You don't have enough money for groceries.",
     },
     {
@@ -105,7 +115,7 @@ export const gameConfig: GameConfig = {
     {
         type: 'Need',
         description: "Your student loan payment is due.",
-        cost: 200,
+        cost: 150, // Reduced from 200
         consequence: "You've missed a student loan payment, which will hurt your credit score."
     },
     {
@@ -113,6 +123,12 @@ export const gameConfig: GameConfig = {
         description: "Your electricity bill has arrived.",
         cost: 80,
         consequence: "The power has been shut off in your apartment."
+    },
+    {
+      type: 'Need',
+      description: "You have a cavity and need a dental filling.",
+      cost: 180,
+      consequence: "You ignored a health issue which could get worse and more expensive later."
     }
   ],
 };
