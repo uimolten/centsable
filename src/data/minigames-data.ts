@@ -25,13 +25,6 @@ export const minigames: Minigame[] = [
     requiredUnitId: 'unit-2', // Unlocks after completing Budgeting unit
   },
   {
-    id: 'credit-climber',
-    title: 'Credit Climber',
-    description: 'Make smart credit decisions to climb your credit score to the top!',
-    icon: CreditCard,
-    requiredUnitId: 'unit-3', // Unlocks after completing Credit unit
-  },
-  {
     id: 'investment-voyage',
     title: 'Investment Voyage',
     description: 'Navigate the market, balance risk and reward, and grow your portfolio.',
