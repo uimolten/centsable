@@ -1,14 +1,14 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
 import { shuffle } from 'lodash';
 import { useAuth } from '@/hooks/use-auth';
 import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
-import { playCorrectSound, playIncorrectSound, playClickSound } from '@/lib/audio-utils';
+import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
 
 import { applicantDeck, ApplicantProfile, REWARD_LIMIT, REWARD_TIMEFRAME_HOURS } from '@/data/minigame-credit-swipe-data';
 import ApplicantCard from '@/components/minigames/credit-swipe/applicant-card';
@@ -22,6 +22,7 @@ import type { GameSummary } from '@/types/user';
 import { Timestamp } from 'firebase/firestore';
 import { intervalToDuration, formatDuration } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+import { Progress } from '@/components/ui/progress';
 
 
 type GameState = 'start' | 'playing' | 'awaiting-reason' | 'game-over';
@@ -107,6 +108,7 @@ export default function CreditSwipeGame() {
     const [viewingSummary, setViewingSummary] = useState<CreditSwipeSummary | null>(null);
     const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
     
+    const x = useMotionValue(0);
 
     useEffect(() => {
         const gameData = userData?.gameSummaries?.['credit-swipe'];
@@ -166,12 +168,13 @@ export default function CreditSwipeGame() {
     }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation]);
     
     const nextCard = useCallback(() => {
+        x.set(0); // Reset position for next card
         if (currentCardIndex < deck.length - 1) {
             setCurrentCardIndex(prev => prev + 1);
         } else {
             handleGameEnd();
         }
-    }, [currentCardIndex, deck.length, handleGameEnd]);
+    }, [currentCardIndex, deck.length, handleGameEnd, x]);
     
     const processResult = (isCorrect: boolean, message: string, scoreChange: number) => {
         setScore(prev => prev + scoreChange);
@@ -310,14 +313,24 @@ export default function CreditSwipeGame() {
             }
         })
     };
+    
+    const progressPercentage = deck.length > 0 ? ((currentCardIndex + 1) / deck.length) * 100 : 0;
 
     return (
-        <div className="w-full h-[650px] flex flex-col items-center justify-center relative">
+        <div className="w-full h-[700px] flex flex-col items-center justify-center relative">
+             <div className="w-full max-w-sm mb-4">
+                <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-semibold text-muted-foreground">Progress</span>
+                    <span className="text-sm font-bold text-foreground">Applicant {currentCardIndex + 1} of {deck.length}</span>
+                </div>
+                <Progress value={progressPercentage} className="h-3" />
+            </div>
+
              <div className="w-full h-[550px] flex items-center justify-center relative">
-                <div className="absolute left-4 flex items-center h-full pr-4 text-red-500/80">
+                <div className="absolute left-0 flex items-center h-full pr-4 text-red-500/80">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={-1} variants={chevronVariants} initial="initial" animate="animate"><ChevronLeft className="w-12 h-12" /></motion.div>)}
                 </div>
-                <div className="absolute right-4 flex items-center h-full pl-4 text-green-500/80">
+                <div className="absolute right-0 flex items-center h-full pl-4 text-green-500/80">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={1} variants={chevronVariants} initial="initial" animate="animate"><ChevronRight className="w-12 h-12" /></motion.div>)}
                 </div>
 
@@ -327,6 +340,7 @@ export default function CreditSwipeGame() {
                             key={deck[currentCardIndex].id}
                             applicant={deck[currentCardIndex]}
                             onSwipe={handleSwipe}
+                            x={x}
                         />
                     )}
                 </AnimatePresence>
