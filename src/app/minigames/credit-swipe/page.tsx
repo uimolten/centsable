@@ -274,7 +274,7 @@ export default function CreditSwipeGame() {
     const chevronVariants = {
         initial: { opacity: 0, x: 0 },
         animate: (i: number) => ({
-            opacity: [0, 0.5, 0],
+            opacity: [0, 0.7, 0],
             x: [0, i * 5, i * 10],
             transition: {
                 delay: i * 0.1,
@@ -289,10 +289,10 @@ export default function CreditSwipeGame() {
     return (
         <div className="w-full h-[650px] flex flex-col items-center justify-center relative">
              <div className="w-full h-[550px] flex items-center justify-center relative">
-                <div className="absolute left-4 md:left-8 flex items-center h-full pr-10 text-red-500/50">
+                <div className="absolute left-0 flex items-center h-full pr-4 text-red-500/80">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={-1} variants={chevronVariants} initial="initial" animate="animate"><ChevronLeft className="w-12 h-12" /></motion.div>)}
                 </div>
-                <div className="absolute right-4 md:right-8 flex items-center h-full pl-10 text-green-500/50">
+                <div className="absolute right-0 flex items-center h-full pl-4 text-green-500/80">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={1} variants={chevronVariants} initial="initial" animate="animate"><ChevronRight className="w-12 h-12" /></motion.div>)}
                 </div>
 
