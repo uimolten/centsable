@@ -32,7 +32,7 @@ interface CreditSwipeSummary extends GameSummary {
 
 
 export default function CreditSwipeGame() {
-    const { user, userData, refreshUserData, triggerLevelUp } = useAuth();
+    const { user, userData, refreshUserData, triggerLevelUp, triggerRewardAnimation } = useAuth();
     const [gameState, setGameState] = useState<GameState>('start');
     const [deck, setDeck] = useState<ApplicantProfile[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -85,7 +85,11 @@ export default function CreditSwipeGame() {
 
         if (user?.uid) {
            await saveGameSummary({ userId: user.uid, gameId: 'credit-swipe', summaryData });
-           await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
+           const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
+           
+           if (rewardResult.xpAwarded > 0 || rewardResult.centsAwarded > 0) {
+             triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+           }
            
            const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
            if(isNewHighScore) {
@@ -98,7 +102,7 @@ export default function CreditSwipeGame() {
                 triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
            }
         }
-    }, [score, highScore, user, refreshUserData, triggerLevelUp]);
+    }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation]);
     
     const nextCard = useCallback(() => {
         if (currentCardIndex < deck.length - 1) {
@@ -125,7 +129,7 @@ export default function CreditSwipeGame() {
     };
 
     const handleSwipe = useCallback((direction: 'left' | 'right') => {
-        if (gameState !== 'playing') return;
+        if (gameState !== 'playing' || feedback) return;
 
         const card = deck[currentCardIndex];
         
@@ -139,7 +143,7 @@ export default function CreditSwipeGame() {
             setDeniedCard(card);
             setGameState('awaiting-reason');
         }
-    }, [gameState, deck, currentCardIndex, nextCard]);
+    }, [gameState, deck, currentCardIndex, processResult, feedback]);
     
     const handleReasonSelection = (reason: string) => {
         if (!deniedCard) return;
@@ -187,7 +191,7 @@ export default function CreditSwipeGame() {
         );
     }
     
-    if (viewingSummary) {
+    if (viewingSummary && gameState === 'game-over') {
         return renderSummaryCard(viewingSummary);
     }
 
@@ -236,10 +240,10 @@ export default function CreditSwipeGame() {
     return (
         <div className="w-full h-[650px] flex flex-col items-center justify-center relative">
              <div className="w-full h-[550px] flex items-center justify-center relative">
-                <div className="absolute left-0 flex items-center h-full pr-10 text-red-500/50">
+                <div className="absolute left-4 md:left-8 flex items-center h-full pr-10 text-red-500/50">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={-1} variants={chevronVariants} initial="initial" animate="animate"><ChevronLeft className="w-12 h-12" /></motion.div>)}
                 </div>
-                <div className="absolute right-0 flex items-center h-full pl-10 text-green-500/50">
+                <div className="absolute right-4 md:right-8 flex items-center h-full pl-10 text-green-500/50">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={1} variants={chevronVariants} initial="initial" animate="animate"><ChevronRight className="w-12 h-12" /></motion.div>)}
                 </div>
 

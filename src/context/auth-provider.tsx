@@ -14,6 +14,11 @@ interface LevelUpData {
     reward: number;
 }
 
+interface RewardAnimationData {
+    xp: number;
+    cents: number;
+}
+
 interface AuthContextType {
   user: User | null;
   userData: UserData | null;
@@ -25,6 +30,8 @@ interface AuthContextType {
   levelUpData: LevelUpData | null;
   triggerLevelUp: (data: LevelUpData) => void;
   closeLevelUpModal: () => void;
+  rewardAnimationData: RewardAnimationData | null;
+  triggerRewardAnimation: (data: RewardAnimationData) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false); // For subsequent data refreshes
   const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
   const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
+  const [rewardAnimationData, setRewardAnimationData] = useState<RewardAnimationData | null>(null);
 
   const fetchUserData = useCallback(async (user: User | null, isInitialLoad: boolean = false): Promise<UserData | null> => {
     if (isInitialLoad) {
@@ -154,8 +162,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLevelUpData(null);
   };
 
+  const triggerRewardAnimation = useCallback((data: RewardAnimationData) => {
+    setRewardAnimationData(data);
+    // Reset after a delay to allow the animation component to unmount
+    setTimeout(() => {
+        setRewardAnimationData(null);
+    }, 4000);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, userData, loading, authLoading, isAdmin, signOut, refreshUserData, levelUpData, triggerLevelUp, closeLevelUpModal }}>
+    <AuthContext.Provider value={{ user, userData, loading, authLoading, isAdmin, signOut, refreshUserData, levelUpData, triggerLevelUp, closeLevelUpModal, rewardAnimationData, triggerRewardAnimation }}>
       {children}
     </AuthContext.Provider>
   );

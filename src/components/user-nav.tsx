@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
-import { LayoutDashboard, LogOut, User as UserIcon, Coins } from 'lucide-react';
+import { LayoutDashboard, LogOut, User as UserIcon, Coins, Gem } from 'lucide-react';
 import { Card } from './ui/card';
 
 export function UserNav() {
@@ -34,7 +34,11 @@ export function UserNav() {
           <Link href="/admin">Admin Panel</Link>
         </Button>
       )}
-      <Card className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
+      <Card id="xp-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
+        <Gem className="h-6 w-6 text-primary" />
+        <span className="font-bold text-lg text-foreground">{userData.xp}</span>
+      </Card>
+      <Card id="cents-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
         <Coins className="h-6 w-6 text-yellow-400" />
         <span className="font-bold text-lg text-foreground">{userData.cents}</span>
       </Card>

@@ -34,7 +34,7 @@ const shuffle = (array: any[]) => {
 };
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
-  const { userData, refreshUserData, triggerLevelUp } = useAuth();
+  const { userData, refreshUserData, triggerLevelUp, triggerRewardAnimation } = useAuth();
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
@@ -115,12 +115,19 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     };
 
     setLastSummary(summaryData);
-    setViewingSummary(summaryData);
-    setSummaryViewType('last');
-
+    if (!viewingSummary) {
+        setViewingSummary(summaryData);
+        setSummaryViewType('last');
+    }
+    
     if(userId) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
-       await awardGameRewards({ userId, gameId: 'budget-busters', score: finalScore });
+       const rewardResult = await awardGameRewards({ userId, gameId: 'budget-busters', score: finalScore });
+       
+       if (rewardResult.xpAwarded > 0 || rewardResult.centsAwarded > 0) {
+           triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+       }
+       
        const xpResult = await refreshUserData?.();
 
        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
@@ -136,7 +143,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await Promise.all(updates);
     }
 
-  }, [highScore, userId, refreshUserData, triggerLevelUp]);
+  }, [highScore, userId, refreshUserData, triggerLevelUp, triggerRewardAnimation, viewingSummary]);
 
   const getNextEvent = (currentFlags: NegativeFlag[]): GameEvent => {
     const eligibleEvents = eventDeck.current.slice(eventIndex.current).filter(event => {
@@ -367,7 +374,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     );
   }
 
-  if (viewingSummary) {
+  if (viewingSummary && !activeEvent) {
       return renderSummaryCard(viewingSummary);
   }
 

@@ -5,6 +5,7 @@ import { AuthProvider } from '@/context/auth-provider';
 import './globals.css';
 import ClientLayout from './client-layout';
 import { LevelUpManager } from '@/components/level-up-manager';
+import { RewardNotifier } from '@/components/reward-notifier';
 
 export const metadata: Metadata = {
   title: 'Centsable | Your Adventure in Financial Mastery',
@@ -28,11 +29,10 @@ export default function RootLayout({
         <AuthProvider>
             <ClientLayout>{children}</ClientLayout>
             <LevelUpManager />
+            <RewardNotifier />
             <Toaster />
         </AuthProvider>
       </body>
     </html>
   );
 }
-
-    
