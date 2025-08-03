@@ -48,7 +48,7 @@ export const REWARD_LIMIT = 2;
 export const REWARD_TIMEFRAME_HOURS = 3;
 
 export const gameConfig: GameConfig = {
-  initialBudget: 2300,
+  initialBudget: 2000,
   rounds: 20,
   guaranteedNeeds: ["Rent is due! You must pay it.", "Your car insurance premium is due."],
   events: [
