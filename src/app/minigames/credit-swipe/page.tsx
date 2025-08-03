@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { shuffle } from 'lodash';
 import { useAuth } from '@/hooks/use-auth';
 import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
@@ -107,9 +107,6 @@ export default function CreditSwipeGame() {
     const [viewingSummary, setViewingSummary] = useState<CreditSwipeSummary | null>(null);
     const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
     
-    // Centralized motion value for card position
-    const x = useMotionValue(0);
-
 
     useEffect(() => {
         const gameData = userData?.gameSummaries?.['credit-swipe'];
@@ -128,7 +125,6 @@ export default function CreditSwipeGame() {
         setFeedback(null);
         setGameState('playing');
         setViewingSummary(null);
-        x.set(0); // Reset position
     };
     
     const handleGameEnd = useCallback(async () => {
@@ -170,13 +166,12 @@ export default function CreditSwipeGame() {
     }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation]);
     
     const nextCard = useCallback(() => {
-        x.set(0); // Reset position for the next card
         if (currentCardIndex < deck.length - 1) {
             setCurrentCardIndex(prev => prev + 1);
         } else {
             handleGameEnd();
         }
-    }, [currentCardIndex, deck.length, handleGameEnd, x]);
+    }, [currentCardIndex, deck.length, handleGameEnd]);
     
     const processResult = (isCorrect: boolean, message: string, scoreChange: number) => {
         setScore(prev => prev + scoreChange);
@@ -188,11 +183,11 @@ export default function CreditSwipeGame() {
             playIncorrectSound();
         }
         
-        nextCard(); // Advance immediately
-
+        // Use a timeout to show feedback before advancing
         setTimeout(() => {
             setFeedback(null);
-        }, 2000); // Clear feedback banner after a delay
+            nextCard();
+        }, 1200);
     };
 
     const handleSwipe = useCallback((direction: 'left' | 'right') => {
@@ -234,9 +229,9 @@ export default function CreditSwipeGame() {
             message = 'Incorrect. This was a strong applicant who should have been approved.';
             scoreChange = -50;
         }
-
-        setDeniedCard(null);
+        
         setGameState('playing');
+        setDeniedCard(null);
         processResult(isCorrectDecision, message, scoreChange);
     };
 
@@ -269,7 +264,7 @@ export default function CreditSwipeGame() {
         );
     }
     
-    if (viewingSummary && gameState === 'game-over') {
+    if (gameState === 'game-over' && viewingSummary) {
         return renderSummaryCard(viewingSummary);
     }
 
@@ -291,7 +286,7 @@ export default function CreditSwipeGame() {
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
                         {lastSummary && (
-                            <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => { setViewingSummary(lastSummary); setSummaryViewType('last'); }}>
+                            <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => { if(lastSummary) {setViewingSummary(lastSummary); setGameState('game-over'); setSummaryViewType('last');} }}>
                                 <History className="mr-2" /> View Last Report
                             </Button>
                         )}
@@ -329,10 +324,9 @@ export default function CreditSwipeGame() {
                 <AnimatePresence>
                     {deck.length > 0 && currentCardIndex < deck.length && (
                         <ApplicantCard 
-                            key={deck[currentCardIndex].id} // Force re-render for each new card
+                            key={deck[currentCardIndex].id}
                             applicant={deck[currentCardIndex]}
                             onSwipe={handleSwipe}
-                            x={x} // Pass the centralized motion value
                         />
                     )}
                 </AnimatePresence>

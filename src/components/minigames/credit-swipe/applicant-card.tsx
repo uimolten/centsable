@@ -1,7 +1,7 @@
 
 "use client";
 
-import { motion, useTransform, MotionValue } from 'framer-motion';
+import { motion, useTransform, MotionValue, useMotionValue } from 'framer-motion';
 import Image from 'next/image';
 import { ApplicantProfile } from '@/data/minigame-credit-swipe-data';
 import { Card } from '@/components/ui/card';
@@ -12,10 +12,10 @@ import 'react-circular-progressbar/dist/styles.css';
 interface ApplicantCardProps {
     applicant: ApplicantProfile;
     onSwipe: (direction: 'left' | 'right') => void;
-    x: MotionValue<number>; // Receive x as a prop
 }
 
-export default function ApplicantCard({ applicant, onSwipe, x }: ApplicantCardProps) {
+export default function ApplicantCard({ applicant, onSwipe }: ApplicantCardProps) {
+    const x = useMotionValue(0);
     const rotate = useTransform(x, [-200, 200], [-20, 20]);
     
     // Stamp opacity transforms
@@ -38,7 +38,6 @@ export default function ApplicantCard({ applicant, onSwipe, x }: ApplicantCardPr
 
     return (
         <motion.div
-            key={applicant.id} // Add key to ensure re-render
             className="absolute cursor-grab active:cursor-grabbing"
             style={{ x, rotate }}
             drag="x"
