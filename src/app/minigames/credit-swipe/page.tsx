@@ -15,7 +15,7 @@ import RejectionModal from '@/components/minigames/credit-swipe/rejection-modal'
 import FeedbackBanner from '@/components/minigames/credit-swipe/feedback-banner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 type GameState = 'start' | 'playing' | 'awaiting-reason' | 'game-over';
@@ -28,7 +28,7 @@ export default function CreditSwipeGame() {
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(0);
-    const [feedback, setFeedback] = useState<Feedback>(null);
+    const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [deniedCard, setDeniedCard] = useState<ApplicantProfile | null>(null);
 
     useEffect(() => {
@@ -160,20 +160,34 @@ export default function CreditSwipeGame() {
     }
 
     return (
-        <div className="w-full h-[600px] flex flex-col items-center justify-center relative">
-            <AnimatePresence>
-                {deck.map((applicant, index) => {
-                    if (index < currentCardIndex) return null;
-                    return (
-                        <ApplicantCard 
-                            key={applicant.id}
-                            applicant={applicant}
-                            onSwipe={handleSwipe}
-                            isActive={index === currentCardIndex}
-                        />
-                    )
-                })}
-            </AnimatePresence>
+        <div className="w-full h-[650px] flex flex-col items-center justify-center relative">
+             <div className="w-full h-[550px] flex items-center justify-center relative">
+                <AnimatePresence>
+                    {deck.map((applicant, index) => {
+                        if (index < currentCardIndex) return null;
+                        return (
+                            <ApplicantCard 
+                                key={applicant.id}
+                                applicant={applicant}
+                                onSwipe={handleSwipe}
+                                isActive={index === currentCardIndex}
+                            />
+                        )
+                    })}
+                </AnimatePresence>
+            </div>
+
+            <div className="relative w-full max-w-sm h-24 bg-card/50 rounded-full flex items-center justify-between px-6 border border-border/20 shadow-inner">
+                <div className="flex items-center gap-2 text-red-400 font-bold">
+                    <ArrowLeft className="w-6 h-6"/>
+                    <span>DENY</span>
+                </div>
+                 <div className="flex items-center gap-2 text-green-400 font-bold">
+                    <span>APPROVE</span>
+                    <ArrowRight className="w-6 h-6"/>
+                </div>
+            </div>
+
 
             <AnimatePresence>
                 {feedback && (
@@ -193,20 +207,6 @@ export default function CreditSwipeGame() {
                     }}
                 />
             )}
-
-            {/* Approve/Deny Stamps */}
-            <AnimatePresence>
-                {feedback?.type === 'correct' && feedback.message.includes('approve') && (
-                     <motion.div initial={{scale: 2, opacity: 0}} animate={{scale: 1, opacity: 1}} exit={{opacity: 0}} transition={{ duration: 0.3 }} className="absolute z-20">
-                        <Image src="/images/approved-stamp.png" width={300} height={300} alt="Approved"/>
-                    </motion.div>
-                )}
-                 {feedback?.type === 'incorrect' && feedback.message.includes('approved') && (
-                     <motion.div initial={{scale: 2, opacity: 0}} animate={{scale: 1, opacity: 1}} exit={{opacity: 0}} transition={{ duration: 0.3 }} className="absolute z-20">
-                        <Image src="/images/denied-stamp.png" width={300} height={300} alt="Denied"/>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 }
