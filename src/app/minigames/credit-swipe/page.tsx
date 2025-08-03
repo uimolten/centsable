@@ -67,12 +67,17 @@ export default function CreditSwipeGame() {
 
         setTimeout(() => {
             setFeedback(null);
-            nextCard();
         }, 2000);
     };
 
     const handleSwipe = (direction: 'left' | 'right') => {
+        if (gameState !== 'playing') return;
+
         const card = deck[currentCardIndex];
+        
+        // Immediately move to the next logical card index or end the game
+        nextCard(); 
+        
         if (direction === 'right') { // Approve
             if (card.decision === 'Approve') {
                 processResult(true, 'Correct! This applicant is a good risk.', 100);
@@ -88,6 +93,7 @@ export default function CreditSwipeGame() {
     const handleReasonSelection = (reason: string) => {
         if (!deniedCard) return;
 
+        // The call to nextCard() is now immediate in handleSwipe, so we don't call it here.
         if (deniedCard.decision === 'Deny') {
             if (reason === deniedCard.correctRejectionReason) {
                 processResult(true, 'Correct! You spotted the main issue.', 150);
@@ -203,7 +209,7 @@ export default function CreditSwipeGame() {
                     onClose={() => {
                         setGameState('playing');
                         setDeniedCard(null);
-                        nextCard();
+                        // No need to call nextCard here anymore as it's handled in swipe
                     }}
                 />
             )}
