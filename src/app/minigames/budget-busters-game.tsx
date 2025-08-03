@@ -113,6 +113,10 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         initialBudget: startingBudget,
     };
 
+    setLastSummary(summaryData);
+    setViewingSummary(summaryData);
+    setSummaryViewType('last');
+
     if(userId) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
        await awardGameRewards({ userId, gameId: 'budget-busters', score: finalScore });
@@ -144,26 +148,30 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     });
 
     if (eligibleEvents.length === 0) {
+      // If no eligible events are left, we might need a fallback. For now, just take the next one.
       const nextEvent = eventDeck.current[eventIndex.current];
       eventIndex.current += 1;
       return nextEvent;
     }
     
     const nextEvent = eligibleEvents[0];
+    // Find the original index in the deck to advance the pointer correctly
     const originalIndex = eventDeck.current.findIndex(e => e.description === nextEvent.description && e.type === nextEvent.type);
     eventIndex.current = originalIndex + 1;
     
     return nextEvent;
   }
   
-  const advanceToNextRound = useCallback((currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[], currentFlags: NegativeFlag[], startingBudget: number) => {
+  const advanceToNextRound = (currentScore: number, currentBudget: number, currentNeeds: number, currentWants: number, currentConsequences: string[], currentFlags: NegativeFlag[], startingBudget: number) => {
       if (round + 1 >= gameConfig.rounds) {
+          // This is the final round, end the game.
+          setActiveEvent(null); // Clear the current event to prevent multiple clicks
           handleGameEnd(currentScore, currentBudget, currentNeeds, currentWants, currentConsequences, startingBudget);
       } else {
           setRound(prev => prev + 1);
           setActiveEvent(getNextEvent(currentFlags));
       }
-  }, [round, handleGameEnd]);
+  };
 
   const createEventDeck = () => {
       const { events, guaranteedNeeds } = gameConfig;
@@ -185,9 +193,11 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         return true;
       });
 
-      const deck = [...guaranteedEvents, ...filteredShuffledEvents];
+      // Take the remaining needed events to fill up to the round count
+      const remainingSlots = gameConfig.rounds - guaranteedEvents.length;
+      const finalDeck = [...guaranteedEvents, ...filteredShuffledEvents.slice(0, remainingSlots)];
       
-      eventDeck.current = shuffle(deck).slice(0, gameConfig.rounds);
+      eventDeck.current = shuffle(finalDeck);
       eventIndex.current = 0;
   }
 
@@ -203,8 +213,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     setIncurredConsequences([]);
     setRound(0);
     createEventDeck();
-    setActiveEvent(eventDeck.current[eventIndex.current]);
-    eventIndex.current = 1;
+    setActiveEvent(getNextEvent([]));
     setIsNewHighScore(false);
     setViewingSummary(null);
     setSummaryViewType(null);
@@ -411,5 +420,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     );
   }
 
-  return null;
+  return (
+    <div className="text-center p-8">
+        <p className="text-lg font-semibold animate-pulse">Calculating your results...</p>
+    </div>
+  );
 }
