@@ -29,24 +29,31 @@ const awardGameRewardsFlow = ai.defineFlow(
     let xpAwarded = 0;
     let centsAwarded = 0;
 
-    if (score > 2000) {
-      xpAwarded = 30;
-      centsAwarded = 5;
-    } else if (score > 1000) {
-      xpAwarded = 15;
-      centsAwarded = 2;
-    } else if (score > 0) {
-       xpAwarded = 5; // Participation reward
+    if (gameId === 'credit-swipe') {
+        if (score > 1000) {
+            xpAwarded = 20;
+            centsAwarded = 5;
+        }
+    } else { // Default rewards for other games like budget-busters
+        if (score > 2000) {
+          xpAwarded = 30;
+          centsAwarded = 5;
+        } else if (score > 1000) {
+          xpAwarded = 15;
+          centsAwarded = 2;
+        } else if (score > 0) {
+           xpAwarded = 5; // Participation reward
+        }
     }
     
     if (xpAwarded === 0) {
-        return { success: true, xpAwarded: 0, centsAwarded: 0 };
+        return { success: true, xpAwarded: 0, centsAwarded: 0, message: "No reward for this score." };
     }
     
     try {
         const userDocRef = doc(db, "users", userId);
 
-        await runTransaction(db, async (transaction) => {
+        const result = await runTransaction(db, async (transaction) => {
             const userDoc = await transaction.get(userDocRef);
             if (!userDoc.exists()) {
               throw new Error("User not found.");
@@ -63,32 +70,34 @@ const awardGameRewardsFlow = ai.defineFlow(
             const recentRewards = rewardHistory.filter(ts => ts > threeHoursAgo);
 
             if (recentRewards.length >= REWARD_LIMIT) {
-              xpAwarded = 0;
-              centsAwarded = 0;
-              // Don't award anything, but don't throw an error.
-              // We just silently skip the reward.
-              return;
+              return { success: true, xpAwarded: 0, centsAwarded: 0, message: 'Reward limit reached.' };
             }
 
             // If we are here, we can award points.
             await addXp({ userId, amount: xpAwarded, cents: centsAwarded });
 
             // Update the user's reward history for this game
+            const newRewardHistory = [...(gameData.rewardHistory ?? []), Timestamp.now()];
+            
             transaction.set(userDocRef, {
                 gameSummaries: {
                     ...userData.gameSummaries,
                     [gameId]: {
                         ...gameData,
-                        rewardHistory: arrayUnion(Timestamp.now())
+                        rewardHistory: newRewardHistory
                     }
                 }
             }, { merge: true });
+
+            return { success: true, xpAwarded, centsAwarded };
         });
 
-        return { success: true, xpAwarded, centsAwarded };
+        return result;
+
     } catch (error) {
         console.error("Error awarding game rewards:", error);
-        return { success: false, xpAwarded: 0, centsAwarded: 0 };
+        const message = error instanceof Error ? error.message : 'Failed to award game rewards.';
+        return { success: false, xpAwarded: 0, centsAwarded: 0, message };
     }
   }
 );

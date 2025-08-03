@@ -57,5 +57,6 @@ export const AwardGameRewardsOutputSchema = z.object({
     success: z.boolean(),
     xpAwarded: z.number(),
     centsAwarded: z.number(),
+    message: z.string().optional(),
 });
 export type AwardGameRewardsOutput = z.infer<typeof AwardGameRewardsOutputSchema>;
