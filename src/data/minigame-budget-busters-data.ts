@@ -395,11 +395,10 @@ export const gameConfig: GameConfig = {
       optionB: { description: 'Sign up for a premium online masterclass', cost: 180 },
     },
     {
-      type: 'choice',
+      type: 'expense',
       category: 'Want',
       description: 'Your current phone is fine, but the new one is tempting.',
-      optionA: { description: 'Keep your current phone', cost: 0 },
-      optionB: { description: 'Upgrade to the latest model', cost: 400 },
+      cost: 400
     },
     {
       type: 'choice',
