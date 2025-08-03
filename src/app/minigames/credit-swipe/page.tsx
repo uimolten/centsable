@@ -10,15 +10,18 @@ import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
 import { playCorrectSound, playIncorrectSound, playClickSound } from '@/lib/audio-utils';
 
-import { applicantDeck, ApplicantProfile } from '@/data/minigame-credit-swipe-data';
+import { applicantDeck, ApplicantProfile, REWARD_LIMIT, REWARD_TIMEFRAME_HOURS } from '@/data/minigame-credit-swipe-data';
 import ApplicantCard from '@/components/minigames/credit-swipe/applicant-card';
 import RejectionModal from '@/components/minigames/credit-swipe/rejection-modal';
 import FeedbackBanner from '@/components/minigames/credit-swipe/feedback-banner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight, History } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight, History, ShieldCheck, Timer } from 'lucide-react';
 import Image from 'next/image';
 import type { GameSummary } from '@/types/user';
+import { Timestamp } from 'firebase/firestore';
+import { intervalToDuration, formatDuration } from 'date-fns';
+
 
 type GameState = 'start' | 'playing' | 'awaiting-reason' | 'game-over';
 type Feedback = { type: 'correct' | 'incorrect'; message: string } | null;
@@ -30,6 +33,51 @@ interface CreditSwipeSummary extends GameSummary {
     highScore: number;
 }
 
+const RewardStatus = () => {
+    const { userData } = useAuth();
+    const [cooldown, setCooldown] = useState('');
+    const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
+
+    useEffect(() => {
+        const gameData = userData?.gameSummaries?.['credit-swipe'];
+        const rewardHistory = (gameData?.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
+        
+        const timeframeAgo = new Date();
+        timeframeAgo.setHours(timeframeAgo.getHours() - REWARD_TIMEFRAME_HOURS);
+        
+        const recentRewards = rewardHistory.filter(ts => ts > timeframeAgo);
+        setRewardsLeft(REWARD_LIMIT - recentRewards.length);
+
+        if (recentRewards.length >= REWARD_LIMIT) {
+            const nextRewardTime = new Date(recentRewards[0].getTime() + REWARD_TIMEFRAME_HOURS * 60 * 60 * 1000);
+            
+            const updateCooldown = () => {
+                const now = new Date();
+                if (now < nextRewardTime) {
+                    const duration = intervalToDuration({ start: now, end: nextRewardTime });
+                    setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
+                } else {
+                    setCooldown('');
+                    setRewardsLeft(REWARD_LIMIT);
+                }
+            };
+            
+            updateCooldown();
+            const intervalId = setInterval(updateCooldown, 1000);
+            return () => clearInterval(intervalId);
+        }
+    }, [userData]);
+
+    if (rewardsLeft > 0) {
+        return (
+            <div className="flex items-center gap-3 text-green-400"><ShieldCheck className="w-6 h-6" /><p><b>Rewards Active:</b> {rewardsLeft}/{REWARD_LIMIT} available</p></div>
+        );
+    }
+    
+    return (
+         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> {cooldown}</p></div>
+    );
+}
 
 export default function CreditSwipeGame() {
     const { user, userData, refreshUserData, triggerLevelUp, triggerRewardAnimation } = useAuth();
@@ -208,6 +256,7 @@ export default function CreditSwipeGame() {
                         <div className="flex items-start gap-3"><ThumbsUp className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" /><p><b>Approve Correctly:</b> +100 points</p></div>
                         <div className="flex items-start gap-3"><ThumbsDown className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" /><p><b>Deny Correctly (with right reason):</b> +150 points</p></div>
                         <div className="flex items-start gap-3"><Star className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" /><p><b>High Score:</b> {highScore} points</p></div>
+                        <RewardStatus />
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>

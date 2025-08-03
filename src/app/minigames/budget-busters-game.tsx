@@ -5,8 +5,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh, Frown } from 'lucide-react';
-import { gameConfig, GameEvent } from '@/data/minigame-budget-busters-data';
+import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh, Frown, Timer } from 'lucide-react';
+import { gameConfig, REWARD_LIMIT, REWARD_TIMEFRAME_HOURS, GameEvent } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
@@ -16,6 +16,8 @@ import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { GameSummary } from '@/types/user';
+import { Timestamp } from 'firebase/firestore';
+import { intervalToDuration, formatDuration } from 'date-fns';
 
 
 type GameState = 'start' | 'playing';
@@ -32,6 +34,52 @@ const shuffle = (array: any[]) => {
   }
   return array;
 };
+
+const RewardStatus = () => {
+    const { userData } = useAuth();
+    const [cooldown, setCooldown] = useState('');
+    const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
+
+    useEffect(() => {
+        const gameData = userData?.gameSummaries?.['budget-busters'];
+        const rewardHistory = (gameData?.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
+        
+        const timeframeAgo = new Date();
+        timeframeAgo.setHours(timeframeAgo.getHours() - REWARD_TIMEFRAME_HOURS);
+        
+        const recentRewards = rewardHistory.filter(ts => ts > timeframeAgo);
+        setRewardsLeft(REWARD_LIMIT - recentRewards.length);
+
+        if (recentRewards.length >= REWARD_LIMIT) {
+            const nextRewardTime = new Date(recentRewards[0].getTime() + REWARD_TIMEFRAME_HOURS * 60 * 60 * 1000);
+            
+            const updateCooldown = () => {
+                const now = new Date();
+                if (now < nextRewardTime) {
+                    const duration = intervalToDuration({ start: now, end: nextRewardTime });
+                    setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
+                } else {
+                    setCooldown('');
+                    setRewardsLeft(REWARD_LIMIT);
+                }
+            };
+            
+            updateCooldown();
+            const intervalId = setInterval(updateCooldown, 1000);
+            return () => clearInterval(intervalId);
+        }
+    }, [userData]);
+
+    if (rewardsLeft > 0) {
+        return (
+            <div className="flex items-center gap-3 text-green-400"><ShieldCheck className="w-6 h-6" /><p><b>Rewards Active:</b> {rewardsLeft}/{REWARD_LIMIT} available</p></div>
+        );
+    }
+    
+    return (
+         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> {cooldown}</p></div>
+    );
+}
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
   const { userData, refreshUserData, triggerLevelUp, triggerRewardAnimation } = useAuth();
@@ -391,7 +439,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
           <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
              <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">How to Play:</b> You have ${gameConfig.initialBudget} for {gameConfig.rounds} financial events. Handle expenses, make choices, and get windfalls.</p></div>
              <div className="flex items-start gap-3"><AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b className="text-foreground">Goal:</b> Score points by making smart choices. Dismissing 'Wants' is good, but dismissing 'Needs' has severe consequences! Try to follow the <b>50/30/20 rule</b> (50% Needs, 30% Wants, 20% Savings).</p></div>
-             <div className="flex items-center gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+              <div className="flex items-center gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <Button 
                     variant="link"
                     onClick={() => {if (highScoreSummary) { setViewingSummary(highScoreSummary); setSummaryViewType('high');}}}
@@ -401,6 +449,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                   <b className="text-foreground">High Score: {highScore}</b>
                 </Button>
              </div>
+             <RewardStatus />
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
