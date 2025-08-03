@@ -24,7 +24,7 @@ type GameState = 'start' | 'playing' | 'awaiting-reason' | 'game-over';
 type Feedback = { type: 'correct' | 'incorrect'; message: string } | null;
 type SummaryViewType = 'last' | 'high' | null;
 
-interface CreditSwipeSummary {
+interface CreditSwipeSummary extends GameSummary {
     score: number;
     isNewHighScore: boolean;
     highScore: number;
@@ -85,7 +85,7 @@ export default function CreditSwipeGame() {
 
         if (user?.uid) {
            await saveGameSummary({ userId: user.uid, gameId: 'credit-swipe', summaryData });
-           const xpResult = await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
+           await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
            
            const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
            if(isNewHighScore) {
@@ -93,10 +93,9 @@ export default function CreditSwipeGame() {
            }
            await Promise.all(questUpdates);
 
-           await refreshUserData?.();
-           if (xpResult.success && xpResult.xpAwarded > 0 && triggerLevelUp) {
-                // This logic needs to be adapted from how addXp returns level up info.
-                // For now, we will just refresh data. A more robust solution might be needed.
+           const xpResult = await refreshUserData?.();
+           if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+                triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
            }
         }
     }, [score, highScore, user, refreshUserData, triggerLevelUp]);

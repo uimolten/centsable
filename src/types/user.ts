@@ -10,7 +10,7 @@ export interface GameSummary {
   spentOnWants?: number;
   incurredConsequences?: string[];
   isNewHighScore: boolean;
-  spentNothingOnWants?: boolean;
+  spentTooLittleOnWants?: boolean;
   missedSavingsGoal?: boolean;
   scorePenalty?: number;
   initialBudget?: number;
