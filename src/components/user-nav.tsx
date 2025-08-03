@@ -16,6 +16,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { LayoutDashboard, LogOut, User as UserIcon, Coins, Gem } from 'lucide-react';
 import { Card } from './ui/card';
+import { LEVEL_THRESHOLDS } from '@/lib/level-config';
+import { Progress } from './ui/progress';
 
 export function UserNav() {
   const { user, userData, signOut } = useAuth();
@@ -26,6 +28,17 @@ export function UserNav() {
   const handleSignOut = () => {
     signOut();
   }
+  
+  const currentLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level);
+  const nextLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level + 1);
+  
+  const xpForCurrentLevel = currentLevelThreshold?.totalXPNeeded ?? 0;
+  const xpForNextLevel = nextLevelThreshold?.totalXPNeeded ?? userData.xp;
+  
+  const xpInCurrentLevel = userData.xp - xpForCurrentLevel;
+  const xpToNextLevel = xpForNextLevel - xpForCurrentLevel;
+
+  const progressPercentage = xpToNextLevel > 0 ? (xpInCurrentLevel / xpToNextLevel) * 100 : 100;
 
   return (
     <div className="flex items-center gap-4">
@@ -34,9 +47,15 @@ export function UserNav() {
           <Link href="/admin">Admin Panel</Link>
         </Button>
       )}
-      <Card id="xp-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
-        <Gem className="h-6 w-6 text-primary" />
-        <span className="font-bold text-lg text-foreground">{userData.xp}</span>
+      <Card id="xp-display" className="flex items-center gap-4 p-2 bg-card/50 border-border/20 w-48">
+        <Gem className="h-6 w-6 text-primary flex-shrink-0" />
+        <div className="flex flex-col w-full">
+            <div className="flex justify-between items-center mb-1">
+                <span className="text-xs font-bold text-foreground">Level {userData.level}</span>
+                <span className="text-xs text-muted-foreground">{xpInCurrentLevel} / {xpToNextLevel}</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+        </div>
       </Card>
       <Card id="cents-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
         <Coins className="h-6 w-6 text-yellow-400" />
