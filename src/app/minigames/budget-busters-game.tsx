@@ -53,6 +53,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   const [viewingSummary, setViewingSummary] = useState<GameSummary | null>(null);
   const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
   const [negativeFlags, setNegativeFlags] = useState<NegativeFlag[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const eventDeck = useRef<GameEvent[]>([]);
   const eventIndex = useRef(0);
@@ -170,6 +171,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       } else {
           setRound(prev => prev + 1);
           setActiveEvent(getNextEvent(currentFlags));
+          setIsProcessing(false);
       }
   };
 
@@ -221,7 +223,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
   }
 
   const handleDecision = (action: 'pay' | 'dismiss' | 'choose_a' | 'choose_b' | 'skip_choice' | 'collect_windfall') => {
-    if (!activeEvent) return;
+    if (!activeEvent || isProcessing) return;
+
+    setIsProcessing(true);
     
     let newScore = score;
     let newBudget = budget;
@@ -416,6 +420,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         round={round + 1}
         totalRounds={gameConfig.rounds}
         currentScore={score}
+        isProcessing={isProcessing}
       />
     );
   }

@@ -31,11 +31,11 @@ const awardGameRewardsFlow = ai.defineFlow(
 
     if (score > 2000) {
       xpAwarded = 30;
-      centsAwarded = 15;
+      centsAwarded = 5;
     } else if (score > 1000) {
       xpAwarded = 15;
-      centsAwarded = 5;
-    } else {
+      centsAwarded = 2;
+    } else if (score > 0) {
        xpAwarded = 5; // Participation reward
     }
     

@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 import { GameEvent, ChoiceEvent, ExpenseEvent, WindfallEvent } from '@/data/minigame-budget-busters-data';
 import { playClickSound } from '@/lib/audio-utils';
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 interface LevelDisplayProps {
   budget: number;
@@ -15,10 +16,11 @@ interface LevelDisplayProps {
   round: number;
   totalRounds: number;
   currentScore: number;
+  isProcessing: boolean;
 }
 
 
-const ExpenseCard = ({ event, budget, onDecision }: { event: ExpenseEvent, budget: number, onDecision: LevelDisplayProps['onDecision']}) => {
+const ExpenseCard = ({ event, budget, onDecision, isProcessing }: { event: ExpenseEvent, budget: number, onDecision: LevelDisplayProps['onDecision'], isProcessing: boolean }) => {
     const canAfford = budget >= event.cost;
     return (
         <motion.div
@@ -44,7 +46,7 @@ const ExpenseCard = ({ event, budget, onDecision }: { event: ExpenseEvent, budge
                     size="lg"
                     className="h-24 text-2xl font-black bg-primary hover:bg-primary/80 shadow-glow"
                     onClick={() => { playClickSound(); onDecision('pay'); }}
-                    disabled={!canAfford}
+                    disabled={!canAfford || isProcessing}
                 >
                     Pay ${event.cost}
                 </Button>
@@ -53,6 +55,7 @@ const ExpenseCard = ({ event, budget, onDecision }: { event: ExpenseEvent, budge
                     variant="destructive"
                     className="h-24 text-2xl font-black bg-red-600/80 hover:bg-red-600"
                     onClick={() => { playClickSound(); onDecision('dismiss'); }}
+                    disabled={isProcessing}
                 >
                     <X className="w-8 h-8 mr-2" />
                     Dismiss
@@ -63,7 +66,7 @@ const ExpenseCard = ({ event, budget, onDecision }: { event: ExpenseEvent, budge
     )
 }
 
-const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget: number, onDecision: LevelDisplayProps['onDecision']}) => {
+const ChoiceCard = ({ event, budget, onDecision, isProcessing }: { event: ChoiceEvent, budget: number, onDecision: LevelDisplayProps['onDecision'], isProcessing: boolean}) => {
     const canAffordA = budget >= event.optionA.cost;
     const canAffordB = budget >= event.optionB.cost;
 
@@ -92,7 +95,7 @@ const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget:
                     variant="outline"
                     className="h-32 text-xl font-bold flex flex-col items-center justify-center gap-2 p-4 whitespace-normal"
                     onClick={() => { playClickSound(); onDecision('choose_a'); }}
-                    disabled={!canAffordA}
+                    disabled={!canAffordA || isProcessing}
                 >
                     <span className="text-center">{event.optionA.description}</span>
                     <span className="text-primary font-black text-2xl">${event.optionA.cost}</span>
@@ -102,7 +105,7 @@ const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget:
                     variant="outline"
                     className="h-32 text-xl font-bold flex flex-col items-center justify-center gap-2 p-4 whitespace-normal"
                     onClick={() => { playClickSound(); onDecision('choose_b'); }}
-                    disabled={!canAffordB}
+                    disabled={!canAffordB || isProcessing}
                 >
                     <span className="text-center">{event.optionB.description}</span>
                     <span className="text-primary font-black text-2xl">${event.optionB.cost}</span>
@@ -113,6 +116,7 @@ const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget:
                 variant="secondary"
                 className="w-full h-16 text-xl font-bold"
                 onClick={() => { playClickSound(); onDecision('skip_choice'); }}
+                disabled={isProcessing}
             >
                 <Ban className="w-6 h-6 mr-2"/>
                 Buy Neither
@@ -121,7 +125,7 @@ const ChoiceCard = ({ event, budget, onDecision }: { event: ChoiceEvent, budget:
     )
 }
 
-const WindfallCard = ({ event, onDecision }: { event: WindfallEvent, onDecision: LevelDisplayProps['onDecision']}) => {
+const WindfallCard = ({ event, onDecision, isProcessing }: { event: WindfallEvent, onDecision: LevelDisplayProps['onDecision'], isProcessing: boolean}) => {
      return (
          <motion.div
             key={event.description}
@@ -145,6 +149,7 @@ const WindfallCard = ({ event, onDecision }: { event: WindfallEvent, onDecision:
                 size="lg"
                 className="w-full h-24 text-2xl font-black bg-yellow-500 hover:bg-yellow-500/80 text-background shadow-glow"
                 onClick={() => { playClickSound(); onDecision('collect_windfall'); }}
+                disabled={isProcessing}
             >
                 <Sparkles className="w-8 h-8 mr-2"/>
                 Collect +${event.income}
@@ -153,23 +158,24 @@ const WindfallCard = ({ event, onDecision }: { event: WindfallEvent, onDecision:
     )
 }
 
-export function LevelDisplay({ budget, event, onDecision, round, totalRounds, currentScore }: LevelDisplayProps) {
+export function LevelDisplay({ budget, event, onDecision, round, totalRounds, currentScore, isProcessing }: LevelDisplayProps) {
 
   const renderEventCard = () => {
+    const props = { budget, onDecision, isProcessing };
     switch (event.type) {
       case 'expense':
-        return <ExpenseCard event={event} budget={budget} onDecision={onDecision} />;
+        return <ExpenseCard event={event} {...props} />;
       case 'choice':
-        return <ChoiceCard event={event} budget={budget} onDecision={onDecision} />;
+        return <ChoiceCard event={event} {...props} />;
       case 'windfall':
-        return <WindfallCard event={event} onDecision={onDecision} />;
+        return <WindfallCard event={event} {...props} />;
       default:
         return null;
     }
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-between p-4">
+    <div className={cn("w-full h-full flex flex-col items-center justify-between p-4 transition-opacity", isProcessing && "opacity-50")}>
       <div className="w-full flex justify-between items-center mb-4 bg-card/50 p-3 rounded-lg">
         <div className="flex items-center gap-2 font-bold text-2xl">
             <Wallet className="text-primary"/>
