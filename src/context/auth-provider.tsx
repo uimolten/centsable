@@ -20,7 +20,7 @@ interface AuthContextType {
   loading: boolean;
   authLoading: boolean; // For initial auth check
   signOut: () => Promise<void>;
-  refreshUserData: () => Promise<void>;
+  refreshUserData: () => Promise<UserData | null>;
   isAdmin: boolean;
   levelUpData: LevelUpData | null;
   triggerLevelUp: (data: LevelUpData) => void;
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
   const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
 
-  const fetchUserData = useCallback(async (user: User | null, isInitialLoad: boolean = false) => {
+  const fetchUserData = useCallback(async (user: User | null, isInitialLoad: boolean = false): Promise<UserData | null> => {
     if (isInitialLoad) {
       setAuthLoading(true);
     } else {
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserData(null);
         setAuthLoading(false);
         setLoading(false);
-        return;
+        return null;
     }
     
     setUser(user);
@@ -62,12 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ]);
         
         const quests = questsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
+        
+        let fetchedData;
 
         if (userDoc.exists()) {
             const data = userDoc.data();
             // Recalculate level on client to ensure it's always in sync with XP
             const calculatedLevel = getLevelFromXP(data.xp ?? 0);
-             setUserData({
+             fetchedData = {
               uid: user.uid,
               email: data.email,
               displayName: data.displayName || user.displayName || 'New Adventurer',
@@ -85,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               dailyQuests: quests,
               dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
               gameSummaries: data.gameSummaries ?? {},
-            });
+            };
         } else {
             // If the user exists in Auth but not Firestore, create their record
             const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests' | 'gameSummaries'> = {
@@ -107,12 +109,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: serverTimestamp(),
             });
             const createdDoc = await getDoc(userDocRef);
-            setUserData({ uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], gameSummaries: {} });
+            fetchedData = { uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], gameSummaries: {} };
         }
-
+        setUserData(fetchedData);
+        return fetchedData;
     } catch (error) {
         console.error("Error fetching user data:", error);
         setUserData(null);
+        return null;
     } finally {
         setAuthLoading(false);
         setLoading(false);
@@ -133,10 +137,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserData(null);
   };
 
-  const refreshUserData = useCallback(async () => {
+  const refreshUserData = useCallback(async (): Promise<UserData | null> => {
     if (user) {
-      await fetchUserData(user, false);
+      return await fetchUserData(user, false);
     }
+    return null;
   }, [user, fetchUserData]);
   
   const isAdmin = userData?.role === 'admin';

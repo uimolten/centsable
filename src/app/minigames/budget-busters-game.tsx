@@ -12,6 +12,7 @@ import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
+import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { GameSummary } from '@/types/user';
@@ -33,7 +34,7 @@ const shuffle = (array: any[]) => {
 };
 
 export function BudgetBustersGame({ userId }: { userId: string }) {
-  const { userData, refreshUserData } = useAuth();
+  const { userData, refreshUserData, triggerLevelUp } = useAuth();
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('start');
   const [score, setScore] = useState(0);
@@ -69,7 +70,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     let finalScore = currentScore;
     let scorePenalty = 0;
     
-    // Check if wants spending is too low (e.g., less than 10% of budget)
     const wantsPercentage = startingBudget > 0 ? (finalWants / startingBudget) * 100 : 0;
     const spentTooLittleOnWants = wantsPercentage < 10;
     
@@ -86,7 +86,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     }
 
     if(finalConsequences.length > 0) {
-        scorePenalty += finalConsequences.length * 75; // Increased penalty per consequence
+        scorePenalty += finalConsequences.length * 75;
     }
 
     finalScore = finalScore - scorePenalty;
@@ -107,7 +107,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         spentOnWants: finalWants,
         incurredConsequences: finalConsequences,
         isNewHighScore: newHighScoreAchieved,
-        spentNothingOnWants: spentTooLittleOnWants, // Re-using this flag for the new logic
+        spentNothingOnWants: spentTooLittleOnWants,
         missedSavingsGoal,
         scorePenalty,
         initialBudget: startingBudget,
@@ -115,7 +115,12 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
     if(userId) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
-       await refreshUserData?.();
+       await awardGameRewards({ userId, score: finalScore });
+       const xpResult = await refreshUserData?.();
+
+       if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+        triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
+       }
     }
     
     setGameState('start');
@@ -128,10 +133,9 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       await Promise.all(updates);
     }
 
-  }, [highScore, userId, refreshUserData]);
+  }, [highScore, userId, refreshUserData, triggerLevelUp]);
 
   const getNextEvent = (currentFlags: NegativeFlag[]): GameEvent => {
-    // Filter the current deck for eligible events
     const eligibleEvents = eventDeck.current.slice(eventIndex.current).filter(event => {
         if (event.type === 'windfall' && event.prerequisites?.forbiddenFlags) {
             return !event.prerequisites.forbiddenFlags.some(flag => currentFlags.includes(flag));
@@ -140,8 +144,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
     });
 
     if (eligibleEvents.length === 0) {
-      // If no eligible events are left, just grab the next one from the original deck
-      // This is a fallback to prevent crashing, though it shouldn't be hit with a large event pool.
       const nextEvent = eventDeck.current[eventIndex.current];
       eventIndex.current += 1;
       return nextEvent;

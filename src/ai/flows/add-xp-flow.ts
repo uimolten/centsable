@@ -21,7 +21,7 @@ const addXpFlow = ai.defineFlow(
     inputSchema: AddXpInputSchema,
     outputSchema: AddXpOutputSchema,
   },
-  async ({ userId, amount, lessonId }) => {
+  async ({ userId, amount, cents, lessonId }) => {
     try {
       const userDocRef = doc(db, "users", userId);
       
@@ -44,7 +44,7 @@ const addXpFlow = ai.defineFlow(
         
         let newLevel = currentLevel;
         let leveledUp = false;
-        let totalCentsReward = 0;
+        let totalCentsReward = cents ?? 0;
 
         // Check for level up
         const nextLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === currentLevel + 1);
@@ -52,13 +52,17 @@ const addXpFlow = ai.defineFlow(
         if (nextLevelThreshold && newXp >= nextLevelThreshold.totalXPNeeded) {
             leveledUp = true;
             newLevel = currentLevel + 1;
-            totalCentsReward = nextLevelThreshold.rewardCents;
+            totalCentsReward += nextLevelThreshold.rewardCents;
             // In a more complex system, you could handle multiple level-ups in one go here
         }
 
         const updates: any = {
-          xp: newXp,
+          xp: increment(amount),
         };
+
+        if (totalCentsReward > 0) {
+            updates.cents = increment(totalCentsReward);
+        }
 
         if (lessonId) {
           updates.completedLessons = arrayUnion(lessonId);
@@ -67,13 +71,12 @@ const addXpFlow = ai.defineFlow(
 
         if (leveledUp) {
           updates.level = newLevel;
-          updates.cents = increment(totalCentsReward);
         }
 
         transaction.update(userDocRef, updates);
 
         if (leveledUp) {
-            return { success: true, leveledUp: true, newLevel, rewardCents: totalCentsReward };
+            return { success: true, leveledUp: true, newLevel, rewardCents: nextLevelThreshold.rewardCents };
         }
         
         return { success: true, leveledUp: false };
