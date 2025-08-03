@@ -108,7 +108,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         spentOnWants: finalWants,
         incurredConsequences: finalConsequences,
         isNewHighScore: newHighScoreAchieved,
-        spentNothingOnWants: spentTooLittleOnWants,
+        spentTooLittleOnWants: spentTooLittleOnWants,
         missedSavingsGoal,
         scorePenalty,
         initialBudget: startingBudget,
@@ -127,8 +127,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
        }
     }
-    
-    setGameState('start');
     
     if (userId) {
       const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
@@ -360,7 +358,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
                         Play Again
                     </Button>
-                     <Button size="lg" variant="outline" className="text-lg" onClick={() => { setViewingSummary(null); setSummaryViewType(null); }}>
+                     <Button size="lg" variant="outline" className="text-lg" onClick={() => { setGameState('start'); setViewingSummary(null); setSummaryViewType(null); }}>
                         Close Report
                     </Button>
                  </div>
