@@ -45,7 +45,7 @@ export interface GameConfig {
 }
 
 export const gameConfig: GameConfig = {
-  initialBudget: 2000,
+  initialBudget: 2300,
   rounds: 20,
   guaranteedNeeds: ["Rent is due! You must pay it.", "Your car insurance premium is due."],
   events: [
@@ -221,12 +221,6 @@ export const gameConfig: GameConfig = {
     {
       type: 'expense',
       category: 'Want',
-      description: "Upgrade your phone to the latest model.",
-      cost: 350,
-    },
-    {
-      type: 'expense',
-      category: 'Want',
       description: "A spontaneous weekend trip.",
       cost: 250,
     },
@@ -395,10 +389,10 @@ export const gameConfig: GameConfig = {
       optionB: { description: 'Sign up for a premium online masterclass', cost: 180 },
     },
     {
-      type: 'expense',
-      category: 'Want',
-      description: 'Your current phone is fine, but the new one is tempting.',
-      cost: 400
+        type: 'expense',
+        category: 'Want',
+        description: 'Your current phone is fine, but the new one is tempting.',
+        cost: 400,
     },
     {
       type: 'choice',
