@@ -115,7 +115,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
 
     if(userId) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
-       await awardGameRewards({ userId, score: finalScore });
+       await awardGameRewards({ userId, gameId: 'budget-busters', score: finalScore });
        const xpResult = await refreshUserData?.();
 
        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {

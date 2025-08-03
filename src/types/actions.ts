@@ -48,6 +48,7 @@ export type AddXpOutput = z.infer<typeof AddXpOutputSchema>;
 
 export const AwardGameRewardsInputSchema = z.object({
     userId: z.string(),
+    gameId: z.string(),
     score: z.number(),
 });
 export type AwardGameRewardsInput = z.infer<typeof AwardGameRewardsInputSchema>;

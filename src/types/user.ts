@@ -37,6 +37,7 @@ export interface UserData {
     [gameId: string]: {
       lastAttempt?: GameSummary;
       bestAttempt?: GameSummary;
+      rewardHistory?: Timestamp[];
     };
   };
 }
