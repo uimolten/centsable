@@ -121,4 +121,17 @@ export const applicantDeck: ApplicantProfile[] = [
         rejectionReasons: [],
         correctRejectionReason: '',
     },
+    {
+        id: 9,
+        name: 'Tyrone McCaffery',
+        avatarUrl: '/images/avatars/avatar-9.png',
+        loanRequest: { title: 'Loan for a Hellcat', amount: 60000 },
+        creditScore: 450,
+        income: 2500,
+        dti: 'High',
+        paymentHistory: 'Missed Payments',
+        decision: 'Deny',
+        rejectionReasons: ['Credit Score is too low', 'Income is too low for this loan', 'Loan amount is too high'],
+        correctRejectionReason: 'Credit Score is too low',
+    },
 ];
