@@ -1,23 +1,21 @@
 
 "use client";
 
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useTransform, MotionValue } from 'framer-motion';
 import Image from 'next/image';
 import { ApplicantProfile } from '@/data/minigame-credit-swipe-data';
 import { Card } from '@/components/ui/card';
-import { Briefcase, GaugeCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { Briefcase, GaugeCircle, ThumbsDown, ThumbsUp, XCircle, CheckCircle } from 'lucide-react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { cn } from '@/lib/utils';
 
 interface ApplicantCardProps {
     applicant: ApplicantProfile;
     onSwipe: (direction: 'left' | 'right') => void;
-    isActive: boolean;
+    x: MotionValue<number>; // Receive x as a prop
 }
 
-export default function ApplicantCard({ applicant, onSwipe, isActive }: ApplicantCardProps) {
-    const x = useMotionValue(0);
+export default function ApplicantCard({ applicant, onSwipe, x }: ApplicantCardProps) {
     const rotate = useTransform(x, [-200, 200], [-20, 20]);
     
     // Stamp opacity transforms
@@ -40,6 +38,7 @@ export default function ApplicantCard({ applicant, onSwipe, isActive }: Applican
 
     return (
         <motion.div
+            key={applicant.id} // Add key to ensure re-render
             className="absolute cursor-grab active:cursor-grabbing"
             style={{ x, rotate }}
             drag="x"
@@ -52,7 +51,8 @@ export default function ApplicantCard({ applicant, onSwipe, isActive }: Applican
                 }
             }}
             initial={{ y: 20, opacity: 0, scale: 0.9 }}
-            animate={{ y: isActive ? 0 : -20, opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5, y: -20 }}
             transition={{ duration: 0.3 }}
         >
             <Card className="relative w-[350px] h-[500px] bg-card/60 backdrop-blur-xl border-2 border-border/20 shadow-2xl rounded-2xl p-6 flex flex-col justify-between overflow-hidden">

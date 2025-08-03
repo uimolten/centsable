@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
 import { shuffle } from 'lodash';
 import { useAuth } from '@/hooks/use-auth';
 import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
@@ -21,6 +21,7 @@ import Image from 'next/image';
 import type { GameSummary } from '@/types/user';
 import { Timestamp } from 'firebase/firestore';
 import { intervalToDuration, formatDuration } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 
 type GameState = 'start' | 'playing' | 'awaiting-reason' | 'game-over';
@@ -39,8 +40,14 @@ const RewardStatus = () => {
     const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
 
     useEffect(() => {
-        const gameData = userData?.gameSummaries?.['credit-swipe'];
-        const rewardHistory = (gameData?.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
+        if (!userData?.gameSummaries?.['credit-swipe']) {
+            setRewardsLeft(REWARD_LIMIT);
+            setCooldown('');
+            return;
+        }
+
+        const gameData = userData.gameSummaries['credit-swipe'];
+        const rewardHistory = (gameData.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
         
         const timeframeAgo = new Date();
         timeframeAgo.setHours(timeframeAgo.getHours() - REWARD_TIMEFRAME_HOURS);
@@ -53,18 +60,24 @@ const RewardStatus = () => {
             
             const updateCooldown = () => {
                 const now = new Date();
-                if (now < nextRewardTime) {
-                    const duration = intervalToDuration({ start: now, end: nextRewardTime });
+                const zonedNow = toZonedTime(now, 'America/Los_Angeles');
+                const zonedNextReward = toZonedTime(nextRewardTime, 'America/Los_Angeles');
+
+                if (zonedNow < zonedNextReward) {
+                    const duration = intervalToDuration({ start: zonedNow, end: zonedNextReward });
                     setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
+                    // No need to clear interval here as the logic will keep it updated.
                 }
             };
             
             updateCooldown();
             const intervalId = setInterval(updateCooldown, 1000);
             return () => clearInterval(intervalId);
+        } else {
+            setCooldown('');
         }
     }, [userData]);
 
@@ -93,6 +106,9 @@ export default function CreditSwipeGame() {
     const [highScoreSummary, setHighScoreSummary] = useState<CreditSwipeSummary | null>(null);
     const [viewingSummary, setViewingSummary] = useState<CreditSwipeSummary | null>(null);
     const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
+    
+    // Centralized motion value for card position
+    const x = useMotionValue(0);
 
 
     useEffect(() => {
@@ -112,6 +128,7 @@ export default function CreditSwipeGame() {
         setFeedback(null);
         setGameState('playing');
         setViewingSummary(null);
+        x.set(0); // Reset position
     };
     
     const handleGameEnd = useCallback(async () => {
@@ -153,12 +170,13 @@ export default function CreditSwipeGame() {
     }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation]);
     
     const nextCard = useCallback(() => {
+        x.set(0); // Reset position for the next card
         if (currentCardIndex < deck.length - 1) {
             setCurrentCardIndex(prev => prev + 1);
         } else {
             handleGameEnd();
         }
-    }, [currentCardIndex, deck.length, handleGameEnd]);
+    }, [currentCardIndex, deck.length, handleGameEnd, x]);
     
     const processResult = (isCorrect: boolean, message: string, scoreChange: number) => {
         setScore(prev => prev + scoreChange);
@@ -169,11 +187,12 @@ export default function CreditSwipeGame() {
         } else {
             playIncorrectSound();
         }
+        
+        nextCard(); // Advance immediately
 
         setTimeout(() => {
             setFeedback(null);
-            nextCard();
-        }, 2000);
+        }, 2000); // Clear feedback banner after a delay
     };
 
     const handleSwipe = useCallback((direction: 'left' | 'right') => {
@@ -196,18 +215,29 @@ export default function CreditSwipeGame() {
     const handleReasonSelection = (reason: string) => {
         if (!deniedCard) return;
 
+        let isCorrectDecision = false;
+        let message = '';
+        let scoreChange = 0;
+
         if (deniedCard.decision === 'Deny') {
             if (reason === deniedCard.correctRejectionReason) {
-                processResult(true, 'Correct! You spotted the main issue.', 150);
+                isCorrectDecision = true;
+                message = 'Correct! You spotted the main issue.';
+                scoreChange = 150;
             } else {
-                processResult(false, `Good instinct, but the bigger issue was ${deniedCard.correctRejectionReason.toLowerCase()}.`, 25);
+                isCorrectDecision = true; // Still correct to deny
+                message = `Good instinct, but the bigger issue was ${deniedCard.correctRejectionReason.toLowerCase()}.`;
+                scoreChange = 25;
             }
         } else {
-            processResult(false, 'Incorrect. This was a strong applicant who should have been approved.', -50);
+            isCorrectDecision = false;
+            message = 'Incorrect. This was a strong applicant who should have been approved.';
+            scoreChange = -50;
         }
 
         setDeniedCard(null);
         setGameState('playing');
+        processResult(isCorrectDecision, message, scoreChange);
     };
 
 
@@ -289,25 +319,22 @@ export default function CreditSwipeGame() {
     return (
         <div className="w-full h-[650px] flex flex-col items-center justify-center relative">
              <div className="w-full h-[550px] flex items-center justify-center relative">
-                <div className="absolute left-0 flex items-center h-full pr-4 text-red-500/80">
+                <div className="absolute left-4 flex items-center h-full pr-4 text-red-500/80">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={-1} variants={chevronVariants} initial="initial" animate="animate"><ChevronLeft className="w-12 h-12" /></motion.div>)}
                 </div>
-                <div className="absolute right-0 flex items-center h-full pl-4 text-green-500/80">
+                <div className="absolute right-4 flex items-center h-full pl-4 text-green-500/80">
                     {[0, 1, 2].map(i => <motion.div key={i} custom={1} variants={chevronVariants} initial="initial" animate="animate"><ChevronRight className="w-12 h-12" /></motion.div>)}
                 </div>
 
                 <AnimatePresence>
-                    {deck.map((applicant, index) => {
-                        if (index < currentCardIndex) return null;
-                        return (
-                            <ApplicantCard 
-                                key={applicant.id}
-                                applicant={applicant}
-                                onSwipe={handleSwipe}
-                                isActive={index === currentCardIndex}
-                            />
-                        )
-                    })}
+                    {deck.length > 0 && currentCardIndex < deck.length && (
+                        <ApplicantCard 
+                            key={deck[currentCardIndex].id} // Force re-render for each new card
+                            applicant={deck[currentCardIndex]}
+                            onSwipe={handleSwipe}
+                            x={x} // Pass the centralized motion value
+                        />
+                    )}
                 </AnimatePresence>
             </div>
 
