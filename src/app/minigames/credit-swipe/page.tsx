@@ -16,7 +16,7 @@ import RejectionModal from '@/components/minigames/credit-swipe/rejection-modal'
 import FeedbackBanner from '@/components/minigames/credit-swipe/feedback-banner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight, History } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight, History } from 'lucide-react';
 import Image from 'next/image';
 import type { GameSummary } from '@/types/user';
 
@@ -120,6 +120,7 @@ export default function CreditSwipeGame() {
 
         setTimeout(() => {
             setFeedback(null);
+            nextCard();
         }, 2000);
     };
 
@@ -127,9 +128,6 @@ export default function CreditSwipeGame() {
         if (gameState !== 'playing') return;
 
         const card = deck[currentCardIndex];
-        
-        // Immediately move to the next logical card index or end the game
-        nextCard(); 
         
         if (direction === 'right') { // Approve
             if (card.decision === 'Approve') {
@@ -146,7 +144,6 @@ export default function CreditSwipeGame() {
     const handleReasonSelection = (reason: string) => {
         if (!deniedCard) return;
 
-        // The call to nextCard() is now immediate in handleSwipe, so we don't call it here.
         if (deniedCard.decision === 'Deny') {
             if (reason === deniedCard.correctRejectionReason) {
                 processResult(true, 'Correct! You spotted the main issue.', 150);
@@ -221,9 +218,31 @@ export default function CreditSwipeGame() {
         );
     }
 
+    const chevronVariants = {
+        initial: { opacity: 0, x: 0 },
+        animate: (i: number) => ({
+            opacity: [0, 0.5, 0],
+            x: [0, i * 5, i * 10],
+            transition: {
+                delay: i * 0.1,
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: 'loop',
+                ease: 'easeInOut'
+            }
+        })
+    };
+
     return (
         <div className="w-full h-[650px] flex flex-col items-center justify-center relative">
              <div className="w-full h-[550px] flex items-center justify-center relative">
+                <div className="absolute left-0 flex items-center h-full pr-10 text-red-500/50">
+                    {[0, 1, 2].map(i => <motion.div key={i} custom={-1} variants={chevronVariants} initial="initial" animate="animate"><ChevronLeft className="w-12 h-12" /></motion.div>)}
+                </div>
+                <div className="absolute right-0 flex items-center h-full pl-10 text-green-500/50">
+                    {[0, 1, 2].map(i => <motion.div key={i} custom={1} variants={chevronVariants} initial="initial" animate="animate"><ChevronRight className="w-12 h-12" /></motion.div>)}
+                </div>
+
                 <AnimatePresence>
                     {deck.map((applicant, index) => {
                         if (index < currentCardIndex) return null;
@@ -239,18 +258,6 @@ export default function CreditSwipeGame() {
                 </AnimatePresence>
             </div>
 
-            <div className="relative w-full max-w-sm h-24 bg-card/50 rounded-full flex items-center justify-between px-6 border border-border/20 shadow-inner">
-                <div className="flex items-center gap-2 text-red-400 font-bold">
-                    <ArrowLeft className="w-6 h-6"/>
-                    <span>DENY</span>
-                </div>
-                 <div className="flex items-center gap-2 text-green-400 font-bold">
-                    <span>APPROVE</span>
-                    <ArrowRight className="w-6 h-6"/>
-                </div>
-            </div>
-
-
             <AnimatePresence>
                 {feedback && (
                     <FeedbackBanner type={feedback.type} message={feedback.message} />
@@ -265,7 +272,7 @@ export default function CreditSwipeGame() {
                     onClose={() => {
                         setGameState('playing');
                         setDeniedCard(null);
-                        // No need to call nextCard here anymore as it's handled in swipe
+                        nextCard();
                     }}
                 />
             )}

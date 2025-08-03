@@ -43,7 +43,7 @@ export default function ApplicantCard({ applicant, onSwipe, isActive }: Applican
             className="absolute cursor-grab active:cursor-grabbing"
             style={{ x, rotate }}
             drag="x"
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            dragConstraints={{ left: -300, right: 300, top: 0, bottom: 0 }}
             onDragEnd={(_, info) => {
                 if (info.offset.x > 100) {
                     onSwipe('right');
