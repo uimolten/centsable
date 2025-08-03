@@ -5,10 +5,10 @@ import type { Quest } from './quests';
 export interface GameSummary {
   score: number;
   highScore: number;
-  budget: number;
-  spentOnNeeds: number;
-  spentOnWants: number;
-  incurredConsequences: string[];
+  budget?: number;
+  spentOnNeeds?: number;
+  spentOnWants?: number;
+  incurredConsequences?: string[];
   isNewHighScore: boolean;
   spentNothingOnWants?: boolean;
   missedSavingsGoal?: boolean;

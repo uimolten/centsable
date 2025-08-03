@@ -1,12 +1,13 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { shuffle } from 'lodash';
 import { useAuth } from '@/hooks/use-auth';
 import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
+import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
 import { playCorrectSound, playIncorrectSound, playClickSound } from '@/lib/audio-utils';
 
 import { applicantDeck, ApplicantProfile } from '@/data/minigame-credit-swipe-data';
@@ -15,14 +16,23 @@ import RejectionModal from '@/components/minigames/credit-swipe/rejection-modal'
 import FeedbackBanner from '@/components/minigames/credit-swipe/feedback-banner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Star, ThumbsUp, ThumbsDown, ArrowLeft, ArrowRight, History } from 'lucide-react';
 import Image from 'next/image';
+import type { GameSummary } from '@/types/user';
 
 type GameState = 'start' | 'playing' | 'awaiting-reason' | 'game-over';
 type Feedback = { type: 'correct' | 'incorrect'; message: string } | null;
+type SummaryViewType = 'last' | 'high' | null;
+
+interface CreditSwipeSummary {
+    score: number;
+    isNewHighScore: boolean;
+    highScore: number;
+}
+
 
 export default function CreditSwipeGame() {
-    const { user } = useAuth();
+    const { user, userData, refreshUserData, triggerLevelUp } = useAuth();
     const [gameState, setGameState] = useState<GameState>('start');
     const [deck, setDeck] = useState<ApplicantProfile[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -31,12 +41,20 @@ export default function CreditSwipeGame() {
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const [deniedCard, setDeniedCard] = useState<ApplicantProfile | null>(null);
 
+    const [lastSummary, setLastSummary] = useState<CreditSwipeSummary | null>(null);
+    const [highScoreSummary, setHighScoreSummary] = useState<CreditSwipeSummary | null>(null);
+    const [viewingSummary, setViewingSummary] = useState<CreditSwipeSummary | null>(null);
+    const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
+
+
     useEffect(() => {
-        const savedHighScore = localStorage.getItem('creditSwipeHighScore');
-        if (savedHighScore) {
-            setHighScore(parseInt(savedHighScore, 10));
+        const gameData = userData?.gameSummaries?.['credit-swipe'];
+        if (gameData) {
+            setHighScore(gameData.bestAttempt?.score ?? 0);
+            setLastSummary(gameData.lastAttempt as CreditSwipeSummary ?? null);
+            setHighScoreSummary(gameData.bestAttempt as CreditSwipeSummary ?? null);
         }
-    }, []);
+    }, [userData]);
     
     const startGame = () => {
         playClickSound();
@@ -45,15 +63,51 @@ export default function CreditSwipeGame() {
         setScore(0);
         setFeedback(null);
         setGameState('playing');
+        setViewingSummary(null);
     };
     
-    const nextCard = () => {
+    const handleGameEnd = useCallback(async () => {
+        setGameState('game-over');
+        const isNewHighScore = score > highScore;
+        if (isNewHighScore) {
+            setHighScore(score);
+        }
+
+        const summaryData: CreditSwipeSummary = {
+            score: score,
+            isNewHighScore: isNewHighScore,
+            highScore: isNewHighScore ? score : highScore,
+        };
+
+        setLastSummary(summaryData);
+        setViewingSummary(summaryData);
+        setSummaryViewType('last');
+
+        if (user?.uid) {
+           await saveGameSummary({ userId: user.uid, gameId: 'credit-swipe', summaryData });
+           const xpResult = await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
+           
+           const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
+           if(isNewHighScore) {
+                questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
+           }
+           await Promise.all(questUpdates);
+
+           await refreshUserData?.();
+           if (xpResult.success && xpResult.xpAwarded > 0 && triggerLevelUp) {
+                // This logic needs to be adapted from how addXp returns level up info.
+                // For now, we will just refresh data. A more robust solution might be needed.
+           }
+        }
+    }, [score, highScore, user, refreshUserData, triggerLevelUp]);
+    
+    const nextCard = useCallback(() => {
         if (currentCardIndex < deck.length - 1) {
             setCurrentCardIndex(prev => prev + 1);
         } else {
             handleGameEnd();
         }
-    };
+    }, [currentCardIndex, deck.length, handleGameEnd]);
     
     const processResult = (isCorrect: boolean, message: string, scoreChange: number) => {
         setScore(prev => prev + scoreChange);
@@ -70,7 +124,7 @@ export default function CreditSwipeGame() {
         }, 2000);
     };
 
-    const handleSwipe = (direction: 'left' | 'right') => {
+    const handleSwipe = useCallback((direction: 'left' | 'right') => {
         if (gameState !== 'playing') return;
 
         const card = deck[currentCardIndex];
@@ -88,7 +142,7 @@ export default function CreditSwipeGame() {
             setDeniedCard(card);
             setGameState('awaiting-reason');
         }
-    };
+    }, [gameState, deck, currentCardIndex, nextCard]);
     
     const handleReasonSelection = (reason: string) => {
         if (!deniedCard) return;
@@ -108,22 +162,39 @@ export default function CreditSwipeGame() {
         setGameState('playing');
     };
 
-    const handleGameEnd = async () => {
-        setGameState('game-over');
-        const isNewHighScore = score > highScore;
-        if (isNewHighScore) {
-            setHighScore(score);
-            localStorage.setItem('creditSwipeHighScore', score.toString());
-        }
 
-        if (user?.uid) {
-            await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
-            await updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'});
-            if(isNewHighScore) {
-                 await updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'});
-            }
-        }
-    };
+    const renderSummaryCard = (summary: CreditSwipeSummary) => {
+        return (
+            <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center">
+                <CardHeader>
+                <CardTitle className="text-3xl font-bold">Game Over!</CardTitle>
+                <CardDescription className="text-lg">Here's your final score:</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                 {summary.isNewHighScore && summaryViewType === 'last' && (
+                    <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-2xl font-bold text-yellow-400 p-3 bg-yellow-400/10 rounded-lg">
+                        🎉 New High Score! 🎉
+                    </motion.div>
+                )}
+                <div className="text-6xl font-black text-primary">{summary.score}</div>
+                <p className="text-muted-foreground">Your previous high score was {highScore}.</p>
+                 <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <Button size="lg" className="text-lg shadow-glow" onClick={startGame}>
+                        Play Again
+                    </Button>
+                     <Button size="lg" variant="outline" className="text-lg" onClick={() => { setGameState('start'); setViewingSummary(null); setSummaryViewType(null); }}>
+                        Close Report
+                    </Button>
+                 </div>
+                </CardContent>
+            </Card>
+        );
+    }
+    
+    if (viewingSummary) {
+        return renderSummaryCard(viewingSummary);
+    }
+
 
     if (gameState === 'start') {
         return (
@@ -138,28 +209,14 @@ export default function CreditSwipeGame() {
                         <div className="flex items-start gap-3"><ThumbsDown className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" /><p><b>Deny Correctly (with right reason):</b> +150 points</p></div>
                         <div className="flex items-start gap-3"><Star className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" /><p><b>High Score:</b> {highScore} points</p></div>
                     </div>
-                    <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
-                </CardContent>
-            </Card>
-        );
-    }
-    
-    if (gameState === 'game-over') {
-         return (
-            <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center">
-                <CardHeader>
-                <CardTitle className="text-3xl font-bold">Game Over!</CardTitle>
-                <CardDescription className="text-lg">Here's your final score:</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                 {score > highScore && (
-                    <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-2xl font-bold text-yellow-400 p-3 bg-yellow-400/10 rounded-lg">
-                        🎉 New High Score! 🎉
-                    </motion.div>
-                )}
-                <div className="text-6xl font-black text-primary">{score}</div>
-                <p className="text-muted-foreground">Your previous high score was {highScore}.</p>
-                <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Play Again</Button>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
+                        {lastSummary && (
+                            <Button size="lg" variant="secondary" className="w-full text-xl font-bold" onClick={() => { setViewingSummary(lastSummary); setSummaryViewType('last'); }}>
+                                <History className="mr-2" /> View Last Report
+                            </Button>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         );
