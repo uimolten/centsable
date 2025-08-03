@@ -10,10 +10,13 @@ import { useAuth } from '@/hooks/use-auth';
 import React, { useCallback } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BudgetBustersGame } from '@/app/minigames/budget-busters-game';
+import CreditSwipeGame from '@/app/minigames/credit-swipe/page';
 
 // Memoize the game components to prevent re-renders on auth state changes
 const MemoizedBudgetBusters = React.memo(BudgetBustersGame);
 const MemoizedSavingsSorter = React.memo(SavingsSorterGame);
+const MemoizedCreditSwipe = React.memo(CreditSwipeGame);
+
 
 export default function MinigamePage() {
   const params = useParams();
@@ -31,6 +34,8 @@ export default function MinigamePage() {
       case 'budget-busters':
         // Pass only the stable UID to prevent re-renders on user object changes
         return <MemoizedBudgetBusters userId={user.uid} />;
+      case 'credit-swipe':
+        return <MemoizedCreditSwipe />;
       default:
         return (
           <div className="text-center">

@@ -25,6 +25,13 @@ export const minigames: Minigame[] = [
     requiredUnitId: 'unit-2', // Unlocks after completing Budgeting unit
   },
   {
+    id: 'credit-swipe',
+    title: 'Credit Swipe',
+    description: 'Play as a loan officer and approve or deny applications. Swipe wisely!',
+    icon: CreditCard,
+    requiredUnitId: 'unit-3', // Unlocks after completing Credit unit
+  },
+  {
     id: 'investment-voyage',
     title: 'Investment Voyage',
     description: 'Navigate the market, balance risk and reward, and grow your portfolio.',
