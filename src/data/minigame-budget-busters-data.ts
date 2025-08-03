@@ -45,7 +45,7 @@ export interface GameConfig {
 }
 
 export const gameConfig: GameConfig = {
-  initialBudget: 3000,
+  initialBudget: 2000,
   rounds: 20,
   guaranteedNeeds: ["Rent is due! You must pay it.", "Your car insurance premium is due."],
   events: [
