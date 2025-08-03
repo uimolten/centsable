@@ -21,6 +21,7 @@ import { lessonBudgeting2 } from '@/data/lesson-budgeting-2';
 import { lessonBudgeting3 } from '@/data/lesson-budgeting-3';
 import { lessonBudgeting4 } from '@/data/lesson-budgeting-4';
 import { lessonBudgetingPractice1 } from '@/data/lesson-budgeting-practice-1';
+import { lessonBudgetingPractice2 } from '@/data/lesson-budgeting-practice-2';
 import { lessonBudgetingQuiz } from '@/data/lesson-budgeting-quiz';
 import { lessonCredit1 } from '@/data/lesson-credit-1';
 import { lessonCredit2 } from '@/data/lesson-credit-2';
@@ -86,6 +87,7 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'b3') return lessonBudgeting3;
   if (lessonId === 'b4') return lessonBudgeting4;
   if (lessonId === 'bp1') return lessonBudgetingPractice1;
+  if (lessonId === 'bp2') return lessonBudgetingPractice2;
   if (lessonId === 'bq1') return lessonBudgetingQuiz;
 
   // Credit
@@ -110,6 +112,7 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 't2') return lessonTaxes2;
   if (lessonId === 't3') return lessonTaxes3;
   if (lessonId === 't4') return lessonTaxes4;
+  if (lessonId === 't5') return lessonTaxes5;
   if (lessonId === 'tp1') return lessonTaxesPractice1;
   if (lessonId === 'tp2') return lessonTaxesPractice2;
   if (lessonId === 'tq1') return lessonTaxesQuiz;
