@@ -5,7 +5,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import { ApplicantProfile } from '@/data/minigame-credit-swipe-data';
 import { Card } from '@/components/ui/card';
-import { Banknote, GaugeCircle, History, Briefcase } from 'lucide-react';
+import { Banknote, GaugeCircle, History, Briefcase, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
