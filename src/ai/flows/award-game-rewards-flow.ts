@@ -35,12 +35,9 @@ const awardGameRewardsFlow = ai.defineFlow(
             centsAwarded = 5;
         }
     } else if (gameId === 'budget-busters') {
-        if (score > 2000) {
-          xpAwarded = 30;
-          centsAwarded = 5;
-        } else if (score > 1000) {
-          xpAwarded = 15;
-          centsAwarded = 2;
+        if (score > 1000) {
+          xpAwarded = 50;
+          centsAwarded = 10;
         }
     }
     // No rewards for savings-sorter as it doesn't have a meaningful score threshold yet
