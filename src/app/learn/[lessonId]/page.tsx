@@ -392,6 +392,17 @@ export default function LessonPage() {
     }
   }, [currentStep, userAnswers, interactiveSortItems]);
 
+  const handleCorrectAnswer = useCallback(() => {
+    playCorrectSound();
+    setStreak(prev => prev + 1);
+    if (user && refreshUserData) {
+        const isQuiz = lesson?.title.toLowerCase().includes('quiz');
+        if (isQuiz) {
+            updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
+        }
+    }
+  }, [user, refreshUserData, lesson?.title]);
+
   const handleCheck = useCallback(() => {
     if (hasAnswered) return;
 
@@ -401,14 +412,7 @@ export default function LessonPage() {
     setIsCorrect(correct);
 
     if (correct) {
-      playCorrectSound();
-      setStreak(prev => prev + 1);
-      if (user && refreshUserData) {
-          const isQuiz = lesson?.title.toLowerCase().includes('quiz');
-          if (isQuiz) {
-              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
-          }
-      }
+      handleCorrectAnswer();
     } else {
       playIncorrectSound();
       const newIncorrectAttempts = incorrectAttempts + 1;
@@ -419,7 +423,7 @@ export default function LessonPage() {
       setStreak(0);
       setLives(prev => Math.max(0, prev - 1));
     }
-  }, [checkAnswer, hasAnswered, incorrectAttempts, lesson?.title, user, refreshUserData]);
+  }, [checkAnswer, hasAnswered, incorrectAttempts, handleCorrectAnswer]);
 
   const handleFooterAction = useCallback(async () => {
     playClickSound();
@@ -559,14 +563,7 @@ export default function LessonPage() {
     setHasAnswered(true);
     setIsCorrect(correct);
     if (correct) {
-      playCorrectSound();
-      setStreak(prev => prev + 1);
-      if (user) {
-          const isQuiz = lesson?.title.toLowerCase().includes('quiz');
-          if (isQuiz) {
-              updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
-          }
-      }
+      handleCorrectAnswer();
     } else {
       playIncorrectSound();
       const newIncorrectAttempts = incorrectAttempts + 1;
