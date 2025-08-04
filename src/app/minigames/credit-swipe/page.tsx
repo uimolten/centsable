@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
 import { shuffle } from 'lodash';
 import { useAuth } from '@/hooks/use-auth';
@@ -116,6 +116,7 @@ export default function CreditSwipeGame() {
     const [viewingSummary, setViewingSummary] = useState<CreditSwipeSummary | null>(null);
     const [summaryViewType, setSummaryViewType] = useState<SummaryViewType>(null);
     
+    const cardStartTime = useRef<number | null>(null);
     const x = useMotionValue(0);
 
     useEffect(() => {
@@ -135,6 +136,7 @@ export default function CreditSwipeGame() {
         setFeedback(null);
         setGameState('playing');
         setViewingSummary(null);
+        cardStartTime.current = Date.now();
     };
     
     const handleGameEnd = useCallback(async () => {
@@ -179,14 +181,24 @@ export default function CreditSwipeGame() {
         x.set(0); // Reset position for next card
         if (currentCardIndex < deck.length - 1) {
             setCurrentCardIndex(prev => prev + 1);
+            cardStartTime.current = Date.now();
         } else {
             handleGameEnd();
         }
     }, [currentCardIndex, deck.length, handleGameEnd, x]);
     
-    const processResult = (isCorrect: boolean, message: string, scoreChange: number) => {
-        setScore(prev => prev + scoreChange);
-        setFeedback({ type: isCorrect ? 'correct' : 'incorrect', message });
+    const processResult = (isCorrect: boolean, baseMessage: string, scoreChange: number) => {
+        let finalScoreChange = scoreChange;
+        let finalMessage = baseMessage;
+        const decisionTime = (Date.now() - (cardStartTime.current ?? Date.now())) / 1000;
+
+        if (isCorrect && decisionTime < 5) {
+            finalScoreChange += 25;
+            finalMessage += " Speed Bonus! +25";
+        }
+
+        setScore(prev => prev + finalScoreChange);
+        setFeedback({ type: isCorrect ? 'correct' : 'incorrect', message: finalMessage });
         
         if (isCorrect) {
             playCorrectSound();
@@ -198,7 +210,7 @@ export default function CreditSwipeGame() {
         setTimeout(() => {
             setFeedback(null);
             nextCard();
-        }, 1200);
+        }, 1500);
     };
 
     const handleSwipe = useCallback((direction: 'left' | 'right') => {
@@ -208,7 +220,7 @@ export default function CreditSwipeGame() {
         
         if (direction === 'right') { // Approve
             if (card.decision === 'Approve') {
-                processResult(true, 'Correct! This applicant is a good risk.', 100);
+                processResult(true, 'Correct! This applicant is a good risk.', 150);
             } else {
                 processResult(false, 'Incorrect. This applicant has too many red flags.', -75);
             }
@@ -235,7 +247,7 @@ export default function CreditSwipeGame() {
                 message = `Good instinct, but the bigger issue was ${deniedCard.correctRejectionReason.toLowerCase()}.`;
                 scoreChange = 25;
             }
-        } else {
+        } else { // User denied a card that should have been approved
             isCorrectDecision = false;
             message = 'Incorrect. This was a strong applicant who should have been approved.';
             scoreChange = -50;
@@ -289,8 +301,9 @@ export default function CreditSwipeGame() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-4 text-left p-4 bg-background/50 rounded-lg">
-                        <div className="flex items-start gap-3"><ThumbsUp className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" /><p><b>Approve Correctly:</b> +100 points</p></div>
+                        <div className="flex items-start gap-3"><ThumbsUp className="w-6 h-6 text-green-400 flex-shrink-0 mt-1" /><p><b>Approve Correctly:</b> +150 points</p></div>
                         <div className="flex items-start gap-3"><ThumbsDown className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" /><p><b>Deny Correctly (with right reason):</b> +150 points</p></div>
+                        <div className="flex items-start gap-3"><Timer className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>Speed Bonus:</b> +25 points (correct decision in under 5s)</p></div>
                         <div className="flex items-start gap-3"><Star className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" /><p><b>High Score:</b> {highScore} points</p></div>
                         <RewardStatus />
                     </div>
@@ -348,6 +361,7 @@ export default function CreditSwipeGame() {
                             key={deck[currentCardIndex].id}
                             applicant={deck[currentCardIndex]}
                             onSwipe={handleSwipe}
+                            x={x}
                         />
                     )}
                 </AnimatePresence>

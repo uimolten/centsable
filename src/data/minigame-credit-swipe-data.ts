@@ -29,7 +29,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -81,7 +81,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -120,7 +120,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -146,7 +146,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Medium',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -159,7 +159,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -185,7 +185,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -198,7 +198,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -224,7 +224,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -250,7 +250,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -289,7 +289,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -315,7 +315,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -341,7 +341,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     },
     {
@@ -367,7 +367,7 @@ export const applicantDeck: ApplicantProfile[] = [
         dti: 'Low',
         paymentHistory: 'On Time',
         decision: 'Approve',
-        rejectionReasons: [],
+        rejectionReasons: ['Credit Score is too low', 'Debt Level is too high', 'Income is too low'],
         correctRejectionReason: '',
     }
 ];
