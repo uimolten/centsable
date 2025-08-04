@@ -17,7 +17,6 @@ export type ApplicantProfile = {
 };
 
 export const REWARD_LIMIT = 2;
-export const REWARD_TIMEFRAME_HOURS = 3;
 
 export const applicantDeck: ApplicantProfile[] = [
     {

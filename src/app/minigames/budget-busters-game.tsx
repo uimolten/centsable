@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh, Frown, Timer } from 'lucide-react';
-import { gameConfig, REWARD_LIMIT, REWARD_TIMEFRAME_HOURS, GameEvent } from '@/data/minigame-budget-busters-data';
+import { gameConfig, REWARD_LIMIT, GameEvent } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
@@ -17,7 +17,8 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { GameSummary } from '@/types/user';
 import { Timestamp } from 'firebase/firestore';
-import { intervalToDuration, formatDuration } from 'date-fns';
+import { intervalToDuration, formatDuration, isBefore, startOfDay, addDays } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 
 type GameState = 'start' | 'playing';
@@ -35,28 +36,46 @@ const shuffle = (array: any[]) => {
   return array;
 };
 
+const PACIFIC_TIMEZONE = 'America/Los_Angeles';
+
 const RewardStatus = () => {
     const { userData } = useAuth();
     const [cooldown, setCooldown] = useState('');
     const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
 
     useEffect(() => {
-        const gameData = userData?.gameSummaries?.['budget-busters'];
-        const rewardHistory = (gameData?.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
+        if (!userData?.gameSummaries?.['budget-busters']) {
+            setRewardsLeft(REWARD_LIMIT);
+            setCooldown('');
+            return;
+        }
+
+        const gameData = userData.gameSummaries['budget-busters'];
+        const rewardHistory = (gameData.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
         
-        const timeframeAgo = new Date();
-        timeframeAgo.setHours(timeframeAgo.getHours() - REWARD_TIMEFRAME_HOURS);
+        const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
+        let fiveAmTodayPacific = startOfDay(nowInPacific);
+        fiveAmTodayPacific.setHours(5);
+
+        if (isBefore(nowInPacific, fiveAmTodayPacific)) {
+            fiveAmTodayPacific.setDate(fiveAmTodayPacific.getDate() - 1);
+        }
         
-        const recentRewards = rewardHistory.filter(ts => ts > timeframeAgo);
+        const recentRewards = rewardHistory.filter(ts => isBefore(fiveAmTodayPacific, toZonedTime(ts, PACIFIC_TIMEZONE)));
         setRewardsLeft(REWARD_LIMIT - recentRewards.length);
 
         if (recentRewards.length >= REWARD_LIMIT) {
-            const nextRewardTime = new Date(recentRewards[0].getTime() + REWARD_TIMEFRAME_HOURS * 60 * 60 * 1000);
+            let nextResetTime = startOfDay(nowInPacific);
+            nextResetTime.setHours(5);
+            if (isBefore(nextResetTime, nowInPacific)) {
+              nextResetTime = addDays(nextResetTime, 1);
+            }
             
             const updateCooldown = () => {
                 const now = new Date();
-                if (now < nextRewardTime) {
-                    const duration = intervalToDuration({ start: now, end: nextRewardTime });
+                const zonedNow = toZonedTime(now, PACIFIC_TIMEZONE);
+                if (isBefore(zonedNow, nextResetTime)) {
+                    const duration = intervalToDuration({ start: zonedNow, end: nextResetTime });
                     setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
                 } else {
                     setCooldown('');
@@ -67,6 +86,8 @@ const RewardStatus = () => {
             updateCooldown();
             const intervalId = setInterval(updateCooldown, 1000);
             return () => clearInterval(intervalId);
+        } else {
+             setCooldown('');
         }
     }, [userData]);
 
@@ -358,7 +379,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         <Card className="bg-card/50 backdrop-blur-lg border-border/20 text-center p-8">
             <CardHeader className="p-0 mb-4">
                 <div className="flex justify-center mb-4">
-                    <Mascot isHappy={!summary.missedSavingsGoal && !summary.spentNothingOnWants && summary.incurredConsequences.length === 0} isSad={summary.missedSavingsGoal || summary.spentNothingOnWants || summary.incurredConsequences.length > 0} />
+                    <Mascot isHappy={!summary.missedSavingsGoal && !summary.spentTooLittleOnWants && summary.incurredConsequences.length === 0} isSad={summary.missedSavingsGoal || summary.spentTooLittleOnWants || summary.incurredConsequences.length > 0} />
                 </div>
                 <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
                     Financial Report
@@ -389,7 +410,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
                     </div>
                  )}
 
-                {summary.spentNothingOnWants && (
+                {summary.spentTooLittleOnWants && (
                     <div className="space-y-2 text-left p-4 bg-yellow-500/20 rounded-lg">
                         <h3 className="font-bold text-center text-lg mb-2 text-yellow-400 flex items-center justify-center gap-2"><Meh /> A Life Un-Lived (-100 Points)</h3>
                         <p className="text-center text-yellow-400/80">

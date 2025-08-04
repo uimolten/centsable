@@ -10,7 +10,7 @@ import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
 
-import { applicantDeck, ApplicantProfile, REWARD_LIMIT, REWARD_TIMEFRAME_HOURS } from '@/data/minigame-credit-swipe-data';
+import { applicantDeck, ApplicantProfile, REWARD_LIMIT } from '@/data/minigame-credit-swipe-data';
 import ApplicantCard from '@/components/minigames/credit-swipe/applicant-card';
 import RejectionModal from '@/components/minigames/credit-swipe/rejection-modal';
 import FeedbackBanner from '@/components/minigames/credit-swipe/feedback-banner';
@@ -20,7 +20,7 @@ import { Star, ThumbsUp, ThumbsDown, ChevronLeft, ChevronRight, History, ShieldC
 import Image from 'next/image';
 import type { GameSummary } from '@/types/user';
 import { Timestamp } from 'firebase/firestore';
-import { intervalToDuration, formatDuration } from 'date-fns';
+import { intervalToDuration, formatDuration, isBefore, startOfDay, addDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { Progress } from '@/components/ui/progress';
 
@@ -34,6 +34,8 @@ interface CreditSwipeSummary extends GameSummary {
     isNewHighScore: boolean;
     highScore: number;
 }
+
+const PACIFIC_TIMEZONE = 'America/Los_Angeles';
 
 const RewardStatus = () => {
     const { userData } = useAuth();
@@ -50,27 +52,33 @@ const RewardStatus = () => {
         const gameData = userData.gameSummaries['credit-swipe'];
         const rewardHistory = (gameData.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
         
-        const timeframeAgo = new Date();
-        timeframeAgo.setHours(timeframeAgo.getHours() - REWARD_TIMEFRAME_HOURS);
+        const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
+        let fiveAmTodayPacific = startOfDay(nowInPacific);
+        fiveAmTodayPacific.setHours(5);
+
+        if (isBefore(nowInPacific, fiveAmTodayPacific)) {
+            fiveAmTodayPacific.setDate(fiveAmTodayPacific.getDate() - 1);
+        }
         
-        const recentRewards = rewardHistory.filter(ts => ts > timeframeAgo);
+        const recentRewards = rewardHistory.filter(ts => isBefore(fiveAmTodayPacific, toZonedTime(ts, PACIFIC_TIMEZONE)));
         setRewardsLeft(REWARD_LIMIT - recentRewards.length);
 
         if (recentRewards.length >= REWARD_LIMIT) {
-            const nextRewardTime = new Date(recentRewards[0].getTime() + REWARD_TIMEFRAME_HOURS * 60 * 60 * 1000);
+            let nextResetTime = startOfDay(nowInPacific);
+            nextResetTime.setHours(5);
+            if (isBefore(nextResetTime, nowInPacific)) {
+              nextResetTime = addDays(nextResetTime, 1);
+            }
             
             const updateCooldown = () => {
                 const now = new Date();
-                const zonedNow = toZonedTime(now, 'America/Los_Angeles');
-                const zonedNextReward = toZonedTime(nextRewardTime, 'America/Los_Angeles');
-
-                if (zonedNow < zonedNextReward) {
-                    const duration = intervalToDuration({ start: zonedNow, end: zonedNextReward });
+                const zonedNow = toZonedTime(now, PACIFIC_TIMEZONE);
+                if (isBefore(zonedNow, nextResetTime)) {
+                    const duration = intervalToDuration({ start: zonedNow, end: nextResetTime });
                     setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
-                    // No need to clear interval here as the logic will keep it updated.
                 }
             };
             
@@ -340,7 +348,6 @@ export default function CreditSwipeGame() {
                             key={deck[currentCardIndex].id}
                             applicant={deck[currentCardIndex]}
                             onSwipe={handleSwipe}
-                            x={x}
                         />
                     )}
                 </AnimatePresence>

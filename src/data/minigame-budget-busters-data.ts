@@ -45,7 +45,6 @@ export interface GameConfig {
 }
 
 export const REWARD_LIMIT = 2;
-export const REWARD_TIMEFRAME_HOURS = 3;
 
 export const gameConfig: GameConfig = {
   initialBudget: 2000,

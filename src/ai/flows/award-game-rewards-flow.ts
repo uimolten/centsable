@@ -11,9 +11,12 @@ import { db } from "@/lib/firebase";
 import { addXp } from './add-xp-flow';
 import { AwardGameRewardsInputSchema, AwardGameRewardsOutputSchema, AwardGameRewardsInput, AwardGameRewardsOutput } from '@/types/actions';
 import type { UserData } from '@/types/user';
+import { toZonedTime } from 'date-fns-tz';
+import { startOfDay, isBefore } from 'date-fns';
+
 
 const REWARD_LIMIT = 2;
-const REWARD_TIMEFRAME_HOURS = 3;
+const PACIFIC_TIMEZONE = 'America/Los_Angeles';
 
 export async function awardGameRewards(input: AwardGameRewardsInput): Promise<AwardGameRewardsOutput> {
   return awardGameRewardsFlow(input);
@@ -59,14 +62,20 @@ const awardGameRewardsFlow = ai.defineFlow(
             const gameData = userData.gameSummaries?.[gameId] ?? {};
             const rewardHistory = (gameData.rewardHistory ?? []).map(t => t.toDate());
 
-            // Filter out timestamps older than the timeframe
-            const threeHoursAgo = new Date();
-            threeHoursAgo.setHours(threeHoursAgo.getHours() - REWARD_TIMEFRAME_HOURS);
-            
-            const recentRewards = rewardHistory.filter(ts => ts > threeHoursAgo);
+            // --- Daily Reset Logic ---
+            const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
+            let fiveAmTodayPacific = startOfDay(nowInPacific);
+            fiveAmTodayPacific.setHours(5);
 
+            // If it's before 5 AM, the reset time is 5 AM *yesterday*.
+            if (isBefore(nowInPacific, fiveAmTodayPacific)) {
+                fiveAmTodayPacific.setDate(fiveAmTodayPacific.getDate() - 1);
+            }
+            
+            const recentRewards = rewardHistory.filter(ts => isBefore(fiveAmTodayPacific, toZonedTime(ts, PACIFIC_TIMEZONE)));
+            
             if (recentRewards.length >= REWARD_LIMIT) {
-              return { success: true, xpAwarded: 0, centsAwarded: 0, message: 'Reward limit reached.' };
+              return { success: true, xpAwarded: 0, centsAwarded: 0, message: 'Reward limit reached for today.' };
             }
 
             // If we are here, we can award points.
