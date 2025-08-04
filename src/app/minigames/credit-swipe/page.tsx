@@ -129,7 +129,7 @@ export default function CreditSwipeGame() {
     
     const startGame = () => {
         playClickSound();
-        setDeck(shuffle(applicantDeck));
+        setDeck(shuffle(applicantDeck).slice(0, 9));
         setCurrentCardIndex(0);
         setScore(0);
         setFeedback(null);
