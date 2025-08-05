@@ -43,14 +43,13 @@ const RewardStatus = () => {
     const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
 
     useEffect(() => {
-        if (!userData?.gameSummaries?.['credit-swipe']) {
+        if (!userData?.dailyRewardClaims) {
             setRewardsLeft(REWARD_LIMIT);
             setCooldown('');
             return;
         }
 
-        const gameData = userData.gameSummaries['credit-swipe'];
-        const rewardHistory = (gameData.rewardHistory ?? []).map(t => (t as Timestamp).toDate());
+        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => (t as Timestamp).toDate());
         
         const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
         let fiveAmTodayPacific = startOfDay(nowInPacific);

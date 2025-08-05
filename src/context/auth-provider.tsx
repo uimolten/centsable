@@ -94,11 +94,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: data.createdAt,
               dailyQuests: quests,
               dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
+              dailyRewardClaims: data.dailyRewardClaims ?? [],
               gameSummaries: data.gameSummaries ?? {},
             };
         } else {
             // If the user exists in Auth but not Firestore, create their record
-            const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests' | 'gameSummaries'> = {
+            const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests' | 'gameSummaries' | 'dailyRewardClaims'> = {
                 email: user.email!,
                 displayName: user.displayName || 'New Adventurer',
                 photoURL: user.photoURL,
@@ -117,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: serverTimestamp(),
             });
             const createdDoc = await getDoc(userDocRef);
-            fetchedData = { uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], gameSummaries: {} };
+            fetchedData = { uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], dailyRewardClaims: [], gameSummaries: {} };
         }
         setUserData(fetchedData);
         return fetchedData;

@@ -33,13 +33,11 @@ export interface UserData {
   createdAt: Timestamp;
   dailyQuests?: Quest[];
   dailyQuestsCompleted?: boolean;
+  dailyRewardClaims?: Timestamp[];
   gameSummaries?: {
     [gameId: string]: {
       lastAttempt?: GameSummary;
       bestAttempt?: GameSummary;
-      rewardHistory?: Timestamp[];
     };
   };
 }
-
-    
