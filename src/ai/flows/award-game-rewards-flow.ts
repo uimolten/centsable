@@ -11,7 +11,7 @@ import { addXp } from './add-xp-flow';
 import { AwardGameRewardsInputSchema, AwardGameRewardsOutputSchema, AwardGameRewardsInput, AwardGameRewardsOutput } from '@/types/actions';
 import type { UserData } from '@/types/user';
 import { toZonedTime } from 'date-fns-tz';
-import { startOfDay, isBefore } from 'date-fns';
+import { startOfDay, isBefore, subDays } from 'date-fns';
 
 const REWARD_LIMIT = 2;
 const PACIFIC_TIMEZONE = 'America/Los_Angeles';
@@ -32,7 +32,7 @@ const awardGameRewardsFlow = ai.defineFlow(
   async ({ userId, gameId, score }) => {
     
     // Standardize reward logic for games that have a score threshold
-    if (score <= SCORE_THRESHOLD) {
+    if (score < SCORE_THRESHOLD) {
         return { success: true, xpAwarded: 0, centsAwarded: 0, message: "Score did not meet threshold for reward." };
     }
     
@@ -50,15 +50,16 @@ const awardGameRewardsFlow = ai.defineFlow(
 
             // --- Daily Reset Logic ---
             const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
-            let fiveAmTodayPacific = startOfDay(nowInPacific);
-            fiveAmTodayPacific.setHours(5);
-
-            // If it's before 5 AM, the reset time is 5 AM *yesterday*.
-            if (isBefore(nowInPacific, fiveAmTodayPacific)) {
-                fiveAmTodayPacific.setDate(fiveAmTodayPacific.getDate() - 1);
+            
+            // Determine the last reset time (5 AM PT today or yesterday)
+            let lastResetTime = startOfDay(nowInPacific);
+            lastResetTime.setHours(5);
+            if (isBefore(nowInPacific, lastResetTime)) {
+                // If it's before 5 AM today, the reset time was 5 AM yesterday.
+                lastResetTime = subDays(lastResetTime, 1);
             }
             
-            const recentRewards = rewardHistory.filter(ts => isBefore(fiveAmTodayPacific, toZonedTime(ts, PACIFIC_TIMEZONE)));
+            const recentRewards = rewardHistory.filter(ts => isBefore(lastResetTime, toZonedTime(ts, PACIFIC_TIMEZONE)));
             
             if (recentRewards.length >= REWARD_LIMIT) {
               return { success: true, xpAwarded: 0, centsAwarded: 0, message: 'Daily reward limit reached.' };

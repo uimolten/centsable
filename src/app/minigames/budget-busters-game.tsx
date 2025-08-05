@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { GameSummary } from '@/types/user';
 import { Timestamp } from 'firebase/firestore';
-import { intervalToDuration, formatDuration, isBefore, startOfDay, addDays } from 'date-fns';
+import { intervalToDuration, formatDuration, isBefore, startOfDay, addDays, subDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
 
@@ -44,43 +44,39 @@ const RewardStatus = () => {
     const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
 
     useEffect(() => {
-        if (!userData?.dailyRewardClaims) {
-            setRewardsLeft(REWARD_LIMIT);
-            setCooldown('');
-            return;
-        }
+        if (!userData) return;
         
-        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => (t instanceof Timestamp ? t.toDate() : new Date(t as any)));
-        
-        const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
-        let fiveAmTodayPacific = startOfDay(nowInPacific);
-        fiveAmTodayPacific.setHours(5);
+        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => t.toDate());
 
-        if (isBefore(nowInPacific, fiveAmTodayPacific)) {
-            fiveAmTodayPacific.setDate(fiveAmTodayPacific.getDate() - 1);
+        // --- Daily Reset Logic ---
+        const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
+        
+        let lastResetTime = startOfDay(nowInPacific);
+        lastResetTime.setHours(5);
+
+        if (isBefore(nowInPacific, lastResetTime)) {
+            lastResetTime = subDays(lastResetTime, 1);
         }
         
-        const recentRewards = rewardHistory.filter(ts => isBefore(fiveAmTodayPacific, toZonedTime(ts, PACIFIC_TIMEZONE)));
+        const recentRewards = rewardHistory.filter(ts => isBefore(lastResetTime, toZonedTime(ts, PACIFIC_TIMEZONE)));
         setRewardsLeft(REWARD_LIMIT - recentRewards.length);
 
         if (recentRewards.length >= REWARD_LIMIT) {
             let nextResetTime = startOfDay(nowInPacific);
             nextResetTime.setHours(5);
-            if (isBefore(nextResetTime, nowInPacific)) {
+            if (isBefore(nextResetTime, nowInPacific) || nowInPacific.getTime() === nextResetTime.getTime()) {
               nextResetTime = addDays(nextResetTime, 1);
             }
             
             const updateCooldown = () => {
-                const now = new Date();
-                const zonedNow = toZonedTime(now, PACIFIC_TIMEZONE);
+                const zonedNow = toZonedTime(new Date(), PACIFIC_TIMEZONE);
                 if (isBefore(zonedNow, nextResetTime)) {
                     const duration = intervalToDuration({ start: zonedNow, end: nextResetTime });
                     setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
-                    // No need for interval anymore if time is up
-                    clearInterval(intervalId);
+                    if (intervalId) clearInterval(intervalId);
                 }
             };
             
