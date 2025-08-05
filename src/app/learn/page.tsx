@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useAuth } from '@/hooks/use-auth';
@@ -106,15 +106,15 @@ export default function LearnPage() {
 
   if (loading) {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-5 px-8 py-8">
-            <aside className="hidden lg:block lg:col-span-3">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_6fr_3fr] gap-x-8 px-4 md:px-8 py-8">
+            <aside className="hidden lg:block">
                  <Skeleton className="h-[500px] w-full" />
             </aside>
-            <main className="lg:col-span-6 space-y-8">
+            <main className="space-y-8">
                 <Skeleton className="h-48 w-full max-w-lg mx-auto" />
                 <Skeleton className="h-96 w-full" />
             </main>
-            <aside className="hidden lg:block lg:col-span-3">
+            <aside className="hidden lg:block">
                  <Skeleton className="h-64 w-full" />
             </aside>
         </div>
@@ -133,16 +133,16 @@ export default function LearnPage() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-5 px-8 py-8 h-full">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_6fr_3fr] gap-x-8 px-4 md:px-8 py-8">
         {/* --- Left Sidebar (Desktop) --- */}
-        <aside className="hidden lg:block lg:col-span-3">
+        <aside className="hidden lg:block">
             <div className="sticky top-24">
                 <LeftSidebar />
             </div>
         </aside>
 
         {/* Main Lessons Column */}
-        <main className="lg:col-span-6 relative">
+        <main className="relative">
             <div className="max-w-xl mx-auto">
                 <LearningPathway 
                     units={units}
@@ -153,7 +153,7 @@ export default function LearnPage() {
         </main>
         
         {/* --- Right Sidebar (Desktop) --- */}
-        <aside className="hidden lg:block lg:col-span-3">
+        <aside className="hidden lg:block">
              <div className="sticky top-24">
                 {rightSidebarContent}
             </div>
