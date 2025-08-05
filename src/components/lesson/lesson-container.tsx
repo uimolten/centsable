@@ -52,7 +52,7 @@ export function LessonContainer({
   const getButtonText = () => {
     if (!currentStep) return "Continue";
     const stepType = currentStep.type;
-    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'goal-builder'].includes(stepType);
+    const isStepWithoutCheck = ['intro', 'concept', 'scenario', 'complete', 'goal-summary', 'goal-builder', 'interactive-town'].includes(stepType);
     
     if (hasAnswered && isCorrect === false) return "Try Again";
     if (isStepWithoutCheck || (hasAnswered && isCorrect)) return "Continue";
@@ -62,6 +62,7 @@ export function LessonContainer({
   const isButtonDisabled = () => {
     const buttonText = getButtonText();
     if (buttonText === 'Check' || (buttonText === 'Continue' && currentStep?.type === 'goal-builder')) {
+        if (currentStep.type === 'interactive-sort') return false;
         return userAnswers.length === 0 || (userAnswers.length > 0 && String(userAnswers[0]).trim() === '');
     }
     return false;
@@ -83,6 +84,7 @@ export function LessonContainer({
   }
 
   const showFooter = currentStep?.type !== 'complete';
+  const showInstruction = currentStep?.type !== 'intro';
 
   return (
     <div 
@@ -122,10 +124,12 @@ export function LessonContainer({
           </header>
 
           <main className="flex-grow flex flex-col items-center justify-start pt-4 md:pt-8 overflow-y-auto p-4 w-full space-y-4">
-            <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
-                <SpeechBubble text={instructionText} />
-                <Mascot isHappy={isCorrect} isSad={isCorrect === false} />
-            </div>
+            {showInstruction && (
+              <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
+                  <SpeechBubble text={instructionText} />
+                  <Mascot isHappy={isCorrect} isSad={isCorrect === false} />
+              </div>
+            )}
 
             <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center">
                 {children}

@@ -21,7 +21,7 @@ export function ConceptCard({ step }: ConceptCardProps) {
 
   // The text for concept and scenario steps is now rendered in the SpeechBubble component.
   // Rendering it here would be duplicative.
-  const textToShow = step.type === 'concept' ? step.text : undefined;
+  const textToShow = step.type === 'concept' ? undefined : step.text;
 
   return (
     <motion.div

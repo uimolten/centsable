@@ -112,7 +112,6 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 't2') return lessonTaxes2;
   if (lessonId === 't3') return lessonTaxes3;
   if (lessonId === 't4') return lessonTaxes4;
-  if (lessonId === 't5') return lessonTaxes5;
   if (lessonId === 'tp1') return lessonTaxesPractice1;
   if (lessonId === 'tp2') return lessonTaxesPractice2;
   if (lessonId === 'tq1') return lessonTaxesQuiz;
@@ -317,14 +316,10 @@ export default function LessonPage() {
     }
     
     // This now only happens after all the logic above
-    if (currentStep?.type === 'complete') {
-      router.push('/learn');
-    } else {
-       // This is now only a marker to show the completion UI
-      setStepIndex(prev => prev + 1);
-    }
+    router.push('/learn');
 
-}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, initialCompletionState, triggerLevelUp, currentStep]);
+
+}, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, initialCompletionState, triggerLevelUp]);
   
   const goToNextStep = useCallback(async () => {
       playClickSound();
@@ -338,8 +333,8 @@ export default function LessonPage() {
         setStepIndex(0);
       }
       else {
-        // This is the end of the last step, trigger completion logic
-        await handleLessonComplete();
+        // This is the end of the last step, show the completion screen.
+        setStepIndex(prev => prev + 1);
       }
       
       setHasAnswered(false);
@@ -348,7 +343,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, handleLessonComplete, moduleIndex, stepIndex, user, refreshUserData, lesson?.modules.length]);
+  }, [currentModule?.steps.length, moduleIndex, stepIndex, user, refreshUserData, lesson?.modules.length]);
 
   const goToPreviousStep = useCallback(() => {
     playClickSound();
@@ -605,14 +600,26 @@ export default function LessonPage() {
     }
   }
 
-  const renderStepContent = (step: Step) => {
+  const renderStepContent = () => {
+    if (!currentStep) {
+        const lastStepOfLesson = lesson.modules.slice(-1)[0].steps.slice(-1)[0];
+        return (
+            <LessonComplete 
+                step={lastStepOfLesson as any} 
+                onContinue={() => handleLessonComplete()}
+                isReviewMode={initialCompletionState}
+                bonusXp={bonusXp}
+            />
+        )
+    }
+      
     const uniqueKey = `${moduleIndex}-${stepIndex}-${tryAgainCounter}`;
     let stepProps: any = {
-      step: step as any,
+      step: currentStep as any,
       onContinue: () => handleLessonComplete(), // Pass the saving function
     };
 
-    switch (step.type) {
+    switch (currentStep.type) {
       case 'multiple-choice':
         stepProps = { ...stepProps, userAnswers, onSelectAnswer: handleSelectAnswer, hasAnswered, isCorrect, incorrectAttempts };
         return <MultipleChoice key={uniqueKey} {...stepProps} />;
@@ -630,7 +637,7 @@ export default function LessonPage() {
         return <InteractiveSort key={uniqueKey} {...stepProps} />;
 
       case 'interactive-town':
-          stepProps = { ...stepProps, step: step as InteractiveTownStep };
+          stepProps = { ...stepProps, step: currentStep as InteractiveTownStep };
           return <InteractiveTown key={uniqueKey} {...stepProps} />;
 
       case 'goal-builder':
@@ -646,7 +653,7 @@ export default function LessonPage() {
       case 'concept':
         return <ConceptCard key={uniqueKey} {...stepProps} />;
       case 'scenario':
-        return <ConceptCard key={uniqueKey} {...{ step: step as ScenarioStep }} />;
+        return <ConceptCard key={uniqueKey} {...{ step: currentStep as ScenarioStep }} />;
       
       case 'complete':
         stepProps = { ...stepProps, isReviewMode: initialCompletionState, bonusXp };
@@ -677,14 +684,7 @@ export default function LessonPage() {
         isSortIncomplete={isSortIncomplete}
       >
         <AnimatePresence mode="wait">
-          {currentStep ? renderStepContent(currentStep) : (
-            <LessonComplete 
-              step={lastStepOfLesson as any} 
-              onContinue={() => handleLessonComplete()}
-              isReviewMode={initialCompletionState}
-              bonusXp={bonusXp}
-            />
-          )}
+          {renderStepContent()}
         </AnimatePresence>
       </LessonContainer>
     </DndProvider>
