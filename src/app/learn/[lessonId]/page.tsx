@@ -242,7 +242,7 @@ export default function LessonPage() {
       // Handle lesson not found, maybe redirect
       router.push('/learn');
     }
-  }, [lessonId, router, user, initialCompletionState]);
+  }, [lessonId, router, user, initialCompletionState, refreshUserData]);
   
   const currentModule = lesson?.modules[moduleIndex];
   const currentStep = currentModule?.steps[stepIndex];
@@ -290,6 +290,7 @@ export default function LessonPage() {
             const addXpPromise = addXp({
                 userId: user.uid,
                 amount: totalXp,
+                cents: lastStep.rewards.coins,
                 lessonId: lessonId,
             });
 

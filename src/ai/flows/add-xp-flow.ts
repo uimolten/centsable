@@ -45,6 +45,7 @@ const addXpFlow = ai.defineFlow(
         let newLevel = currentLevel;
         let leveledUp = false;
         let totalCentsReward = cents ?? 0;
+        let levelUpRewardCents = 0;
 
         // Check for level up
         const nextLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === currentLevel + 1);
@@ -52,7 +53,8 @@ const addXpFlow = ai.defineFlow(
         if (nextLevelThreshold && newXp >= nextLevelThreshold.totalXPNeeded) {
             leveledUp = true;
             newLevel = currentLevel + 1;
-            totalCentsReward += nextLevelThreshold.rewardCents;
+            levelUpRewardCents = nextLevelThreshold.rewardCents;
+            totalCentsReward += levelUpRewardCents;
             // In a more complex system, you could handle multiple level-ups in one go here
         }
 
@@ -76,7 +78,7 @@ const addXpFlow = ai.defineFlow(
         transaction.update(userDocRef, updates);
 
         if (leveledUp) {
-            return { success: true, leveledUp: true, newLevel, rewardCents: nextLevelThreshold.rewardCents };
+            return { success: true, leveledUp: true, newLevel, rewardCents: levelUpRewardCents };
         }
         
         return { success: true, leveledUp: false };
