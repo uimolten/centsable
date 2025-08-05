@@ -49,7 +49,7 @@ const RewardStatus = () => {
             return;
         }
 
-        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => (t as Timestamp).toDate());
+        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => (t instanceof Timestamp ? t.toDate() : new Date(t as any)));
         
         const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
         let fiveAmTodayPacific = startOfDay(nowInPacific);
@@ -78,6 +78,7 @@ const RewardStatus = () => {
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
+                    clearInterval(intervalId);
                 }
             };
             
@@ -174,6 +175,7 @@ export default function CreditSwipeGame() {
                 triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
            }
         }
+        await refreshUserData?.();
     }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation]);
     
     const nextCard = useCallback(() => {
@@ -196,7 +198,7 @@ export default function CreditSwipeGame() {
             finalMessage += " Speed Bonus! +25";
         }
 
-        setScore(prev => prev + finalScoreChange);
+        setScore(prev => Math.max(0, prev + finalScoreChange));
         setFeedback({ type: isCorrect ? 'correct' : 'incorrect', message: finalMessage });
         
         if (isCorrect) {

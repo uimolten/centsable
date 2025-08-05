@@ -50,7 +50,7 @@ const RewardStatus = () => {
             return;
         }
         
-        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => (t as Timestamp).toDate());
+        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => (t instanceof Timestamp ? t.toDate() : new Date(t as any)));
         
         const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
         let fiveAmTodayPacific = startOfDay(nowInPacific);
@@ -79,6 +79,8 @@ const RewardStatus = () => {
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
+                    // No need for interval anymore if time is up
+                    clearInterval(intervalId);
                 }
             };
             
@@ -158,7 +160,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
         scorePenalty += finalConsequences.length * 75;
     }
 
-    finalScore = finalScore - scorePenalty;
+    finalScore = Math.max(0, finalScore - scorePenalty);
 
     const newHighScoreAchieved = finalScore > highScore;
     if (newHighScoreAchieved) {
@@ -210,6 +212,8 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
       }
       await Promise.all(updates);
     }
+
+    await refreshUserData?.();
 
   }, [highScore, userId, refreshUserData, triggerLevelUp, triggerRewardAnimation, viewingSummary]);
 
