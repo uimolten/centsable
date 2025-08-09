@@ -100,7 +100,7 @@ const RewardStatus = () => {
     }
     
     return (
-         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> <span className="font-semibold text-yellow-400">{cooldown}</span></p></div>
+         <div className="flex items-center gap-3 text-yellow-300"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> <span className="font-semibold text-yellow-300">{cooldown}</span></p></div>
     );
 }
 

@@ -32,6 +32,12 @@ interface GameItem {
 const GAME_DURATION = 30; // seconds
 const PACIFIC_TIMEZONE = 'America/Los_Angeles';
 
+const formatHMS = (duration: Duration) => {
+    const hours = (duration.hours ?? 0).toString().padStart(2, '0');
+    const minutes = (duration.minutes ?? 0).toString().padStart(2, '0');
+    const seconds = (duration.seconds ?? 0).toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
 
 const RewardStatus = () => {
     const { userData } = useAuth();
@@ -65,7 +71,7 @@ const RewardStatus = () => {
                 const zonedNow = toZonedTime(new Date(), PACIFIC_TIMEZONE);
                 if (isBefore(zonedNow, nextResetTime)) {
                     const duration = intervalToDuration({ start: zonedNow, end: nextResetTime });
-                    setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
+                    setCooldown(formatHMS(duration));
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
@@ -88,7 +94,7 @@ const RewardStatus = () => {
     }
     
     return (
-         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> {cooldown}</p></div>
+         <div className="flex items-center gap-3 text-yellow-300"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> <span className="font-semibold text-yellow-300">{cooldown}</span></p></div>
     );
 }
 
@@ -116,39 +122,39 @@ export function SavingsSorterGame() {
     setGameState('end');
     playIncorrectSound(); // Time's up sound
 
-    const isNewHighScore = score > highScore;
+    const finalScore = score;
+    const isNewHighScore = finalScore > highScore;
     if (isNewHighScore) {
-      setHighScore(score);
+      setHighScore(finalScore);
     }
-
+    
     const summaryData: GameSummary = {
-        score: score,
+        score: finalScore,
         isNewHighScore: isNewHighScore,
-        highScore: isNewHighScore ? score : highScore,
+        highScore: isNewHighScore ? finalScore : highScore,
     };
 
     if (user?.uid) {
-       await saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
+        await saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
        
-       const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
-       if (isNewHighScore) {
+        const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
+        if (isNewHighScore) {
             questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
-       }
+        }
+        await Promise.all(questUpdates);
        
-       const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score });
+        const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score: finalScore });
        
-       if (rewardResult.success) {
-         triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
-       } else {
-         toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
-       }
+        if (rewardResult.success) {
+            triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+        } else {
+            toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
+        }
        
-       await Promise.all(questUpdates);
-       
-       const xpResult = await refreshUserData?.();
-       if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+        const xpResult = await refreshUserData?.();
+        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
             triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
-       }
+        }
     }
   }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
 
@@ -202,7 +208,7 @@ export function SavingsSorterGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, timeLeft, score, highScore, handleGameEnd]);
+  }, [gameState, timeLeft, handleGameEnd]);
   
   const currentItem = items[currentItemIndex];
 
