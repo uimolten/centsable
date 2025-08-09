@@ -36,6 +36,7 @@ import { lessonInvesting2 } from '@/data/lesson-investing-2';
 import { lessonInvesting3 } from '@/data/lesson-investing-3';
 import { lessonInvesting4 } from '@/data/lesson-investing-4';
 import { lessonInvesting5 } from '@/data/lesson-investing-5';
+import { lessonInvestingQuiz } from '@/data/lesson-investing-quiz';
 import { lessonTaxes1 } from '@/data/lesson-taxes-1';
 import { lessonTaxes2 } from '@/data/lesson-taxes-2';
 import { lessonTaxes3 } from '@/data/lesson-taxes-3';
@@ -106,6 +107,7 @@ const getLessonData = (lessonId: string): Lesson | null => {
   if (lessonId === 'i3') return lessonInvesting3;
   if (lessonId === 'i4') return lessonInvesting4;
   if (lessonId === 'i5') return lessonInvesting5;
+  if (lessonId === 'iq1') return lessonInvestingQuiz;
 
   // Taxes
   if (lessonId === 't1') return lessonTaxes1;

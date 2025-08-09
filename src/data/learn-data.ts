@@ -59,7 +59,7 @@ const rawUnitsData: Unit[] = [
       { id: 'i3', title: 'Choosing Your Gear: Types of Investments', type: 'lesson', state: 'locked', xp: 8 },
       { id: 'i4', title: "Don't Put All Your Items in One Slot: Diversification", type: 'lesson', state: 'locked', xp: 7 },
       { id: 'i5', title: 'Starting Your Quest: How to Actually Invest', type: 'lesson', state: 'locked', xp: 5 },
-      { id: 'i6', title: 'Investing Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
+      { id: 'iq1', title: 'Investing Unit Quiz', type: 'quiz', state: 'locked', xp: 25 },
     ],
   },
   {
