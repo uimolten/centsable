@@ -105,42 +105,47 @@ export function Header() {
                        <SheetTitle className="sr-only">Main Menu</SheetTitle>
                        <SheetDescription className="sr-only">Navigate to different parts of the application.</SheetDescription>
                     </SheetHeader>
-                    <nav className="flex-grow flex flex-col gap-6 mt-8">
-                      {navLinks.map((link) => (
-                        <Link 
-                          key={link.href} 
-                          href={link.href} 
-                          onClick={(e) => {
-                            handleLinkClick(!!link.protected, e);
-                            if (!link.protected || user) {
-                              closeMenu();
-                            }
-                          }}
-                          className="text-2xl font-semibold text-foreground hover:text-primary transition-colors">
-                          {link.label}
-                        </Link>
-                      ))}
-                    </nav>
-                    <div className="flex-shrink-0 border-t border-border/10 pt-6">
-                      {loading ? (
-                         <div className="flex items-center space-x-2">
-                            <Skeleton className="h-10 w-full rounded-md" />
-                         </div>
-                      ) : user ? (
-                        <div>
-                          <UserNav />
+                    
+                    <div className="flex-grow flex flex-col justify-between">
+                        <nav className="flex flex-col gap-6 mt-8">
+                          {navLinks.map((link) => (
+                            <Link 
+                              key={link.href} 
+                              href={link.href} 
+                              onClick={(e) => {
+                                handleLinkClick(!!link.protected, e);
+                                if (!link.protected || user) {
+                                  closeMenu();
+                                }
+                              }}
+                              className="text-2xl font-semibold text-foreground hover:text-primary transition-colors">
+                              {link.label}
+                            </Link>
+                          ))}
+                        </nav>
+
+                        <div className="flex-shrink-0 border-t border-border/10 pt-6">
+                          {loading ? (
+                             <div className="flex items-center space-x-2">
+                                <Skeleton className="h-10 w-full rounded-md" />
+                             </div>
+                          ) : user ? (
+                            <div>
+                              <UserNav />
+                            </div>
+                          ) : (
+                            <div className="flex flex-col gap-4">
+                              <Button variant="outline" asChild size="lg" className="text-lg">
+                                <Link href="/auth" onClick={closeMenu}>Log In</Link>
+                              </Button>
+                              <Button asChild size="lg" className="shadow-glow text-lg">
+                                <Link href="/auth?view=signup" onClick={closeMenu}>Sign Up</Link>
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="flex flex-col gap-4">
-                          <Button variant="outline" asChild size="lg" className="text-lg">
-                            <Link href="/auth" onClick={closeMenu}>Log In</Link>
-                          </Button>
-                          <Button asChild size="lg" className="shadow-glow text-lg">
-                            <Link href="/auth?view=signup" onClick={closeMenu}>Sign Up</Link>
-                          </Button>
-                        </div>
-                      )}
                     </div>
+
                   </SheetContent>
                 </Sheet>
               </div>
