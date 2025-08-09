@@ -6,6 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCompactNumber(number: number) {
+  if (number === null || number === undefined || isNaN(number)) {
+    return '0';
+  }
   if (number < 1000) {
     return number.toString();
   }
