@@ -18,6 +18,7 @@ import { LayoutDashboard, LogOut, User as UserIcon, Coins, Gem } from 'lucide-re
 import { Card } from './ui/card';
 import { LEVEL_THRESHOLDS } from '@/lib/level-config';
 import { Progress } from './ui/progress';
+import { formatCompactNumber } from '@/lib/utils';
 
 export function UserNav() {
   const { user, userData, signOut } = useAuth();
@@ -59,7 +60,7 @@ export function UserNav() {
       </Card>
       <Card id="cents-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
         <Coins className="h-6 w-6 text-yellow-400" />
-        <span className="font-bold text-lg text-foreground">{userData.cents}</span>
+        <span className="font-bold text-lg text-foreground">{formatCompactNumber(userData.cents)}</span>
       </Card>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
