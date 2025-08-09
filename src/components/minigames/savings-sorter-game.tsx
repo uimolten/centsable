@@ -32,6 +32,12 @@ interface GameItem {
 const GAME_DURATION = 30; // seconds
 const PACIFIC_TIMEZONE = 'America/Los_Angeles';
 
+const formatHMS = (duration: Duration) => {
+    const hours = (duration.hours ?? 0).toString().padStart(2, '0');
+    const minutes = (duration.minutes ?? 0).toString().padStart(2, '0');
+    const seconds = (duration.seconds ?? 0).toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
 
 const RewardStatus = () => {
     const { userData } = useAuth();
@@ -65,7 +71,7 @@ const RewardStatus = () => {
                 const zonedNow = toZonedTime(new Date(), PACIFIC_TIMEZONE);
                 if (isBefore(zonedNow, nextResetTime)) {
                     const duration = intervalToDuration({ start: zonedNow, end: nextResetTime });
-                    setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
+                    setCooldown(formatHMS(duration));
                 } else {
                     setCooldown('');
                     setRewardsLeft(REWARD_LIMIT);
@@ -88,7 +94,7 @@ const RewardStatus = () => {
     }
     
     return (
-         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> {cooldown}</p></div>
+         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> <span className="font-semibold text-yellow-400">{cooldown}</span></p></div>
     );
 }
 
