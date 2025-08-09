@@ -324,9 +324,6 @@ export default function LessonPage() {
   
   const goToNextStep = useCallback(async () => {
       playClickSound();
-      if (user && refreshUserData) {
-          await updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' });
-      }
       if (stepIndex < (currentModule?.steps.length ?? 0) - 1) {
         setStepIndex(stepIndex + 1);
       } else if (moduleIndex < (lesson?.modules.length ?? 0) -1) {
@@ -344,7 +341,7 @@ export default function LessonPage() {
       setTryAgainCounter(0);
       setIncorrectAttempts(0);
       setIsSortIncomplete(false);
-  }, [currentModule?.steps.length, moduleIndex, stepIndex, user, refreshUserData, lesson?.modules.length]);
+  }, [currentModule?.steps.length, moduleIndex, stepIndex, lesson?.modules.length]);
 
   const goToPreviousStep = useCallback(() => {
     playClickSound();
@@ -388,14 +385,16 @@ export default function LessonPage() {
     }
   }, [currentStep, userAnswers, interactiveSortItems]);
 
-  const handleCorrectAnswer = useCallback(() => {
+  const handleCorrectAnswer = useCallback(async () => {
     playCorrectSound();
     setStreak(prev => prev + 1);
-    if (user && refreshUserData) {
-        const isQuiz = lesson?.title.toLowerCase().includes('quiz');
-        if (isQuiz) {
-            updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
-        }
+    if (!user || !refreshUserData) return;
+
+    await updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' });
+    
+    const isQuiz = lesson?.title.toLowerCase().includes('quiz');
+    if (isQuiz) {
+        await updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
     }
   }, [user, refreshUserData, lesson?.title]);
 
