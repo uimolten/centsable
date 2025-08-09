@@ -611,7 +611,7 @@ export const MagicBento: React.FC<BentoProps> = ({
                 <Image
                   src={card.image}
                   alt={card.title || 'Feature image'}
-                  layout="fill"
+                  fill
                   objectFit="cover"
                   className="card__image"
                   data-ai-hint={card.imageHint}

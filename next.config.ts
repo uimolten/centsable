@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -17,15 +18,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-  },
-  webpack: (config, { isServer }) => {
-    // Add a rule to handle Firebase ESM modules
-    config.resolve.alias['@firebase/auth'] =
-      require.resolve('firebase/auth');
-    config.resolve.alias['@firebase/firestore'] =
-      require.resolve('firebase/firestore');
-
-    return config;
   },
 };
 
