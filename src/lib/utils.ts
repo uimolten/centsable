@@ -10,11 +10,16 @@ export function formatCompactNumber(number: number) {
     return '0';
   }
   if (number < 1000) {
-    return number.toString();
+    return Math.floor(number).toString();
   }
-  const formatter = new Intl.NumberFormat('en', {
-    notation: 'compact',
-    compactDisplay: 'short',
-  });
-  return formatter.format(number);
+  if (number >= 1000 && number < 1000000) {
+    return (Math.floor((number / 1000) * 10) / 10).toFixed(1) + 'K';
+  }
+  if (number >= 1000000 && number < 1000000000) {
+    return (Math.floor((number / 1000000) * 10) / 10).toFixed(1) + 'M';
+  }
+  if (number >= 1000000000) {
+    return (Math.floor((number / 1000000000) * 10) / 10).toFixed(1) + 'B';
+  }
+  return number.toString();
 }
