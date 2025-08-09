@@ -12,6 +12,7 @@ import { Skeleton } from '../ui/skeleton';
 import { Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from '@/components/ui/sheet';
 import { LoginPromptDialog } from '../auth/login-prompt-dialog';
+import { Separator } from '../ui/separator';
 
 export function Header() {
   const { user, userData, loading } = useAuth();
@@ -99,51 +100,53 @@ export function Header() {
                       <span className="sr-only">Open menu</span>
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-full max-w-sm bg-background/95 backdrop-blur-lg flex flex-col">
-                    <SheetHeader className="flex-shrink-0 border-b border-border/10 pb-4">
+                  <SheetContent side="right" className="w-full max-w-sm bg-background/95 backdrop-blur-lg flex flex-col p-0">
+                    <SheetHeader className="flex-shrink-0 border-b border-border/10 p-6 pb-4">
                        <Logo onClick={closeMenu} />
                        <SheetTitle className="sr-only">Main Menu</SheetTitle>
                        <SheetDescription className="sr-only">Navigate to different parts of the application.</SheetDescription>
                     </SheetHeader>
                     
-                    <div className="flex-grow flex flex-col justify-between">
-                        <nav className="flex flex-col gap-6 mt-8">
-                          {navLinks.map((link) => (
-                            <Link 
-                              key={link.href} 
-                              href={link.href} 
-                              onClick={(e) => {
-                                handleLinkClick(!!link.protected, e);
-                                if (!link.protected || user) {
-                                  closeMenu();
-                                }
-                              }}
-                              className="text-2xl font-semibold text-foreground hover:text-primary transition-colors">
-                              {link.label}
-                            </Link>
-                          ))}
-                        </nav>
+                    <div className="flex flex-col h-full">
+                       <div className="p-6">
+                        {loading ? (
+                           <div className="flex items-center space-x-2">
+                              <Skeleton className="h-10 w-full rounded-md" />
+                           </div>
+                        ) : user ? (
+                          <div>
+                            <UserNav />
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-4">
+                            <Button asChild size="lg" className="shadow-glow text-lg">
+                              <Link href="/auth?view=signup" onClick={closeMenu}>Sign Up</Link>
+                            </Button>
+                            <Button variant="outline" asChild size="lg" className="text-lg">
+                              <Link href="/auth" onClick={closeMenu}>Log In</Link>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <Separator className="bg-border/10" />
 
-                        <div className="flex-shrink-0 border-t border-border/10 pt-6">
-                          {loading ? (
-                             <div className="flex items-center space-x-2">
-                                <Skeleton className="h-10 w-full rounded-md" />
-                             </div>
-                          ) : user ? (
-                            <div>
-                              <UserNav />
-                            </div>
-                          ) : (
-                            <div className="flex flex-col gap-4">
-                              <Button variant="outline" asChild size="lg" className="text-lg">
-                                <Link href="/auth" onClick={closeMenu}>Log In</Link>
-                              </Button>
-                              <Button asChild size="lg" className="shadow-glow text-lg">
-                                <Link href="/auth?view=signup" onClick={closeMenu}>Sign Up</Link>
-                              </Button>
-                            </div>
-                          )}
-                        </div>
+                      <nav className="flex flex-col gap-6 p-6">
+                        {navLinks.map((link) => (
+                          <Link 
+                            key={link.href} 
+                            href={link.href} 
+                            onClick={(e) => {
+                              handleLinkClick(!!link.protected, e);
+                              if (!link.protected || user) {
+                                closeMenu();
+                              }
+                            }}
+                            className="text-2xl font-semibold text-foreground hover:text-primary transition-colors">
+                            {link.label}
+                          </Link>
+                        ))}
+                      </nav>
                     </div>
 
                   </SheetContent>
