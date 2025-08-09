@@ -71,10 +71,11 @@ const awardGameRewardsFlow = ai.defineFlow(
             }
 
             // If we are here, we can award points.
-            await addXp({ userId, amount: XP_AWARD, cents: CENTS_AWARD });
-
-            // Update the user's global reward history
+            // Note: We are not using the addXp flow here to keep reward logic self-contained
+            // and avoid potential circular dependencies or complex transactions.
             transaction.update(userDocRef, {
+                xp: (userData.xp ?? 0) + XP_AWARD,
+                cents: (userData.cents ?? 0) + CENTS_AWARD,
                 dailyRewardClaims: arrayUnion(Timestamp.now())
             });
 

@@ -195,7 +195,6 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
        }
        
        const xpResult = await refreshUserData?.();
-
        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
         triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
        }
