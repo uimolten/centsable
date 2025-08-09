@@ -94,7 +94,7 @@ const RewardStatus = () => {
     }
     
     return (
-         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> <span className="font-semibold text-yellow-400">{cooldown}</span></p></div>
+         <div className="flex items-center gap-3 text-[#FFEEBC]"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> <span className="font-semibold">{cooldown}</span></p></div>
     );
 }
 
@@ -119,51 +119,43 @@ export function SavingsSorterGame() {
 
 
   const handleGameEnd = useCallback(async () => {
-    setGameState('end');
     playIncorrectSound(); // Time's up sound
 
-    // Use a function for setHighScore to get the latest state
-    setHighScore(currentHighScore => {
-      const finalScore = score;
-      const isNewHighScore = finalScore > currentHighScore;
-      if (isNewHighScore) {
-        setHighScore(finalScore);
-      }
-      
-      const summaryData: GameSummary = {
-          score: finalScore,
-          isNewHighScore: isNewHighScore,
-          highScore: isNewHighScore ? finalScore : currentHighScore,
-      };
+    const finalScore = score;
+    const isNewHighScore = finalScore > highScore;
+    if (isNewHighScore) {
+      setHighScore(finalScore);
+    }
+    
+    const summaryData: GameSummary = {
+        score: finalScore,
+        isNewHighScore: isNewHighScore,
+        highScore: isNewHighScore ? finalScore : highScore,
+    };
 
-      if (user?.uid) {
-         saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
-         
-         const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
-         if (isNewHighScore) {
-              questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
-         }
-         
-         awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score: finalScore }).then(rewardResult => {
-            if (rewardResult.success) {
-              triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
-            } else {
-              toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
-            }
-         });
-         
-         Promise.all(questUpdates).then(() => {
-            refreshUserData?.().then(xpResult => {
-                 if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
-                      triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
-                 }
-            });
-         });
-      }
-      return isNewHighScore ? finalScore : currentHighScore;
-    });
-
-  }, [score, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
+    if (user?.uid) {
+        await saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
+       
+        const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
+        if (isNewHighScore) {
+            questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
+        }
+        await Promise.all(questUpdates);
+       
+        const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score: finalScore });
+       
+        if (rewardResult.success) {
+            triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+        } else {
+            toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
+        }
+       
+        const xpResult = await refreshUserData?.();
+        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+            triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
+        }
+    }
+  }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
 
 
   const startGame = () => {
@@ -206,7 +198,7 @@ export function SavingsSorterGame() {
     if (gameState !== 'playing') return;
 
     if (timeLeft <= 0) {
-      handleGameEnd();
+      setGameState('end');
       return;
     }
 
@@ -215,8 +207,14 @@ export function SavingsSorterGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, timeLeft, handleGameEnd]);
+  }, [gameState, timeLeft]);
   
+  useEffect(() => {
+    if (gameState === 'end') {
+      handleGameEnd();
+    }
+  }, [gameState, handleGameEnd]);
+
   const currentItem = items[currentItemIndex];
 
   if (gameState === 'start') {
