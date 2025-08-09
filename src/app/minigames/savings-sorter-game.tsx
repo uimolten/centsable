@@ -15,6 +15,7 @@ import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audi
 import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
 import type { GameSummary } from '@/types/user';
+import { useToast } from '@/hooks/use-toast';
 
 
 type GameState = 'start' | 'playing' | 'end';
@@ -27,10 +28,10 @@ interface GameItem {
 }
 
 const GAME_DURATION = 30; // seconds
-const SCORE_THRESHOLD = 2000;
 
 export function SavingsSorterGame() {
   const { user, userData, refreshUserData, triggerRewardAnimation, triggerLevelUp } = useAuth();
+  const { toast } = useToast();
   const [gameState, setGameState] = useState<GameState>('start');
   const [items, setItems] = useState<GameItem[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -70,21 +71,23 @@ export function SavingsSorterGame() {
        if (isNewHighScore) {
             questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
        }
-       await Promise.all(questUpdates);
-
-       if (score >= SCORE_THRESHOLD) {
-         const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score });
-         if (rewardResult.xpAwarded > 0 || rewardResult.centsAwarded > 0) {
-           triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
-         }
+       
+       const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score });
+       
+       if (rewardResult.success) {
+         triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+       } else {
+         toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
        }
+       
+       await Promise.all(questUpdates);
        
        const xpResult = await refreshUserData?.();
        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
             triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
        }
     }
-  }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp]);
+  }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
 
 
   const startGame = () => {

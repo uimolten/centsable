@@ -13,9 +13,14 @@ import type { UserData } from '@/types/user';
 import { toZonedTime } from 'date-fns-tz';
 import { startOfDay, isBefore, subDays } from 'date-fns';
 
+const REWARD_THRESHOLDS: Record<string, number> = {
+  'credit-swipe': 1250,
+  'budget-busters': 1000,
+  'savings-sorter': 2000,
+};
+
 const REWARD_LIMIT = 2;
 const PACIFIC_TIMEZONE = 'America/Los_Angeles';
-const SCORE_THRESHOLD = 1000;
 const XP_AWARD = 50;
 const CENTS_AWARD = 10;
 
@@ -31,9 +36,9 @@ const awardGameRewardsFlow = ai.defineFlow(
   },
   async ({ userId, gameId, score }) => {
     
-    // Standardize reward logic for games that have a score threshold
-    if (score < SCORE_THRESHOLD) {
-        return { success: true, xpAwarded: 0, centsAwarded: 0, message: "Score did not meet threshold for reward." };
+    const scoreThreshold = REWARD_THRESHOLDS[gameId] ?? Infinity;
+    if (score < scoreThreshold) {
+        return { success: false, xpAwarded: 0, centsAwarded: 0, message: "Score did not meet threshold for reward." };
     }
     
     try {
@@ -62,7 +67,7 @@ const awardGameRewardsFlow = ai.defineFlow(
             const recentRewards = rewardHistory.filter(ts => isBefore(lastResetTime, toZonedTime(ts, PACIFIC_TIMEZONE)));
             
             if (recentRewards.length >= REWARD_LIMIT) {
-              return { success: true, xpAwarded: 0, centsAwarded: 0, message: 'Daily reward limit reached.' };
+              return { success: false, xpAwarded: 0, centsAwarded: 0, message: 'Daily reward limit reached.' };
             }
 
             // If we are here, we can award points.
@@ -73,7 +78,7 @@ const awardGameRewardsFlow = ai.defineFlow(
                 dailyRewardClaims: arrayUnion(Timestamp.now())
             });
 
-            return { success: true, xpAwarded: XP_AWARD, centsAwarded: CENTS_AWARD };
+            return { success: true, xpAwarded: XP_AWARD, centsAwarded: CENTS_AWARD, message: 'Reward claimed!' };
         });
 
         return result;

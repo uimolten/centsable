@@ -9,6 +9,7 @@ import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
+import { useToast } from '@/hooks/use-toast';
 
 import { applicantDeck, ApplicantProfile, REWARD_LIMIT } from '@/data/minigame-credit-swipe-data';
 import ApplicantCard from '@/components/minigames/credit-swipe/applicant-card';
@@ -98,6 +99,7 @@ const RewardStatus = () => {
 
 export default function CreditSwipeGame() {
     const { user, userData, refreshUserData, triggerLevelUp, triggerRewardAnimation } = useAuth();
+    const { toast } = useToast();
     const [gameState, setGameState] = useState<GameState>('start');
     const [deck, setDeck] = useState<ApplicantProfile[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -155,8 +157,10 @@ export default function CreditSwipeGame() {
            await saveGameSummary({ userId: user.uid, gameId: 'credit-swipe', summaryData });
            const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'credit-swipe', score });
            
-           if (rewardResult.xpAwarded > 0 || rewardResult.centsAwarded > 0) {
+           if (rewardResult.success) {
              triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+           } else {
+             toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
            }
            
            const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
@@ -171,7 +175,7 @@ export default function CreditSwipeGame() {
            }
         }
         await refreshUserData?.();
-    }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation]);
+    }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation, toast]);
     
     const nextCard = useCallback(() => {
         x.set(0); // Reset position for next card

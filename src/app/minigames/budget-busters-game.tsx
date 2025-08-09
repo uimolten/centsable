@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Hand, Target, Star, AlertTriangle, ShieldCheck, History, Meh, Frown, Timer } from 'lucide-react';
-import { gameConfig, REWARD_LIMIT, GameEvent } from '@/data/minigame-budget-busters-data';
+import { gameConfig, REWARD_LIMIT } from '@/data/minigame-budget-busters-data';
 import { LevelDisplay } from '@/components/minigames/level-display';
 import { Mascot } from '@/components/lesson/mascot';
 import { useAuth } from '@/hooks/use-auth';
@@ -190,7 +190,7 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
        await saveGameSummary({ userId, gameId: 'budget-busters', summaryData });
        const rewardResult = await awardGameRewards({ userId, gameId: 'budget-busters', score: finalScore });
        
-       if (rewardResult.xpAwarded > 0 || rewardResult.centsAwarded > 0) {
+       if (rewardResult.success) {
            triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
        }
        
