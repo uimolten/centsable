@@ -11,6 +11,11 @@ import { PiggyBank, Hand, Target, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
+import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
+import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
+import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
+import type { GameSummary } from '@/types/user';
+
 
 type GameState = 'start' | 'playing' | 'end';
 type ItemCategory = 'Need' | 'Want';
@@ -22,9 +27,10 @@ interface GameItem {
 }
 
 const GAME_DURATION = 30; // seconds
+const SCORE_THRESHOLD = 2000;
 
 export function SavingsSorterGame() {
-  const { user, refreshUserData } = useAuth();
+  const { user, userData, refreshUserData, triggerRewardAnimation, triggerLevelUp } = useAuth();
   const [gameState, setGameState] = useState<GameState>('start');
   const [items, setItems] = useState<GameItem[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -35,26 +41,54 @@ export function SavingsSorterGame() {
   const [highScore, setHighScore] = useState(0);
 
   useEffect(() => {
-    // Load high score from local storage on component mount
-    const savedHighScore = localStorage.getItem('savingsSorterHighScore');
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore, 10));
+    const gameData = userData?.gameSummaries?.['savings-sorter'];
+    if (gameData) {
+        setHighScore(gameData.bestAttempt?.score ?? 0);
     }
-  }, []);
+  }, [userData]);
 
-  const triggerQuestUpdate = async (isNewHighScore: boolean) => {
-    if (!user || !refreshUserData) return;
 
-    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+  const handleGameEnd = useCallback(async () => {
+    setGameState('end');
+    playIncorrectSound(); // Time's up sound
+
+    const isNewHighScore = score > highScore;
     if (isNewHighScore) {
-      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
+      setHighScore(score);
     }
-    
-    await Promise.all(updates);
-    await refreshUserData();
-  };
+
+    const summaryData: GameSummary = {
+        score: score,
+        isNewHighScore: isNewHighScore,
+        highScore: isNewHighScore ? score : highScore,
+    };
+
+    if (user?.uid) {
+       await saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
+       
+       const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
+       if (isNewHighScore) {
+            questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
+       }
+       await Promise.all(questUpdates);
+
+       if (score >= SCORE_THRESHOLD) {
+         const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score });
+         if (rewardResult.xpAwarded > 0 || rewardResult.centsAwarded > 0) {
+           triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+         }
+       }
+       
+       const xpResult = await refreshUserData?.();
+       if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+            triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
+       }
+    }
+  }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp]);
+
 
   const startGame = () => {
+    playClickSound();
     setItems(shuffle(savingsSorterItems));
     setCurrentItemIndex(0);
     setScore(0);
@@ -65,11 +99,14 @@ export function SavingsSorterGame() {
   const handleAnswer = (selectedCategory: ItemCategory) => {
     if (feedback) return; // Prevent multiple answers for the same item
 
+    playClickSound();
     const currentItem = items[currentItemIndex];
     if (currentItem.category === selectedCategory) {
+      playCorrectSound();
       setScore(prev => prev + 100);
       setFeedback('correct');
     } else {
+      playIncorrectSound();
       setScore(prev => Math.max(0, prev - 50));
       setFeedback('incorrect');
     }
@@ -90,13 +127,7 @@ export function SavingsSorterGame() {
     if (gameState !== 'playing') return;
 
     if (timeLeft <= 0) {
-      setGameState('end');
-      const isNewHighScore = score > highScore && score > 0;
-      if (isNewHighScore) {
-        setHighScore(score);
-        localStorage.setItem('savingsSorterHighScore', score.toString());
-      }
-      triggerQuestUpdate(isNewHighScore);
+      handleGameEnd();
       return;
     }
 
@@ -105,7 +136,7 @@ export function SavingsSorterGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, timeLeft, score, highScore]);
+  }, [gameState, timeLeft, score, highScore, handleGameEnd]);
   
   const currentItem = items[currentItemIndex];
 
