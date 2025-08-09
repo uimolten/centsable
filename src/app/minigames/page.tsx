@@ -36,7 +36,7 @@ export default function MinigamesPage() {
 
       <AnimatePresence>
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto"
           initial="hidden"
           animate="visible"
           variants={{
@@ -75,17 +75,17 @@ export default function MinigamesPage() {
                       <game.icon className="w-8 h-8" />
                     </div>
                     <div className="flex-grow">
-                      <CardTitle className={cn(!isUnlocked && "text-muted-foreground")}>{game.title}</CardTitle>
-                      <CardDescription className={cn(isUnlocked ? "text-muted-foreground" : "text-muted-foreground/80")}>
+                      <CardTitle className={cn("text-xl", !isUnlocked && "text-muted-foreground")}>{game.title}</CardTitle>
+                      <CardDescription className={cn("text-base", isUnlocked ? "text-muted-foreground" : "text-muted-foreground/80")}>
                         {game.description}
                       </CardDescription>
                     </div>
                   </CardHeader>
                   <CardContent className="flex-grow flex flex-col justify-end">
                     {isUnlocked ? (
-                       <Button asChild className="w-full shadow-lg">
+                       <Button asChild className="w-full shadow-lg text-lg">
                          <Link href={`/minigames/${game.id}`}>
-                           <Gamepad2 className="mr-2 h-4 w-4" />
+                           <Gamepad2 className="mr-2 h-5 w-5" />
                            Play Now
                          </Link>
                        </Button>

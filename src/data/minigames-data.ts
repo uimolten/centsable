@@ -1,5 +1,5 @@
 
-import { PiggyBank, PieChart, CreditCard, LineChart, Landmark, ShieldCheck, Briefcase, LucideIcon } from 'lucide-react';
+import { PiggyBank, PieChart, CreditCard, LucideIcon } from 'lucide-react';
 
 export interface Minigame {
   id: string;
@@ -30,26 +30,5 @@ export const minigames: Minigame[] = [
     description: 'Play as a loan officer and approve or deny applications. Swipe wisely!',
     icon: CreditCard,
     requiredUnitId: 'unit-3', // Unlocks after completing Credit unit
-  },
-  {
-    id: 'investment-voyage',
-    title: 'Investment Voyage',
-    description: 'Navigate the market, balance risk and reward, and grow your portfolio.',
-    icon: LineChart,
-    requiredUnitId: 'unit-4', // Unlocks after completing Investing unit
-  },
-  {
-    id: 'tax-dash',
-    title: 'Tax Dash',
-    description: 'Race against the clock to identify deductions and file your taxes correctly.',
-    icon: Landmark,
-    requiredUnitId: 'unit-5', // Unlocks after completing Taxes unit
-  },
-   {
-    id: 'retirement-rush',
-    title: 'Retirement Rush',
-    description: "Make smart choices to maximize your retirement savings for the long haul.",
-    icon: Briefcase,
-    requiredUnitId: 'unit-6', // Unlocks after completing Retirement Planning unit
   },
 ];
