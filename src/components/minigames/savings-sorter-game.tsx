@@ -7,11 +7,18 @@ import { shuffle } from 'lodash';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { savingsSorterItems } from '@/data/minigame-savings-sorter-data';
-import { PiggyBank, Hand, Target, Star } from 'lucide-react';
+import { PiggyBank, Hand, Target, Star, Timer, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 import { playClickSound, playCorrectSound, playIncorrectSound } from '@/lib/audio-utils';
+import { awardGameRewards } from '@/ai/flows/award-game-rewards-flow';
+import { saveGameSummary } from '@/ai/flows/save-game-summary-flow';
+import type { GameSummary } from '@/types/user';
+import { useToast } from '@/hooks/use-toast';
+import { REWARD_LIMIT } from '@/data/minigame-credit-swipe-data'; // Re-use from another game config
+import { toZonedTime } from 'date-fns-tz';
+import { intervalToDuration, formatDuration, isBefore, startOfDay, addDays, subDays } from 'date-fns';
 
 type GameState = 'start' | 'playing' | 'end';
 type ItemCategory = 'Need' | 'Want';
@@ -23,9 +30,71 @@ interface GameItem {
 }
 
 const GAME_DURATION = 30; // seconds
+const PACIFIC_TIMEZONE = 'America/Los_Angeles';
+
+
+const RewardStatus = () => {
+    const { userData } = useAuth();
+    const [cooldown, setCooldown] = useState('');
+    const [rewardsLeft, setRewardsLeft] = useState(REWARD_LIMIT);
+
+    useEffect(() => {
+        if (!userData) return;
+
+        const rewardHistory = (userData.dailyRewardClaims ?? []).map(t => t.toDate());
+        
+        const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
+        let lastResetTime = startOfDay(nowInPacific);
+        lastResetTime.setHours(5);
+
+        if (isBefore(nowInPacific, lastResetTime)) {
+            lastResetTime = subDays(lastResetTime, 1);
+        }
+        
+        const recentRewards = rewardHistory.filter(ts => isBefore(lastResetTime, toZonedTime(ts, PACIFIC_TIMEZONE)));
+        setRewardsLeft(REWARD_LIMIT - recentRewards.length);
+
+        if (recentRewards.length >= REWARD_LIMIT) {
+            let nextResetTime = startOfDay(nowInPacific);
+            nextResetTime.setHours(5);
+            if (isBefore(nextResetTime, nowInPacific) || nowInPacific.getTime() === nextResetTime.getTime()) {
+              nextResetTime = addDays(nextResetTime, 1);
+            }
+            
+            const updateCooldown = () => {
+                const zonedNow = toZonedTime(new Date(), PACIFIC_TIMEZONE);
+                if (isBefore(zonedNow, nextResetTime)) {
+                    const duration = intervalToDuration({ start: zonedNow, end: nextResetTime });
+                    setCooldown(formatDuration(duration, { format: ['hours', 'minutes', 'seconds'] }));
+                } else {
+                    setCooldown('');
+                    setRewardsLeft(REWARD_LIMIT);
+                    if (intervalId) clearInterval(intervalId);
+                }
+            };
+            
+            updateCooldown();
+            const intervalId = setInterval(updateCooldown, 1000);
+            return () => clearInterval(intervalId);
+        } else {
+            setCooldown('');
+        }
+    }, [userData]);
+
+    if (rewardsLeft > 0) {
+        return (
+            <div className="flex items-center gap-3 text-green-400"><ShieldCheck className="w-6 h-6" /><p><b>Rewards Active:</b> {rewardsLeft}/{REWARD_LIMIT} available</p></div>
+        );
+    }
+    
+    return (
+         <div className="flex items-center gap-3 text-yellow-400"><Timer className="w-6 h-6" /><p><b>Next Reward In:</b> {cooldown}</p></div>
+    );
+}
 
 export function SavingsSorterGame() {
-  const { user, refreshUserData } = useAuth();
+  const { user, userData, refreshUserData, triggerRewardAnimation, triggerLevelUp } = useAuth();
+  const { toast } = useToast();
   const [gameState, setGameState] = useState<GameState>('start');
   const [items, setItems] = useState<GameItem[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -36,24 +105,53 @@ export function SavingsSorterGame() {
   const [highScore, setHighScore] = useState(0);
 
   useEffect(() => {
-    // Load high score from local storage on component mount
-    const savedHighScore = localStorage.getItem('savingsSorterHighScore');
-    if (savedHighScore) {
-      setHighScore(parseInt(savedHighScore, 10));
+    const gameData = userData?.gameSummaries?.['savings-sorter'];
+    if (gameData) {
+        setHighScore(gameData.bestAttempt?.score ?? 0);
     }
-  }, []);
+  }, [userData]);
 
-  const triggerQuestUpdate = async (isNewHighScore: boolean) => {
-    if (!user || !refreshUserData) return;
 
-    const updates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round' })];
+  const handleGameEnd = useCallback(async () => {
+    setGameState('end');
+    playIncorrectSound(); // Time's up sound
+
+    const isNewHighScore = score > highScore;
     if (isNewHighScore) {
-      updates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score' }));
+      setHighScore(score);
     }
-    
-    await Promise.all(updates);
-    await refreshUserData();
-  };
+
+    const summaryData: GameSummary = {
+        score: score,
+        isNewHighScore: isNewHighScore,
+        highScore: isNewHighScore ? score : highScore,
+    };
+
+    if (user?.uid) {
+       await saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
+       
+       const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
+       if (isNewHighScore) {
+            questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
+       }
+       
+       const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score });
+       
+       if (rewardResult.success) {
+         triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+       } else {
+         toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
+       }
+       
+       await Promise.all(questUpdates);
+       
+       const xpResult = await refreshUserData?.();
+       if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+            triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
+       }
+    }
+  }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
+
 
   const startGame = () => {
     playClickSound();
@@ -95,14 +193,7 @@ export function SavingsSorterGame() {
     if (gameState !== 'playing') return;
 
     if (timeLeft <= 0) {
-      setGameState('end');
-      playIncorrectSound(); // Time's up sound
-      const isNewHighScore = score > highScore && score > 0;
-      if (isNewHighScore) {
-        setHighScore(score);
-        localStorage.setItem('savingsSorterHighScore', score.toString());
-      }
-      triggerQuestUpdate(isNewHighScore);
+      handleGameEnd();
       return;
     }
 
@@ -111,7 +202,7 @@ export function SavingsSorterGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, timeLeft, score, highScore]);
+  }, [gameState, timeLeft, score, highScore, handleGameEnd]);
   
   const currentItem = items[currentItemIndex];
 
@@ -129,6 +220,7 @@ export function SavingsSorterGame() {
              <div className="flex items-start gap-3"><Hand className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>How to Play:</b> An item will appear. Decide if it's a "Need" (essential) or a "Want" (nice to have) as fast as you can.</p></div>
              <div className="flex items-start gap-3"><Target className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>Goal:</b> Score as many points as possible before the timer runs out. Correct answers give +100 points, incorrect answers give -50.</p></div>
              <div className="flex items-start gap-3"><Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" /><p><b>High Score:</b> {highScore} points</p></div>
+             <RewardStatus />
           </div>
           <Button size="lg" className="w-full text-xl font-bold shadow-glow" onClick={startGame}>Start Game</Button>
         </CardContent>
