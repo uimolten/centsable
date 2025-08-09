@@ -84,7 +84,8 @@ export function LessonContainer({
   }
 
   const showFooter = currentStep?.type !== 'complete';
-  const showInstruction = currentStep?.type !== 'intro';
+  const showInstruction = !!currentStep && currentStep?.type !== 'intro';
+  const showSpeechBubble = !!currentStep;
 
   return (
     <div 
@@ -124,7 +125,7 @@ export function LessonContainer({
           </header>
 
           <main className="flex-grow flex flex-col items-center justify-start pt-4 md:pt-8 overflow-y-auto p-4 w-full space-y-4">
-            {showInstruction && (
+            {showSpeechBubble && (
               <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
                   <SpeechBubble text={instructionText} />
                   <Mascot isHappy={isCorrect} isSad={isCorrect === false} />

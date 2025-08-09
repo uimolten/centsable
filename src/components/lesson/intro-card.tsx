@@ -7,6 +7,9 @@ interface IntroCardProps {
 }
 
 export function IntroCard({ step }: IntroCardProps) {
+  // The introductory text is now rendered in the SpeechBubble component within LessonContainer.
+  // This component remains to ensure the structure is consistent and for any future visual elements
+  // specific to the intro step.
   return (
     <motion.div
       key="intro"
