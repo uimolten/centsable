@@ -19,6 +19,7 @@ import { Card } from './ui/card';
 import { LEVEL_THRESHOLDS } from '@/lib/level-config';
 import { Progress } from './ui/progress';
 import { formatCompactNumber } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 export function UserNav() {
   const { user, userData, signOut } = useAuth();
@@ -58,10 +59,19 @@ export function UserNav() {
             <Progress value={progressPercentage} className="h-2" />
         </div>
       </Card>
-      <Card id="cents-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20">
-        <Coins className="h-6 w-6 text-yellow-400" />
-        <span className="font-bold text-lg text-foreground">{formatCompactNumber(userData.cents)}</span>
-      </Card>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Card id="cents-display" className="flex items-center gap-2 p-2 bg-card/50 border-border/20 cursor-default">
+              <Coins className="h-6 w-6 text-yellow-400" />
+              <span className="font-bold text-lg text-foreground">{formatCompactNumber(userData.cents)}</span>
+            </Card>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{userData.cents.toLocaleString()} Cents</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
