@@ -122,41 +122,48 @@ export function SavingsSorterGame() {
     setGameState('end');
     playIncorrectSound(); // Time's up sound
 
-    const isNewHighScore = score > highScore;
-    if (isNewHighScore) {
-      setHighScore(score);
-    }
+    // Use a function for setHighScore to get the latest state
+    setHighScore(currentHighScore => {
+      const finalScore = score;
+      const isNewHighScore = finalScore > currentHighScore;
+      if (isNewHighScore) {
+        setHighScore(finalScore);
+      }
+      
+      const summaryData: GameSummary = {
+          score: finalScore,
+          isNewHighScore: isNewHighScore,
+          highScore: isNewHighScore ? finalScore : currentHighScore,
+      };
 
-    const summaryData: GameSummary = {
-        score: score,
-        isNewHighScore: isNewHighScore,
-        highScore: isNewHighScore ? score : highScore,
-    };
+      if (user?.uid) {
+         saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
+         
+         const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
+         if (isNewHighScore) {
+              questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
+         }
+         
+         awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score: finalScore }).then(rewardResult => {
+            if (rewardResult.success) {
+              triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
+            } else {
+              toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
+            }
+         });
+         
+         Promise.all(questUpdates).then(() => {
+            refreshUserData?.().then(xpResult => {
+                 if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
+                      triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
+                 }
+            });
+         });
+      }
+      return isNewHighScore ? finalScore : currentHighScore;
+    });
 
-    if (user?.uid) {
-       await saveGameSummary({ userId: user.uid, gameId: 'savings-sorter', summaryData });
-       
-       const questUpdates = [updateQuestProgress({ userId: user.uid, actionType: 'play_minigame_round'})];
-       if (isNewHighScore) {
-            questUpdates.push(updateQuestProgress({ userId: user.uid, actionType: 'beat_high_score'}));
-       }
-       
-       const rewardResult = await awardGameRewards({ userId: user.uid, gameId: 'savings-sorter', score });
-       
-       if (rewardResult.success) {
-         triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
-       } else {
-         toast({ variant: 'default', title: 'No Reward This Time', description: rewardResult.message });
-       }
-       
-       await Promise.all(questUpdates);
-       
-       const xpResult = await refreshUserData?.();
-       if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
-            triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
-       }
-    }
-  }, [score, highScore, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
+  }, [score, user, refreshUserData, triggerRewardAnimation, triggerLevelUp, toast]);
 
 
   const startGame = () => {
@@ -208,7 +215,7 @@ export function SavingsSorterGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameState, timeLeft, score, highScore, handleGameEnd]);
+  }, [gameState, timeLeft, handleGameEnd]);
   
   const currentItem = items[currentItemIndex];
 
