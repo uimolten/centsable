@@ -36,12 +36,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         visited.add(currentMainRoute);
         sessionStorage.setItem(visitedPagesKey, JSON.stringify(Array.from(visited)));
         
-        if (visited.size >= 3) {
-            updateQuestProgress({ userId: user.uid, actionType: 'visit_page' });
-            // Once the quest is triggered, we can clear the storage for the next session/day
-            // Or we can add a timestamp check here to only clear it daily
-            // For now, let's keep it simple and not clear it automatically
-        }
+        // This quest only requires incrementing, not checking size on client
+        updateQuestProgress({ userId: user.uid, actionType: 'visit_page' });
       }
     } catch (error) {
         console.error("Could not access session storage:", error);

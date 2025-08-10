@@ -392,9 +392,11 @@ export default function LessonPage() {
     playCorrectSound();
     setStreak(prev => prev + 1);
     if (!user || !refreshUserData) return;
-
+    
+    // Always update for generic step completion
     await updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' });
     
+    // Check if the current lesson is a quiz for the specific quiz quest
     const isQuiz = lesson?.title.toLowerCase().includes('quiz');
     if (isQuiz) {
         await updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
