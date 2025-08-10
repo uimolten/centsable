@@ -271,7 +271,6 @@ export default function LessonPage() {
 
   const handleLessonComplete = useCallback(async () => {
     if (!user || !lessonId || !lesson) {
-        // Fallback navigation if something is wrong
         router.push(`/learn`);
         return;
     }
@@ -281,7 +280,13 @@ export default function LessonPage() {
         const isQuiz = lesson.title.toLowerCase().includes('quiz');
         const lastStep = lesson.modules.slice(-1)[0].steps.slice(-1)[0] as CompleteStep;
 
-        const actionType = isPractice ? 'complete_practice_session' : isQuiz ? 'complete_unit' : undefined;
+        // Determine quest action type
+        let actionType: 'complete_practice_session' | 'complete_unit' | undefined;
+        if (isPractice) {
+            actionType = 'complete_practice_session';
+        } else if (isQuiz) {
+            actionType = 'complete_unit';
+        }
 
         // Calculate accuracy for bonus XP
         const accuracy = interactiveStepsCount > 0 ? 1 - (totalIncorrectAttempts / interactiveStepsCount) : 1;
@@ -303,7 +308,7 @@ export default function LessonPage() {
             
             const [xpResult] = await Promise.all([addXpPromise, questUpdatePromise]);
             
-            await refreshUserData?.(); // Refresh user data to get new XP/Cents
+            await refreshUserData?.();
 
             if(xpResult.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
                 triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
@@ -319,10 +324,7 @@ export default function LessonPage() {
         }
     }
     
-    // This now only happens after all the logic above
     router.push('/learn');
-
-
 }, [lessonId, router, user, refreshUserData, toast, interactiveStepsCount, totalIncorrectAttempts, lesson, initialCompletionState, triggerLevelUp]);
   
   const goToNextStep = useCallback(async () => {

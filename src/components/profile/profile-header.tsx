@@ -36,6 +36,7 @@ export function ProfileHeader({ user, onUpdateUser, xpInCurrentLevel, xpToNextLe
   }, [user.displayName]);
 
   const handleSave = async () => {
+    if (!user) return;
     if (displayName.trim().length < 3) {
       toast({
         variant: "destructive",
@@ -56,7 +57,8 @@ export function ProfileHeader({ user, onUpdateUser, xpInCurrentLevel, xpToNextLe
 
       if (result.success) {
         await onUpdateUser();
-        await updateQuestProgress({ userId: user.uid, actionType: 'update_profile' });
+        // This was missing before
+        await updateQuestProgress({ userId: user.uid, actionType: 'update_profile' }); 
         await refreshUserData?.();
         toast({ title: "Username updated successfully!" });
         setIsEditing(false);
