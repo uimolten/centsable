@@ -1,4 +1,3 @@
-
 "use client";
 
 import { AuthProvider } from '@/context/auth-provider';
@@ -23,7 +22,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user || typeof window === 'undefined') return;
 
-    const mainRoutes = new Set(['/learn', '/minigames', '/shop']);
+    const mainRoutes = new Set(['/learn', '/minigames', '/shop', '/profile']);
     const visitedPagesKey = `visited_pages_${user.uid}`;
     
     const triggerVisitQuest = async (route: string) => {
