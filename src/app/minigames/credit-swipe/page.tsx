@@ -181,7 +181,6 @@ export default function CreditSwipeGame() {
                 triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
            }
         }
-        await refreshUserData?.();
     }, [score, highScore, user, refreshUserData, triggerLevelUp, triggerRewardAnimation, toast]);
     
     const nextCard = useCallback(() => {

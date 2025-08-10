@@ -201,21 +201,17 @@ export function BudgetBustersGame({ userId }: { userId: string }) {
            triggerRewardAnimation({ xp: rewardResult.xpAwarded, cents: rewardResult.centsAwarded });
        }
        
+       const questPromises = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
+       if (newHighScoreAchieved) {
+         questPromises.push(updateQuestProgress({ userId: userId, actionType: 'beat_high_score' }));
+       }
+       await Promise.all(questPromises);
+
        const xpResult = await refreshUserData?.();
        if (xpResult?.leveledUp && xpResult.newLevel && xpResult.rewardCents) {
         triggerLevelUp({ newLevel: xpResult.newLevel, reward: xpResult.rewardCents });
        }
     }
-    
-    if (userId) {
-      const updates = [updateQuestProgress({ userId: userId, actionType: 'play_minigame_round' })];
-      if (newHighScoreAchieved) {
-        updates.push(updateQuestProgress({ userId: userId, actionType: 'beat_high_score' }));
-      }
-      await Promise.all(updates);
-    }
-
-    await refreshUserData?.();
 
   }, [highScore, userId, refreshUserData, triggerLevelUp, triggerRewardAnimation, viewingSummary]);
 

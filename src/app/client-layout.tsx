@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react';
 import { updateQuestProgress } from '@/ai/flows/update-quest-progress-flow';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { user, authLoading } = useAuth();
+  const { user, authLoading, refreshUserData } = useAuth();
   const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
 
@@ -26,6 +26,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     const mainRoutes = new Set(['/learn', '/minigames', '/profile']);
     const visitedPagesKey = `visited_pages_${user.uid}`;
     
+    const triggerVisitQuest = async (route: string) => {
+        await updateQuestProgress({ userId: user.uid, actionType: 'visit_page' });
+        await refreshUserData?.();
+    }
+
     try {
       const visitedRaw = sessionStorage.getItem(visitedPagesKey);
       const visited = visitedRaw ? new Set(JSON.parse(visitedRaw)) : new Set();
@@ -36,13 +41,12 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         visited.add(currentMainRoute);
         sessionStorage.setItem(visitedPagesKey, JSON.stringify(Array.from(visited)));
         
-        // This quest only requires incrementing, not checking size on client
-        updateQuestProgress({ userId: user.uid, actionType: 'visit_page' });
+        triggerVisitQuest(currentMainRoute);
       }
     } catch (error) {
         console.error("Could not access session storage:", error);
     }
-  }, [pathname, user]);
+  }, [pathname, user, refreshUserData]);
 
   const isAuthPage = pathname.startsWith('/auth');
   const isIndividualLessonPage = pathname.startsWith('/learn/') && pathname.split('/').length > 2;

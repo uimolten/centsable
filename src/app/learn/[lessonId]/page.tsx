@@ -220,7 +220,9 @@ export default function LessonPage() {
     const loadedLesson = getLessonData(lessonId);
     if (loadedLesson) {
       if (user && refreshUserData && initialCompletionState === false) {
-        updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' });
+        updateQuestProgress({ userId: user.uid, actionType: 'start_new_lesson' }).then(() => {
+            refreshUserData?.();
+        });
       }
       setLesson(loadedLesson);
       const allSteps = loadedLesson.modules.reduce((acc, module) => acc + module.steps.length, 0);
@@ -395,14 +397,20 @@ export default function LessonPage() {
     setStreak(prev => prev + 1);
     if (!user || !refreshUserData) return;
     
+    const questPromises = [];
+    
     // Always update for generic step completion
-    await updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' });
+    questPromises.push(updateQuestProgress({ userId: user.uid, actionType: 'complete_lesson_step' }));
     
     // Check if the current lesson is a quiz for the specific quiz quest
     const isQuiz = lesson?.title.toLowerCase().includes('quiz');
     if (isQuiz) {
-        await updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' });
+        questPromises.push(updateQuestProgress({ userId: user.uid, actionType: 'complete_quiz_question' }));
     }
+
+    await Promise.all(questPromises);
+    await refreshUserData();
+
   }, [user, refreshUserData, lesson?.title]);
 
   const handleCheck = useCallback(() => {
@@ -456,7 +464,7 @@ export default function LessonPage() {
     if (currentStep?.type === 'goal-builder') {
         const step = currentStep as GoalBuilderStep;
         if (user && refreshUserData && step.storageKey === 'item') { // Assume goal creation quest updates on first step
-            updateQuestProgress({ userId: user.uid, actionType: 'create_goal' });
+            updateQuestProgress({ userId: user.uid, actionType: 'create_goal' }).then(() => refreshUserData());
         }
         setGoalData(prev => ({...prev, [step.storageKey]: userAnswers[0]}));
         goToNextStep();
