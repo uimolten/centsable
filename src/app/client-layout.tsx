@@ -23,7 +23,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user || typeof window === 'undefined') return;
 
-    const mainRoutes = new Set(['/learn', '/minigames', '/shop', '/profile']);
+    const mainRoutes = new Set(['/', '/learn', '/minigames', '/shop', '/profile']);
     const visitedPagesKey = `visited_pages_${user.uid}`;
     
     const triggerVisitQuest = async (route: string) => {
@@ -35,7 +35,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       const visitedRaw = sessionStorage.getItem(visitedPagesKey);
       const visited = visitedRaw ? new Set(JSON.parse(visitedRaw)) : new Set();
       
-      const currentMainRoute = Array.from(mainRoutes).find(route => pathname.startsWith(route));
+      const currentMainRoute = pathname === '/' ? '/' : Array.from(mainRoutes).find(route => route !== '/' && pathname.startsWith(route));
 
       if (currentMainRoute && !visited.has(currentMainRoute)) {
         visited.add(currentMainRoute);
