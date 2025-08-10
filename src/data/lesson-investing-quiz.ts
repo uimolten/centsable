@@ -20,6 +20,7 @@ export const lessonInvestingQuiz: Lesson = {
             { id: 'opt1', text: 'Lots of money' },
             { id: 'opt2', text: 'Lots of time' },
             { id: 'opt3', text: 'Lots of experience' },
+            { id: 'opt4', text: 'A higher risk tolerance' },
           ],
           correctAnswer: 'opt2',
         },
