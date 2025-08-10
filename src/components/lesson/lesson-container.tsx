@@ -5,14 +5,26 @@
 import { useRouter } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Check, X, Heart, Flame, ChevronLeft } from 'lucide-react';
+import { Check, X, Heart, Flame, ChevronLeft, AlertTriangle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Step } from '@/types/lesson';
 import { Mascot } from './mascot';
 import { SpeechBubble } from './speech-bubble';
 import { AnswerFeedback } from './answer-feedback';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 interface LessonContainerProps {
   children: React.ReactNode;
@@ -48,6 +60,7 @@ export function LessonContainer({
   isSortIncomplete,
 }: LessonContainerProps) {
   const router = useRouter();
+  const [isExitAlertOpen, setIsExitAlertOpen] = useState(false);
 
   const getButtonText = () => {
     if (!currentStep) return "Continue";
@@ -99,9 +112,35 @@ export function LessonContainer({
         <div className="relative z-10 flex flex-col h-full">
           <header className="flex-shrink-0 p-4">
             <div className="container mx-auto flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => router.push('/learn')}>
-                <X className="h-7 w-7" />
-              </Button>
+               <AlertDialog open={isExitAlertOpen} onOpenChange={setIsExitAlertOpen}>
+                <AlertDialogTrigger asChild>
+                   <Button variant="ghost" size="icon">
+                    <X className="h-7 w-7" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <div className="flex justify-center mb-2">
+                        <div className="w-16 h-16 rounded-full bg-destructive/20 flex items-center justify-center">
+                            <AlertTriangle className="w-8 h-8 text-destructive" />
+                        </div>
+                    </div>
+                    <AlertDialogTitle className="text-center">Are you sure you want to exit?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-center">
+                      Your progress in this session will not be saved if you leave now.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className="flex-col-reverse sm:flex-row gap-2">
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction 
+                        className="bg-destructive hover:bg-destructive/90" 
+                        onClick={() => router.push('/learn')}>
+                        Exit
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
               <div className="relative flex-grow h-4 rounded-full bg-muted">
                  <div className="absolute inset-0 h-full w-full overflow-hidden rounded-full">
                   <div
