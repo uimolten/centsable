@@ -23,7 +23,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user || typeof window === 'undefined') return;
 
-    const mainRoutes = new Set(['/learn', '/minigames', '/profile']);
+    const mainRoutes = new Set(['/learn', '/minigames', '/profile', '/shop']);
     const visitedPagesKey = `visited_pages_${user.uid}`;
     
     const triggerVisitQuest = async (route: string) => {
