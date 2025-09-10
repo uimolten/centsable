@@ -2,6 +2,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,22 +26,28 @@ export function UserNav() {
   const { user, userData, signOut } = useAuth();
   const isAdmin = userData?.role === 'admin';
 
+  const levelInfo = useMemo(() => {
+    if (!userData) return { xpInCurrentLevel: 0, xpToNextLevel: 1, progressPercentage: 0 };
+    
+    const currentLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level);
+    const nextLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level + 1);
+    
+    const xpForCurrentLevel = currentLevelThreshold?.totalXPNeeded ?? 0;
+    const xpForNextLevel = nextLevelThreshold?.totalXPNeeded ?? userData.xp;
+    
+    const xpInCurrentLevel = userData.xp - xpForCurrentLevel;
+    const xpToNextLevel = xpForNextLevel - xpForCurrentLevel;
+
+    const progressPercentage = xpToNextLevel > 0 ? (xpInCurrentLevel / xpToNextLevel) * 100 : 100;
+    
+    return { xpInCurrentLevel, xpToNextLevel, progressPercentage };
+  }, [userData?.xp, userData?.level]);
+
   if (!user || !userData) return null;
 
   const handleSignOut = () => {
     signOut();
   }
-  
-  const currentLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level);
-  const nextLevelThreshold = LEVEL_THRESHOLDS.find(t => t.level === userData.level + 1);
-  
-  const xpForCurrentLevel = currentLevelThreshold?.totalXPNeeded ?? 0;
-  const xpForNextLevel = nextLevelThreshold?.totalXPNeeded ?? userData.xp;
-  
-  const xpInCurrentLevel = userData.xp - xpForCurrentLevel;
-  const xpToNextLevel = xpForNextLevel - xpForCurrentLevel;
-
-  const progressPercentage = xpToNextLevel > 0 ? (xpInCurrentLevel / xpToNextLevel) * 100 : 100;
 
   return (
     <div className="flex items-center gap-4">
@@ -54,9 +61,9 @@ export function UserNav() {
         <div className="flex flex-col w-full">
             <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-bold text-foreground">Level {userData.level}</span>
-                <span className="text-xs text-muted-foreground">{xpInCurrentLevel} / {xpToNextLevel}</span>
+                <span className="text-xs text-muted-foreground">{levelInfo.xpInCurrentLevel} / {levelInfo.xpToNextLevel}</span>
             </div>
-            <Progress value={progressPercentage} className="h-2" />
+            <Progress value={levelInfo.progressPercentage} className="h-2" />
         </div>
       </Card>
       <TooltipProvider>
