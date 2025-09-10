@@ -38,7 +38,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [internalUserData, setInternalUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(false); // For subsequent data refreshes
   const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
   const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!user) {
         setUser(null);
-        setInternalUserData(null);
+        setUserData(null);
         setAuthLoading(false);
         setLoading(false);
         return null;
@@ -120,20 +120,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const createdDoc = await getDoc(userDocRef);
             fetchedData = { uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], dailyRewardClaims: [], gameSummaries: {} };
         }
-        setInternalUserData(fetchedData);
+        setUserData(fetchedData);
         return fetchedData;
     } catch (error) {
         console.error("Error fetching user data:", error);
-        setInternalUserData(null);
+        setUserData(null);
         return null;
     } finally {
         setAuthLoading(false);
         setLoading(false);
     }
   }, []);
-
-  const userData = useMemo(() => internalUserData, [internalUserData]);
-
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -145,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await firebaseSignOut(auth);
     setUser(null);
-    setInternalUserData(null);
+    setUserData(null);
   };
 
   const refreshUserData = useCallback(async (): Promise<UserData | null> => {
@@ -157,13 +154,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const isAdmin = userData?.role === 'admin';
 
-  const triggerLevelUp = (data: LevelUpData) => {
+  const triggerLevelUp = useCallback((data: LevelUpData) => {
     setLevelUpData(data);
-  };
+  }, []);
 
-  const closeLevelUpModal = () => {
+  const closeLevelUpModal = useCallback(() => {
     setLevelUpData(null);
-  };
+  }, []);
 
   const triggerRewardAnimation = useCallback((data: RewardAnimationData) => {
     setRewardAnimationData(data);
@@ -173,8 +170,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, 4000);
   }, []);
 
+  const value = useMemo(() => ({
+    user,
+    userData,
+    loading,
+    authLoading,
+    signOut,
+    refreshUserData,
+    isAdmin,
+    levelUpData,
+    triggerLevelUp,
+    closeLevelUpModal,
+    rewardAnimationData,
+    triggerRewardAnimation
+  }), [user, userData, loading, authLoading, refreshUserData, isAdmin, levelUpData, triggerLevelUp, closeLevelUpModal, rewardAnimationData, triggerRewardAnimation]);
+
   return (
-    <AuthContext.Provider value={{ user, userData, loading, authLoading, isAdmin, signOut, refreshUserData, levelUpData, triggerLevelUp, closeLevelUpModal, rewardAnimationData, triggerRewardAnimation }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

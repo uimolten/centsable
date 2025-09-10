@@ -22,7 +22,7 @@ import { UserData } from '@/types/user';
 
 export default function LearnPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth(); // Use authLoading for initial check
+  const { user, authLoading } = useAuth();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
@@ -30,7 +30,10 @@ export default function LearnPage() {
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
+  console.log("Learn page rendered. User is:", user ? user.uid : "null");
+
   useEffect(() => {
+    console.log("%cuseEffect is running because the user object changed.", "color: lightgreen; font-weight: bold;");
     if (!user) {
       setIsLoading(false);
       setCompletedLessons([]);
