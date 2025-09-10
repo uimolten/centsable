@@ -15,19 +15,51 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetDescri
 import { Target } from 'lucide-react';
 import { LearningPathway } from '@/components/learn/learning-pathway';
 import { ActivityDetails } from '@/components/learn/activity-details';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { UserData } from '@/types/user';
 
 
 export default function LearnPage() {
   const router = useRouter();
-  const { user, userData, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth(); // Use authLoading for initial check
   const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
+  useEffect(() => {
+    if (!user) {
+      setIsLoading(false);
+      setCompletedLessons([]);
+      return;
+    }
+  
+    setIsLoading(true);
+  
+    const userDocRef = doc(db, 'users', user.uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const userData = docSnap.data() as UserData;
+        setCompletedLessons(userData.completedLessons || []);
+      } else {
+        console.log("No user progress document found!");
+        setCompletedLessons([]);
+      }
+      setIsLoading(false);
+    }, (error) => {
+      console.error("Error fetching user data:", error);
+      setIsLoading(false);
+    });
+  
+    return () => unsubscribe();
+  }, [user]);
+
 
   const units = useMemo(() => {
-    if (!userData && !DEV_MODE_UNLOCK_ALL) {
+    if ((!user || completedLessons.length === 0) && !DEV_MODE_UNLOCK_ALL) {
       return rawUnitsData.map(unit => ({
         ...unit,
         activities: unit.activities.map(act => ({ ...act, state: 'locked' as ActivityState }))
@@ -40,13 +72,13 @@ export default function LearnPage() {
       if (unitIndex > 0) {
         const previousUnit = rawUnitsData[unitIndex - 1];
         const completedLessonsForPrevUnit = previousUnit.activities
-          .filter(act => userData?.completedLessons?.includes(act.id))
+          .filter(act => completedLessons.includes(act.id))
           .length;
         isPreviousUnitCompleted = completedLessonsForPrevUnit === previousUnit.activities.length;
       }
 
       const activities = unit.activities.map(activity => {
-        const isCompleted = userData?.completedLessons?.includes(activity.id) ?? false;
+        const isCompleted = completedLessons.includes(activity.id);
         let state: ActivityState = 'locked';
 
         if (DEV_MODE_UNLOCK_ALL) {
@@ -56,7 +88,7 @@ export default function LearnPage() {
             state = 'completed';
           } else if (!isFirstActiveSet && isPreviousUnitCompleted) {
              const previousActivityIndex = unit.activities.findIndex(a => a.id === activity.id) - 1;
-             if(previousActivityIndex < 0 || userData?.completedLessons?.includes(unit.activities[previousActivityIndex].id)) {
+             if(previousActivityIndex < 0 || completedLessons.includes(unit.activities[previousActivityIndex].id)) {
                 state = 'active';
                 isFirstActiveSet = true;
              }
@@ -69,7 +101,7 @@ export default function LearnPage() {
     });
 
     return processedUnits;
-  }, [userData]);
+  }, [completedLessons, user]);
 
   const selectedUnit = useMemo(() => {
     if (!selectedActivity) return undefined;
@@ -104,7 +136,7 @@ export default function LearnPage() {
     setSelectedActivity(null);
   };
 
-  if (loading) {
+  if (authLoading || isLoading) {
     return (
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_6fr_3fr] gap-x-8 px-4 md:px-8 py-8">
             <aside className="hidden lg:block">
