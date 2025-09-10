@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs, Timestamp, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -38,7 +38,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [internalUserData, setInternalUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(false); // For subsequent data refreshes
   const [authLoading, setAuthLoading] = useState(true); // For the initial auth state check
   const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!user) {
         setUser(null);
-        setUserData(null);
+        setInternalUserData(null);
         setAuthLoading(false);
         setLoading(false);
         return null;
@@ -120,17 +120,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const createdDoc = await getDoc(userDocRef);
             fetchedData = { uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], dailyRewardClaims: [], gameSummaries: {} };
         }
-        setUserData(fetchedData);
+        setInternalUserData(fetchedData);
         return fetchedData;
     } catch (error) {
         console.error("Error fetching user data:", error);
-        setUserData(null);
+        setInternalUserData(null);
         return null;
     } finally {
         setAuthLoading(false);
         setLoading(false);
     }
   }, []);
+
+  const userData = useMemo(() => internalUserData, [internalUserData]);
 
 
   useEffect(() => {
@@ -143,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await firebaseSignOut(auth);
     setUser(null);
-    setUserData(null);
+    setInternalUserData(null);
   };
 
   const refreshUserData = useCallback(async (): Promise<UserData | null> => {
