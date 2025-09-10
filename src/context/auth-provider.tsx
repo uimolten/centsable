@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
@@ -44,25 +43,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
   const [rewardAnimationData, setRewardAnimationData] = useState<RewardAnimationData | null>(null);
 
-  const fetchUserData = useCallback(async (user: User | null, isInitialLoad: boolean = false): Promise<UserData | null> => {
-    if (isInitialLoad) {
-      setAuthLoading(true);
-    } else {
-      setLoading(true);
-    }
-
-    if (!user) {
-        setUser(null);
+  const fetchUserData = useCallback(async (currentUser: User | null): Promise<UserData | null> => {
+    if (!currentUser) {
         setUserData(null);
-        setAuthLoading(false);
-        setLoading(false);
         return null;
     }
     
-    setUser(user);
     try {
-        const userDocRef = doc(db, 'users', user.uid);
-        const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        const questsQuery = query(collection(db, 'users', currentUser.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
         
         const [userDoc, questsSnapshot] = await Promise.all([
           getDoc(userDocRef),
@@ -75,13 +64,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (userDoc.exists()) {
             const data = userDoc.data();
-            // Recalculate level on client to ensure it's always in sync with XP
             const calculatedLevel = getLevelFromXP(data.xp ?? 0);
              fetchedData = {
-              uid: user.uid,
+              uid: currentUser.uid,
               email: data.email,
-              displayName: data.displayName || user.displayName || 'New Adventurer',
-              photoURL: data.photoURL || user.photoURL,
+              displayName: data.displayName || currentUser.displayName || 'New Adventurer',
+              photoURL: data.photoURL || currentUser.photoURL,
               role: data.role || 'user',
               xp: data.xp ?? 0,
               level: calculatedLevel,
@@ -98,11 +86,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               gameSummaries: data.gameSummaries ?? {},
             };
         } else {
-            // If the user exists in Auth but not Firestore, create their record
             const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests' | 'gameSummaries' | 'dailyRewardClaims'> = {
-                email: user.email!,
-                displayName: user.displayName || 'New Adventurer',
-                photoURL: user.photoURL,
+                email: currentUser.email!,
+                displayName: currentUser.displayName || 'New Adventurer',
+                photoURL: currentUser.photoURL,
                 role: 'user',
                 xp: 0,
                 level: 1,
@@ -118,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: serverTimestamp(),
             });
             const createdDoc = await getDoc(userDocRef);
-            fetchedData = { uid: user.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], dailyRewardClaims: [], gameSummaries: {} };
+            fetchedData = { uid: currentUser.uid, ...createdDoc.data() as Omit<UserData, 'uid' | 'dailyQuests'>, dailyQuests: [], dailyRewardClaims: [], gameSummaries: {} };
         }
         setUserData(fetchedData);
         return fetchedData;
@@ -126,15 +113,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Error fetching user data:", error);
         setUserData(null);
         return null;
-    } finally {
-        setAuthLoading(false);
-        setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      fetchUserData(user, true);
+    setAuthLoading(true);
+    const unsubscribe = onAuthStateChanged(auth, async (newUser) => {
+      setUser(newUser);
+      await fetchUserData(newUser);
+      setAuthLoading(false);
     });
     return () => unsubscribe();
   }, [fetchUserData]);
@@ -146,13 +133,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshUserData = useCallback(async (): Promise<UserData | null> => {
-    if (user) {
-      return await fetchUserData(user, false);
-    }
-    return null;
+    setLoading(true);
+    const refreshedData = await fetchUserData(user);
+    setLoading(false);
+    return refreshedData;
   }, [user, fetchUserData]);
   
-  const isAdmin = userData?.role === 'admin';
+  const isAdmin = useMemo(() => userData?.role === 'admin', [userData]);
 
   const triggerLevelUp = useCallback((data: LevelUpData) => {
     setLevelUpData(data);
@@ -164,7 +151,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const triggerRewardAnimation = useCallback((data: RewardAnimationData) => {
     setRewardAnimationData(data);
-    // Reset after a delay to allow the animation component to unmount
     setTimeout(() => {
         setRewardAnimationData(null);
     }, 4000);
@@ -183,7 +169,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     closeLevelUpModal,
     rewardAnimationData,
     triggerRewardAnimation
-  }), [user, userData, loading, authLoading, refreshUserData, isAdmin, levelUpData, triggerLevelUp, closeLevelUpModal, rewardAnimationData, triggerRewardAnimation]);
+  }), [
+    user, 
+    userData, 
+    loading, 
+    authLoading, 
+    refreshUserData, 
+    isAdmin, 
+    levelUpData, 
+    triggerLevelUp, 
+    closeLevelUpModal, 
+    rewardAnimationData, 
+    triggerRewardAnimation
+  ]);
 
   return (
     <AuthContext.Provider value={value}>
