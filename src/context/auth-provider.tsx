@@ -3,7 +3,7 @@
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { doc, getDoc, serverTimestamp, setDoc, collection, getDocs, Timestamp, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { UserData } from '@/types/user';
 import { Quest } from '@/types/quests';
@@ -23,7 +23,7 @@ interface AuthContextType {
   user: User | null;
   userData: UserData | null;
   loading: boolean;
-  authLoading: boolean; // For initial auth check
+  authLoading: boolean; 
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<UserData | null>;
   isAdmin: boolean;
@@ -40,7 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [authLoading, setAuthLoading] = useState(true);
   const [levelUpData, setLevelUpData] = useState<LevelUpData | null>(null);
   const [rewardAnimationData, setRewardAnimationData] = useState<RewardAnimationData | null>(null);
 
@@ -49,7 +48,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(currentUser);
       if (!currentUser) {
         setUserData(null);
-        setAuthLoading(false);
         setLoading(false);
       }
     });
@@ -60,13 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user?.uid) {
       setLoading(true);
       const userDocRef = doc(db, 'users', user.uid);
-      
+
       const unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
-          const calculatedLevel = getLevelFromXP(data.xp ?? 0);
+           const calculatedLevel = getLevelFromXP(data.xp ?? 0);
           setUserData(prevData => ({
-            ...prevData, // Keep existing quest data if any
+            ...prevData,
             uid: docSnap.id,
             email: data.email,
             displayName: data.displayName || 'New Adventurer',
@@ -86,48 +84,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             gameSummaries: data.gameSummaries ?? {},
           }));
         } else {
-            // This might run briefly during account creation
-            setDoc(userDocRef, {
-                email: user.email,
-                displayName: user.displayName || 'New Adventurer',
-                photoURL: user.photoURL,
-                role: 'user',
-                createdAt: serverTimestamp(),
-                xp: 0,
-                cents: 0,
-                streak: 0,
-                lessonsCompleted: 0,
-                achievements: [],
-                completedLessons: [],
-            });
+          setUserData(null);
         }
-        // Don't set loading to false here, wait for quests too
+        // Don't set loading false until quests are also loaded
       }, (error) => {
         console.error("User document onSnapshot error:", error);
         setLoading(false);
-        setAuthLoading(false);
       });
-
+      
       const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
       const unsubscribeQuests = onSnapshot(questsQuery, (querySnapshot) => {
         const quests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
-        setUserData(prevData => ({
-            ...prevData,
-            dailyQuests: quests,
-        } as UserData)); // Cast as UserData to assure TS
-        setLoading(false); // Now we have profile and quests
-        setAuthLoading(false);
+        setUserData(prevData => {
+            // Ensure prevData is not null before spreading
+            if (!prevData) return null;
+            return {
+                ...prevData,
+                dailyQuests: quests,
+            }
+        });
+        setLoading(false); // Quests and profile are loaded
       }, (error) => {
         console.error("Quests subcollection onSnapshot error:", error);
-        setLoading(false); // Still stop loading on error
-        setAuthLoading(false);
+        setLoading(false);
       });
-
 
       return () => {
         unsubscribeProfile();
         unsubscribeQuests();
       };
+    } else {
+        // Handle user logout
+        setUserData(null);
+        setLoading(false);
     }
   }, [user]);
 
@@ -137,51 +126,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const refreshUserData = useCallback(async (): Promise<UserData | null> => {
      if (!user) return null;
-     setLoading(true);
-     const userDocRef = doc(db, 'users', user.uid);
-     const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
-     
-     try {
-       const [userDoc, questsSnapshot] = await Promise.all([
-         getDoc(userDocRef),
-         getDocs(questsQuery),
-       ]);
-       
-       if (userDoc.exists()) {
-           const data = userDoc.data();
-           const quests = questsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
-           const calculatedLevel = getLevelFromXP(data.xp ?? 0);
-           const refreshedData: UserData = {
-              uid: user.uid,
-              email: data.email,
-              displayName: data.displayName || 'New Adventurer',
-              photoURL: data.photoURL,
-              role: data.role || 'user',
-              xp: data.xp ?? 0,
-              level: calculatedLevel,
-              cents: data.cents ?? 0,
-              streak: data.streak ?? 0,
-              lessonsCompleted: data.lessonsCompleted ?? 0,
-              achievements: data.achievements ?? [],
-              completedLessons: data.completedLessons ?? [],
-              lastQuestGenerated: data.lastQuestGenerated,
-              createdAt: data.createdAt,
-              dailyQuests: quests,
-              dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
-              dailyRewardClaims: data.dailyRewardClaims ?? [],
-              gameSummaries: data.gameSummaries ?? {},
-           };
-           setUserData(refreshedData);
-           setLoading(false);
-           return refreshedData;
-       }
-       return null;
-     } catch (error) {
-       console.error("Error refreshing user data:", error);
-       setLoading(false);
-       return null;
-     }
-  }, [user]);
+     // The onSnapshot listeners will handle refreshing, so this can be a no-op
+     // or can be used to trigger a one-time fetch if really needed.
+     // For now, we rely on real-time updates.
+     return userData;
+  }, [user, userData]);
 
   const isAdmin = useMemo(() => userData?.role === 'admin', [userData]);
 
@@ -204,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     userData,
     loading,
-    authLoading,
+    authLoading: loading, // Use the same loading state
     signOut,
     refreshUserData,
     isAdmin,
@@ -217,7 +166,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user, 
     userData, 
     loading, 
-    authLoading, 
     isAdmin, 
     levelUpData, 
     rewardAnimationData, 

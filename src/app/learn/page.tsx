@@ -15,54 +15,19 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetDescri
 import { Target } from 'lucide-react';
 import { LearningPathway } from '@/components/learn/learning-pathway';
 import { ActivityDetails } from '@/components/learn/activity-details';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { UserData } from '@/types/user';
-
 
 export default function LearnPage() {
   const router = useRouter();
-  const { user, authLoading } = useAuth();
+  const { userData, loading } = useAuth(); // Use the centralized hook
   const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  console.log("Learn page rendered. User is:", user ? user.uid : "null");
 
-  useEffect(() => {
-    console.log("%cuseEffect is running because the user object changed.", "color: lightgreen; font-weight: bold;");
-    if (!user) {
-      setIsLoading(false);
-      setCompletedLessons([]);
-      return;
-    }
-  
-    setIsLoading(true);
-  
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const userData = docSnap.data() as UserData;
-        setCompletedLessons(userData.completedLessons || []);
-      } else {
-        console.log("No user progress document found!");
-        setCompletedLessons([]);
-      }
-      setIsLoading(false);
-    }, (error) => {
-      console.error("Error fetching user data:", error);
-      setIsLoading(false);
-    });
-  
-    return () => unsubscribe();
-  }, [user]);
-
+  const completedLessons = useMemo(() => userData?.completedLessons ?? [], [userData]);
 
   const units = useMemo(() => {
-    if ((!user || completedLessons.length === 0) && !DEV_MODE_UNLOCK_ALL) {
+    if (!userData && !DEV_MODE_UNLOCK_ALL) {
       return rawUnitsData.map(unit => ({
         ...unit,
         activities: unit.activities.map(act => ({ ...act, state: 'locked' as ActivityState }))
@@ -104,7 +69,7 @@ export default function LearnPage() {
     });
 
     return processedUnits;
-  }, [completedLessons, user]);
+  }, [completedLessons, userData]);
 
   const selectedUnit = useMemo(() => {
     if (!selectedActivity) return undefined;
@@ -125,7 +90,6 @@ export default function LearnPage() {
         return;
     }
     
-    // If the same activity is clicked, deselect it. Otherwise, select the new one.
     setSelectedActivity(prev => (prev?.id === activity.id ? null : activity));
   };
 
@@ -139,7 +103,7 @@ export default function LearnPage() {
     setSelectedActivity(null);
   };
 
-  if (authLoading || isLoading) {
+  if (loading) {
     return (
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_6fr_3fr] gap-x-8 px-4 md:px-8 py-8">
             <aside className="hidden lg:block">
@@ -169,14 +133,12 @@ export default function LearnPage() {
   return (
     <>
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_6fr_3fr] gap-x-8 px-4 md:px-8 py-8">
-        {/* --- Left Sidebar (Desktop) --- */}
         <aside className="hidden lg:block">
             <div className="sticky top-24">
                 <LeftSidebar />
             </div>
         </aside>
 
-        {/* Main Lessons Column */}
         <main className="relative">
             <div className="max-w-xl mx-auto">
                 <LearningPathway 
@@ -187,7 +149,6 @@ export default function LearnPage() {
             </div>
         </main>
         
-        {/* --- Right Sidebar (Desktop) --- */}
         <aside className="hidden lg:block">
              <div className="sticky top-24">
                 {rightSidebarContent}
@@ -195,7 +156,6 @@ export default function LearnPage() {
         </aside>
       </div>
       
-      {/* Mobile Quest Button */}
       {!isDesktop && (
         <Sheet>
             <SheetTrigger asChild>
@@ -210,7 +170,6 @@ export default function LearnPage() {
         </Sheet>
       )}
 
-      {/* Mobile/Tablet Activity Details Sheet */}
       {!isDesktop && (
         <Sheet open={isSheetOpen} onOpenChange={(isOpen) => {
           setIsSheetOpen(isOpen);
