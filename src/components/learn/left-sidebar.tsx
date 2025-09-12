@@ -1,19 +1,15 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '@/hooks/use-auth';
-import { Quest } from '@/types/quests';
+import { useDailyQuests } from '@/hooks/use-daily-quests';
+import type { Quest } from '@/types/quests';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Gem, Coins, CheckCircle2, Loader2, X } from 'lucide-react';
+import { Gem, Coins, CheckCircle2, X } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from '../ui/skeleton';
 import { QuestIcon } from './quest-icon';
-import { generateDailyQuests } from '@/ai/flows/generate-daily-quests-flow';
-import { isSameDay, isBefore } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
 
 interface QuestItemProps {
   quest: Quest;
@@ -64,55 +60,10 @@ interface LeftSidebarProps {
 }
 
 export function LeftSidebar({ isSheet = false }: LeftSidebarProps) {
-  const { user, userData, refreshUserData } = useAuth();
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  const quests = useMemo(() => userData?.dailyQuests ?? [], [userData?.dailyQuests]);
-
-  useEffect(() => {
-    const generateQuestsIfNeeded = async () => {
-      if (!user || !userData || isGenerating) return;
-
-      const pacificTimeZone = 'America/Los_Angeles';
-      const nowInPacific = toZonedTime(new Date(), pacificTimeZone);
-      
-      const lastGeneratedDate = userData.lastQuestGenerated 
-        ? toZonedTime(userData.lastQuestGenerated.toDate(), pacificTimeZone)
-        : null;
-
-      let needsNewQuests = false;
-      if (!lastGeneratedDate) {
-        needsNewQuests = true; // First time ever.
-      } else {
-        const fiveAmTodayPacific = new Date(nowInPacific);
-        fiveAmTodayPacific.setHours(5, 0, 0, 0);
-
-        const lastGeneratedIsBeforeTodayFiveAm = isBefore(lastGeneratedDate, fiveAmTodayPacific);
-        const todayIsAfterFiveAm = isBefore(fiveAmTodayPacific, nowInPacific);
-
-        if (!isSameDay(nowInPacific, lastGeneratedDate) && lastGeneratedIsBeforeTodayFiveAm) {
-           needsNewQuests = true;
-        }
-      }
-
-      if (needsNewQuests) {
-        setIsGenerating(true);
-        try {
-          await generateDailyQuests({ userId: user.uid });
-          await refreshUserData?.();
-        } catch (error) {
-          console.error("Failed to generate new quests:", error);
-        } finally {
-          setIsGenerating(false);
-        }
-      }
-    };
-
-    generateQuestsIfNeeded();
-  }, [user, userData, isGenerating, refreshUserData]);
+  const { quests, isLoading } = useDailyQuests();
 
   const renderContent = () => {
-    if (isGenerating || !userData) {
+    if (isLoading) {
       return (
         <div className="space-y-4 px-6">
           <Skeleton className="h-8 w-3/4" />
