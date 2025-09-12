@@ -76,8 +76,9 @@ export function Hero() {
                   src="/images/app-screenshot.png?v=2"
                   alt="Centsable Application Screenshot"
                   data-ai-hint="app screenshot"
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="100vw"
                   className="rounded-lg"
                   priority
                 />

@@ -16,7 +16,7 @@ export const lessonInvesting3: Lesson = {
         {
           type: 'concept',
           text: "The first piece of gear is a <b>Stock</b>. Buying a stock means you own a tiny piece of a company, like Apple or Nike. It's like having a powerful but risky magic sword! ⚔️",
-          image: 'https://placehold.co/400x225',
+          image: 'https://placehold.co/400x225/0A0A0A/4ADE80',
           imageHint: 'magic sword',
         },
         {
@@ -34,17 +34,17 @@ export const lessonInvesting3: Lesson = {
         {
           type: 'concept',
           text: "Next up is a <b>Bond</b>. A bond is basically a loan you give to a company or government. They promise to pay you back with extra 'interest'. It's like a sturdy, reliable shield. 🛡️",
-          image: 'https://placehold.co/400x225',
+          image: 'https://placehold.co/400x225/0A0A0A/4ADE80',
           imageHint: 'magic shield',
         },
         {
           type: 'multiple-choice',
           question: "Which one is like OWNING a piece of a company?",
           options: [
-            { id: 'stock', text: 'Stock', image: 'https://placehold.co/200x200', imageHint: 'sword icon' },
-            { id: 'bond', text: 'Bond', image: 'https://placehold.co/200x200', imageHint: 'shield icon' },
-            { id: 'mutual_fund', text: 'Mutual Fund', image: 'https://placehold.co/200x200', imageHint: 'inventory bag' },
-            { id: 'savings_account', text: 'Savings Account', image: 'https://placehold.co/200x200', imageHint: 'bank building' },
+            { id: 'stock', text: 'Stock', image: 'https://placehold.co/200x200/0A0A0A/4ADE80', imageHint: 'sword icon' },
+            { id: 'bond', text: 'Bond', image: 'https://placehold.co/200x200/0A0A0A/4ADE80', imageHint: 'shield icon' },
+            { id: 'mutual_fund', text: 'Mutual Fund', image: 'https://placehold.co/200x200/0A0A0A/4ADE80', imageHint: 'inventory bag' },
+            { id: 'savings_account', text: 'Savings Account', image: 'https://placehold.co/200x200/0A0A0A/4ADE80', imageHint: 'bank building' },
           ],
           correctAnswer: 'stock',
           reinforcement: "That's it! Stocks = Ownership.",
@@ -52,7 +52,7 @@ export const lessonInvesting3: Lesson = {
         {
           type: 'concept',
           text: "Finally, there are <b>Mutual Funds</b> and <b>ETFs</b>. Think of these as a pre-made inventory bag 🎒 full of many different stocks and bonds. It's an easy way to get a mix of everything!",
-          image: 'https://placehold.co/400x225',
+          image: 'https://placehold.co/400x225/0A0A0A/4ADE80',
           imageHint: 'inventory bag',
         },
         {

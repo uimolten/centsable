@@ -63,8 +63,9 @@ export function InteractiveTown({ step }: InteractiveTownProps) {
           <Image
             src="https://placehold.co/800x450"
             alt="A cartoon town showing various public services."
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
+            sizes="100vw"
             data-ai-hint="cartoon town"
           />
           {step.items.map(item => (

@@ -60,13 +60,13 @@ export default function ApplicantCard({ applicant, onSwipe, x }: ApplicantCardPr
                     style={{ opacity: approveStampOpacity }}
                     className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
                 >
-                     <Image src="/images/approved-stamp.png" width={300} height={300} alt="Approved"/>
+                     <Image src="/images/approved-stamp.png" width={300} height={300} alt="Approved stamp"/>
                 </motion.div>
                 <motion.div 
                     style={{ opacity: denyStampOpacity }}
                     className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
                 >
-                     <Image src="/images/denied-stamp.png" width={300} height={300} alt="Denied"/>
+                     <Image src="/images/denied-stamp.png" width={300} height={300} alt="Denied stamp"/>
                 </motion.div>
 
 
