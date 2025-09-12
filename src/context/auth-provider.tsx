@@ -45,36 +45,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [rewardAnimationData, setRewardAnimationData] = useState<RewardAnimationData | null>(null);
 
   useEffect(() => {
-    console.log("Setting up Auth state listener...");
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed. User:", currentUser ? currentUser.uid : null);
       setUser(currentUser);
       if (!currentUser) {
+        setUserData(null);
         setAuthLoading(false);
+        setLoading(false);
       }
     });
-
     return () => unsubscribeAuth();
   }, []);
 
   useEffect(() => {
-    // This is the CRITICAL CHANGE. We now check for a valid user.uid.
     if (user?.uid) {
-      console.log(`%cSetting up profile listener for UID: ${user.uid}`, "color: yellow;");
-      
-      const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
-      
+      setLoading(true);
       const userDocRef = doc(db, 'users', user.uid);
-      const unsubscribeProfile = onSnapshot(userDocRef, async (docSnap) => {
+      
+      const unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
         if (docSnap.exists()) {
-          console.log("%cProfile data received:", "color: lightgreen;", docSnap.data());
           const data = docSnap.data();
-
-          const questsSnapshot = await getDocs(questsQuery);
-          const quests = questsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
           const calculatedLevel = getLevelFromXP(data.xp ?? 0);
-
-          setUserData({
+          setUserData(prevData => ({
+            ...prevData, // Keep existing quest data if any
             uid: docSnap.id,
             email: data.email,
             displayName: data.displayName || 'New Adventurer',
@@ -89,49 +81,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             completedLessons: data.completedLessons ?? [],
             lastQuestGenerated: data.lastQuestGenerated,
             createdAt: data.createdAt,
-            dailyQuests: quests,
             dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
             dailyRewardClaims: data.dailyRewardClaims ?? [],
             gameSummaries: data.gameSummaries ?? {},
-          });
+          }));
         } else {
-          console.log("User document does not exist.");
-          // Create user document if it doesn't exist
-          const newUserData: Omit<UserData, 'createdAt' | 'uid' | 'dailyQuests' | 'gameSummaries' | 'dailyRewardClaims'> = {
-              email: user.email!,
-              displayName: user.displayName || 'New Adventurer',
-              photoURL: user.photoURL,
-              role: 'user',
-              xp: 0,
-              level: 1,
-              cents: 0,
-              streak: 0,
-              lessonsCompleted: 0,
-              achievements: [],
-              completedLessons: [],
-              dailyQuestsCompleted: false,
-          };
-          await setDoc(userDocRef, {
-              ...newUserData,
-              createdAt: serverTimestamp(),
-          });
-          // The listener will pick up the new document, so we don't set state here.
+            // This might run briefly during account creation
+            setDoc(userDocRef, {
+                email: user.email,
+                displayName: user.displayName || 'New Adventurer',
+                photoURL: user.photoURL,
+                role: 'user',
+                createdAt: serverTimestamp(),
+                xp: 0,
+                cents: 0,
+                streak: 0,
+                lessonsCompleted: 0,
+                achievements: [],
+                completedLessons: [],
+            });
         }
-        setLoading(false);
-        setAuthLoading(false);
+        // Don't set loading to false here, wait for quests too
       }, (error) => {
-        console.error("Firestore onSnapshot error:", error);
-        setUserData(null);
+        console.error("User document onSnapshot error:", error);
         setLoading(false);
         setAuthLoading(false);
       });
 
-      return () => unsubscribeProfile();
-    } else if (!user) {
-        // Handles logout case
-        setUserData(null);
-        setLoading(false);
+      const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
+      const unsubscribeQuests = onSnapshot(questsQuery, (querySnapshot) => {
+        const quests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
+        setUserData(prevData => ({
+            ...prevData,
+            dailyQuests: quests,
+        } as UserData)); // Cast as UserData to assure TS
+        setLoading(false); // Now we have profile and quests
         setAuthLoading(false);
+      }, (error) => {
+        console.error("Quests subcollection onSnapshot error:", error);
+        setLoading(false); // Still stop loading on error
+        setAuthLoading(false);
+      });
+
+
+      return () => {
+        unsubscribeProfile();
+        unsubscribeQuests();
+      };
     }
   }, [user]);
 
@@ -222,14 +218,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userData, 
     loading, 
     authLoading, 
-    refreshUserData, 
     isAdmin, 
     levelUpData, 
-    triggerLevelUp, 
-    closeLevelUpModal, 
     rewardAnimationData, 
+    refreshUserData,
+    triggerLevelUp,
+    closeLevelUpModal,
     triggerRewardAnimation,
-    signOut
   ]);
 
   return (
