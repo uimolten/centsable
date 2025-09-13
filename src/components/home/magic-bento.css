@@ -73,9 +73,11 @@
 .card__content {
   flex-direction: column;
   background: linear-gradient(to top, hsla(var(--background), 1) 40%, hsla(var(--background), 0.7) 70%, transparent 100%);
-  padding: 1rem;
+  padding: 1.25rem;
   margin: -1.25em;
   margin-top: auto;
+  height: 60%;
+  justify-content: flex-end;
 }
 
 .card__label {
