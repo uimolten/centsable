@@ -63,14 +63,14 @@ const cardData: BentoCardProps[] = [
     title: "Competitive Quizzes",
     description: "Challenge yourself and friends to see who's the master of money.",
     label: "Challenge",
-    image: "/images/bento-challenge.png",
+    image: "https://placehold.co/600x400/0A0A0A/4ADE80",
     imageHint: "quiz interface",
   },
   {
     title: "Earn Rewards",
     description: "Unlock achievements and earn Cents to spend in the virtual shop.",
     label: "Reward",
-    image: "/images/bento-reward.png",
+    image: "https://placehold.co/600x400/0A0A0A/4ADE80",
     imageHint: "coins trophy",
   },
 ];
