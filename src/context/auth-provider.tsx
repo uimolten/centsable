@@ -46,10 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      // If there's no user, we can immediately stop loading.
       if (!currentUser) {
         setUserData(null);
         setLoading(false);
       }
+      // If there IS a user, we wait for the Firestore listener to set loading to false.
     });
     return () => unsubscribeAuth();
   }, []);
@@ -90,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Don't set loading to false here; wait for quest listener
       }, (error) => {
         console.error("User document onSnapshot error:", error);
+        setUserData(null);
         setLoading(false);
       });
       
@@ -104,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 dailyQuests: quests,
             }
         });
-        setLoading(false); // Data is now fully loaded
+        setLoading(false); // Data is now fully loaded after both listeners have fired.
       }, (error) => {
         console.error("Quests subcollection onSnapshot error:", error);
         setLoading(false);
@@ -115,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         unsubscribeQuests();
       };
     } else {
+        // This handles the case where the user logs out.
         setUserData(null);
         setLoading(false);
     }
