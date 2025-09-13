@@ -5301,3 +5301,15 @@ Dev App Server is now running.
 
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
  
+[info] i  firestore: Change detected, updating rules... 
+[debug] [2025-09-13T07:00:53.689Z] >>> [apiv2][query] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules [none]
+[debug] [2025-09-13T07:00:53.692Z] >>> [apiv2][body] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules {"ignore_errors":true,"rules":{"files":[{"name":"security.rules","content":"rules_version = '2';\n\nservice cloud.firestore {\n  match /databases/{database}/documents {\n  \n    function isAdmin() {\n      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&\n             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';\n    }\n\n    // Rules for all subcollections of a user's document\n    match /users/{userId}/{document=**} {\n      allow read, write: if request.auth.uid == userId || isAdmin();\n    }\n\n    // An admin can read any user's document.\n    // A regular user can only read/update their own document.\n    match /users/{userId} {\n      allow read: if isAdmin() || request.auth.uid == userId;\n      allow update: if request.auth.uid == userId;\n      allow create, delete: if false;\n    }\n  }\n}\n"}]}}
+[debug] [2025-09-13T07:00:53.721Z] Sep 13, 2025 7:00:53 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 13, 2025 7:00:53 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2025-09-13T07:00:55.275Z] Sep 13, 2025 7:00:55 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 13, 2025 7:00:55 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2025-09-13T07:00:58.548Z] <<< [apiv2][status] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules 200
+[debug] [2025-09-13T07:00:58.548Z] <<< [apiv2][body] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules {}
+[info] ✔  firestore: Rules updated. 

@@ -2,15 +2,23 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only read and write their own data and subcollections.
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+  
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
 
-      // Allow users to read and write to any documents in subcollections
-      // under their own user document.
-      match /{allPaths=**} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
+    // Rules for all subcollections of a user's document
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth.uid == userId || isAdmin();
+    }
+
+    // An admin can read any user's document.
+    // A regular user can only read/update their own document.
+    match /users/{userId} {
+      allow read: if isAdmin() || request.auth.uid == userId;
+      allow update: if request.auth.uid == userId;
+      allow create, delete: if false;
     }
   }
 }

@@ -51,11 +51,6 @@ export function UserNav() {
 
   return (
     <div className="flex items-center gap-4">
-      {isAdmin && (
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin">Admin Panel</Link>
-        </Button>
-      )}
       <Card id="xp-display" className="flex items-center gap-4 p-2 bg-card/50 border-border/20 w-48">
         <Gem className="h-6 w-6 text-primary flex-shrink-0" />
         <div className="flex flex-col w-full">
@@ -102,6 +97,11 @@ export function UserNav() {
             <DropdownMenuItem asChild>
               <Link href="/profile"><UserIcon className="mr-2 h-4 w-4" />Profile</Link>
             </DropdownMenuItem>
+            {isAdmin && (
+               <DropdownMenuItem asChild>
+                <Link href="/admin"><LayoutDashboard className="mr-2 h-4 w-4" />Admin Panel</Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut}>
