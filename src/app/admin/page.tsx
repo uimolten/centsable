@@ -22,20 +22,20 @@ import { resetAllUsersProgress } from "@/ai/flows/reset-all-users-progress-flow"
 import { Loader2 } from "lucide-react";
 
 function AdminPageContent() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, authLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
-    if (!loading) {
+    if (!authLoading) {
       if (!user) {
         router.push('/auth');
       } else if (!isAdmin) {
         router.push('/');
       }
     }
-  }, [user, isAdmin, loading, router]);
+  }, [user, isAdmin, authLoading, router]);
 
   const handleReset = async () => {
     setIsResetting(true);
@@ -60,7 +60,7 @@ function AdminPageContent() {
     }
   };
 
-  if (loading || !user || !isAdmin) {
+  if (authLoading || !isAdmin) {
     return (
       <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-2xl font-bold">Verifying Access...</h1>
