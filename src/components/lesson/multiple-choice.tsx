@@ -38,7 +38,7 @@ export function MultipleChoice({ step, userAnswers, onSelectAnswer, hasAnswered,
       return (
         <div className="flex flex-col items-center justify-center gap-2">
           <Image 
-            src={option.image} 
+            src={option.image.replace(/^\//, '')} 
             alt={option.text || `Option image`}
             data-ai-hint={option.imageHint}
             width={150}
