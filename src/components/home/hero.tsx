@@ -78,7 +78,7 @@ export function Hero() {
                   data-ai-hint="app screenshot"
                   fill
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 1200px) 100vw, 80vw"
                   className="rounded-lg"
                   priority
                 />
@@ -88,5 +88,3 @@ export function Hero() {
       </section>
   );
 }
-
-    

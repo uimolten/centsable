@@ -613,7 +613,7 @@ export const MagicBento: React.FC<BentoProps> = ({
                   alt={card.title || 'Feature image'}
                   fill
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   data-ai-hint={card.imageHint}
                 />
               )}
@@ -756,5 +756,3 @@ export const MagicBento: React.FC<BentoProps> = ({
     </>
   );
 };
-
-    

@@ -1,30 +1,34 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { generateDailyQuests } from '@/ai/flows/generate-daily-quests-flow';
-import { isSameDay, isBefore } from 'date-fns';
+import { isBefore } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import type { Quest } from '@/types/quests';
 
+// This hook manages the state and logic for fetching and refreshing daily quests.
 export function useDailyQuests() {
   const { user, userData, refreshUserData } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  
-  const quests = useMemo(() => userData?.dailyQuests ?? [], [userData?.dailyQuests]);
+  const [quests, setQuests] = useState<Quest[]>([]);
 
   useEffect(() => {
-    const generateQuestsIfNeeded = async () => {
+    const processQuests = async () => {
+      // Don't do anything if we don't have a logged-in user or their data has not loaded yet.
+      // The `userData` object itself is the single source of truth.
       if (!user || !userData) {
-        // If there's no user or user data, we are not loading quests.
-        if (!user) setIsLoading(false);
+        if (!user) {
+          setQuests([]);
+          setIsLoading(false);
+        }
         return;
       }
-      
+
+      // Check if new quests need to be generated.
       const pacificTimeZone = 'America/Los_Angeles';
       const nowInPacific = toZonedTime(new Date(), pacificTimeZone);
-      
       const lastGeneratedDate = userData.lastQuestGenerated 
         ? toZonedTime(userData.lastQuestGenerated.toDate(), pacificTimeZone)
         : null;
@@ -33,41 +37,43 @@ export function useDailyQuests() {
       if (!lastGeneratedDate) {
         needsNewQuests = true; // First time ever.
       } else {
-        // The reset time is 5 AM PT of the CURRENT day.
         const fiveAmTodayPacific = new Date(nowInPacific);
         fiveAmTodayPacific.setHours(5, 0, 0, 0);
-
-        // If it's currently BEFORE 5 AM PT, the last reset window we care about was 5 AM YESTERDAY.
-        // But since we only generate quests *after* 5 AM, we just need to check if the last generation
-        // was on a different calendar day and happened before today's 5 AM threshold.
-        const lastGeneratedIsSameDay = isSameDay(nowInPacific, lastGeneratedDate);
-        const nowIsAfter5AM = isBefore(fiveAmTodayPacific, nowInPacific);
-
-        if (!lastGeneratedIsSameDay && nowIsAfter5AM) {
-           needsNewQuests = true;
+        
+        // If it's after 5 AM today AND the last generation was before 5 AM today, we need new quests.
+        if (isBefore(nowInPacific, fiveAmTodayPacific) && isBefore(lastGeneratedDate, fiveAmTodayPacific)) {
+            // It's before 5 AM, so we don't generate new ones yet.
+            needsNewQuests = false;
+        } else if (isBefore(fiveAmTodayPacific, nowInPacific) && isBefore(lastGeneratedDate, fiveAmTodayPacific)) {
+            // It's after 5 AM, and the last generation was before the reset time.
+            needsNewQuests = true;
         }
       }
 
       if (needsNewQuests) {
         setIsLoading(true);
         try {
+          // Call the secure backend flow to generate quests.
           await generateDailyQuests({ userId: user.uid });
-          await refreshUserData?.(); // This will trigger a re-fetch of userData in the AuthProvider
+          // The AuthProvider's real-time listener will automatically update the quests.
+          // We don't need to manually set state here.
         } catch (error) {
           console.error("Failed to generate new quests:", error);
-        } finally {
-          // The AuthProvider's loading state will handle the final isLoading=false
+          setIsLoading(false); // Stop loading on error
         }
       } else {
+        // If no new quests are needed, use the ones from the main user data context.
+        setQuests(userData.dailyQuests ?? []);
         setIsLoading(false);
       }
     };
 
-    generateQuestsIfNeeded();
+    processQuests();
     
-    // This effect should only run when the core user data object changes,
-    // not on every minor state update.
-  }, [user, userData?.lastQuestGenerated, refreshUserData]);
-
+    // This effect depends on the userData object. When the real-time listeners
+    // in AuthProvider update userData (e.g., after quest generation), this will re-run.
+  }, [user, userData]);
+  
+  // The hook returns the quest list and a loading state for the UI to use.
   return { quests, isLoading };
 }

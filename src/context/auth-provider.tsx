@@ -57,14 +57,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (user?.uid) {
       setLoading(true);
+      
+      // Listener for the main user document
       const userDocRef = doc(db, 'users', user.uid);
-
       const unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
-           const calculatedLevel = getLevelFromXP(data.xp ?? 0);
+          const calculatedLevel = getLevelFromXP(data.xp ?? 0);
           setUserData(prevData => ({
-            ...prevData,
+            ...(prevData ?? {}), // Ensure prevData is not null
             uid: docSnap.id,
             email: data.email,
             displayName: data.displayName || 'New Adventurer',
@@ -82,28 +83,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             dailyQuestsCompleted: data.dailyQuestsCompleted ?? false,
             dailyRewardClaims: data.dailyRewardClaims ?? [],
             gameSummaries: data.gameSummaries ?? {},
-          }));
+          } as UserData));
         } else {
           setUserData(null);
         }
-        // Don't set loading false until quests are also loaded
+        // Don't set loading to false here; wait for quest listener
       }, (error) => {
         console.error("User document onSnapshot error:", error);
         setLoading(false);
       });
       
+      // Listener for the quests subcollection
       const questsQuery = query(collection(db, 'users', user.uid, 'daily_quests'), orderBy('assignedDate', 'desc'));
       const unsubscribeQuests = onSnapshot(questsQuery, (querySnapshot) => {
         const quests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Quest));
         setUserData(prevData => {
-            // Ensure prevData is not null before spreading
-            if (!prevData) return null;
+            if (!prevData) return null; // Should not happen if user is logged in
             return {
                 ...prevData,
                 dailyQuests: quests,
             }
         });
-        setLoading(false); // Quests and profile are loaded
+        setLoading(false); // Data is now fully loaded
       }, (error) => {
         console.error("Quests subcollection onSnapshot error:", error);
         setLoading(false);
@@ -114,7 +115,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         unsubscribeQuests();
       };
     } else {
-        // Handle user logout
         setUserData(null);
         setLoading(false);
     }
@@ -125,12 +125,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
   
   const refreshUserData = useCallback(async (): Promise<UserData | null> => {
-     if (!user) return null;
-     // The onSnapshot listeners will handle refreshing, so this can be a no-op
-     // or can be used to trigger a one-time fetch if really needed.
-     // For now, we rely on real-time updates.
      return userData;
-  }, [user, userData]);
+  }, [userData]);
 
   const isAdmin = useMemo(() => userData?.role === 'admin', [userData]);
 
@@ -153,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     userData,
     loading,
-    authLoading: loading, // Use the same loading state
+    authLoading: loading,
     signOut,
     refreshUserData,
     isAdmin,
@@ -168,11 +164,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading, 
     isAdmin, 
     levelUpData, 
-    rewardAnimationData, 
+    rewardAnimationData,
     refreshUserData,
     triggerLevelUp,
     closeLevelUpModal,
-    triggerRewardAnimation,
+    triggerRewardAnimation
   ]);
 
   return (
