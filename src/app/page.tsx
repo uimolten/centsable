@@ -7,8 +7,50 @@ import { Cta } from '@/components/home/cta';
 import { MagicBento } from '@/components/home/magic-bento';
 import { motion } from 'framer-motion';
 import BlurText from '@/components/ui/blur-text';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect } from 'react';
+import { resetAllUsersProgress } from '@/ai/flows/reset-all-users-progress-flow';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
+  const { isAdmin, authLoading } = useAuth();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const runAdminReset = async () => {
+      // Ensure the user is an admin and the flow hasn't been run in this session
+      if (isAdmin && !sessionStorage.getItem('admin_progress_reset_done')) {
+        console.log('Admin detected, attempting to reset user progress...');
+        sessionStorage.setItem('admin_progress_reset_done', 'true'); // Prevent re-running in the same session
+        
+        try {
+          const result = await resetAllUsersProgress();
+          if (result.success) {
+            toast({
+              title: "Admin Action: Success!",
+              description: `Reset learning progress for ${result.usersReset} users.`,
+              duration: 10000,
+            });
+          } else {
+            throw new Error(result.message || "An unknown error occurred during reset.");
+          }
+        } catch (error: any) {
+          toast({
+            variant: "destructive",
+            title: "Admin Action: Reset Failed",
+            description: error.message,
+            duration: 10000,
+          });
+        }
+      }
+    };
+
+    if (!authLoading) {
+      runAdminReset();
+    }
+  }, [isAdmin, authLoading, toast]);
+
+
   return (
     <div className="relative w-full">
         <Hero />
