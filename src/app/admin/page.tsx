@@ -1,10 +1,7 @@
 
 "use client";
-import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import ClientLayout from "../client-layout";
+
+import { AdminRoute } from "@/components/AdminRoute";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -20,22 +17,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { resetAllUsersProgress } from "@/ai/flows/reset-all-users-progress-flow";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 function AdminPageContent() {
-  const { user, isAdmin, authLoading } = useAuth();
-  const router = useRouter();
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
-
-  useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push('/auth');
-      } else if (!isAdmin) {
-        router.push('/');
-      }
-    }
-  }, [user, isAdmin, authLoading, router]);
 
   const handleReset = async () => {
     setIsResetting(true);
@@ -59,18 +45,6 @@ function AdminPageContent() {
       setIsResetting(false);
     }
   };
-
-  if (authLoading || !isAdmin) {
-    return (
-      <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-2xl font-bold">Verifying Access...</h1>
-        <div className="mt-8 flex flex-col items-center gap-4">
-          <Skeleton className="h-8 w-full max-w-md" />
-          <Skeleton className="h-8 w-full max-w-md" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -113,10 +87,10 @@ function AdminPageContent() {
   );
 }
 
-export default function AdminPage() {
-    return (
-        <ClientLayout>
-            <AdminPageContent />
-        </ClientLayout>
-    )
-}
+const ProtectedAdminPage = () => (
+    <AdminRoute>
+        <AdminPageContent />
+    </AdminRoute>
+);
+
+export default ProtectedAdminPage;
