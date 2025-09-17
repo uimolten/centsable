@@ -18,15 +18,26 @@ import { useToast } from "@/hooks/use-toast";
 import { resetAllUsersProgress } from "@/ai/flows/reset-all-users-progress-flow";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 function AdminPageContent() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
 
   const handleReset = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "You must be logged in to perform this action.",
+      });
+      return;
+    }
+
     setIsResetting(true);
     try {
-      const result = await resetAllUsersProgress();
+      const result = await resetAllUsersProgress({ adminUserId: user.uid });
       if (result.success) {
         toast({
           title: "Success!",
