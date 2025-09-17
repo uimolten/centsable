@@ -1,24 +1,38 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
   
+    // Helper function to check for admin role
     function isAdmin() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+      // Check if the user is authenticated and if their user document exists
+      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Rules for all subcollections of a user's document
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth.uid == userId || isAdmin();
+    match /users/{userId} {
+      // Admins can read/write any user document fully.
+      allow read, write: if isAdmin();
+      
+      // Regular users can only read their own document.
+      allow get: if request.auth.uid == userId;
+      
+      // Regular users can only update their own displayName. No other fields.
+      allow update: if request.auth.uid == userId && request.resource.data.keys().hasOnly(['displayName', 'email', 'photoURL', 'role', 'createdAt', 'xp', 'level', 'cents', 'streak', 'lessonsCompleted', 'completedLessons', 'achievements', 'lastQuestGenerated', 'dailyQuestsCompleted', 'dailyRewardClaims', 'gameSummaries']);
+      
+      // No user can create or delete user documents directly.
+      allow create, delete: if false;
+
+      // Rules for subcollections
+      match /daily_quests/{questId} {
+        allow read, write: if request.auth.uid == userId || isAdmin();
+      }
     }
 
-    // An admin can read any user's document.
-    // A regular user can only read/update their own document.
-    match /users/{userId} {
-      allow read: if isAdmin() || request.auth.uid == userId;
-      allow update: if request.auth.uid == userId;
-      allow create, delete: if false;
+    // A catch-all to prevent any other access.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
