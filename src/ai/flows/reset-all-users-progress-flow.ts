@@ -7,7 +7,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { db } from "@/lib/firebase";
-import { collection, getDocs, writeBatch, doc } from "firebase/firestore";
+import { collection, getDocs, writeBatch, doc, getDoc } from "firebase/firestore";
 import type { UserData } from '@/types/user';
 
 const ResetAllUsersProgressInputSchema = z.object({
@@ -31,7 +31,7 @@ async function verifyAdmin(userId: string) {
         throw new Error('Authentication required.');
     }
     const userDocRef = doc(db, 'users', userId);
-    const userDoc = await userDocRef.get();
+    const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
         throw new Error('User not found.');
