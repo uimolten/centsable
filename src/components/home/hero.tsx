@@ -73,10 +73,10 @@ export function Hero() {
           >
             <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-xl border-2 border-border/10 bg-card/50 shadow-2xl shadow-primary/10">
                 <Image
-                  key="/images/app-screenshot.png"
-                  src="/images/app-screenshot.png"
-                  alt="Centsable Application Screenshot"
-                  data-ai-hint="app screenshot"
+                  key="/images/HeroSection.png"
+                  src="/images/HeroSection.png"
+                  alt="Centsable App Hero Section"
+                  data-ai-hint="app hero"
                   fill
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 1200px) 100vw, 80vw"
