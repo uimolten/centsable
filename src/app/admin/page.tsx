@@ -16,49 +16,44 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { resetAllUsersProgress } from "@/ai/flows/reset-all-users-progress-flow";
-import { debugAdminStatus } from "@/ai/flows/debug-admin-status-flow";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 
 function AdminPageContent() {
-  const { user, userData } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isResetting, setIsResetting] = useState(false);
 
-  const handleDebugCheck = async () => {
-    console.log("--- STARTING ADMIN DEBUG CHECK ---");
-    
-    if (!user || !userData) {
-      console.error("Client-side check failed: No user or userData available.");
-      alert("Debug check failed: Not logged in on the client. See console.");
+  const handleReset = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "You must be logged in to perform this action.",
+      });
       return;
     }
 
-    console.log("Client-side user object:", user);
-    console.log("Client-side user data (from context):", userData);
-    
     setIsResetting(true);
     try {
-      console.log("Calling 'debugAdminStatus' flow...");
-      const result = await debugAdminStatus({ userId: user.uid });
-
-      console.log("--- SERVER RESPONSE ---");
-      console.log("Status:", result.status);
-      console.log("Message from Server:", result.message);
-      console.log("UID Checked by Server:", result.checkedUid);
-      console.log("Firestore Doc Exists?:", result.docExists);
-      console.log("Firestore Doc Data:", result.docData);
-      console.log("Server thinks I am admin?:", result.isAdmin);
-      console.log("-------------------------");
-
-      alert("Debug check complete. See the browser console for results.");
-
+      const result = await resetAllUsersProgress({ adminUserId: user.uid });
+      if (result.success) {
+        toast({
+          title: "Success!",
+          description: `${result.usersReset} users have had their progress reset.`,
+        });
+      } else {
+        throw new Error(result.message || "An unknown error occurred.");
+      }
     } catch (error: any) {
-      console.error("Debug function call FAILED:", error);
-      alert(`Debug check failed: ${error.message}`);
+      toast({
+        variant: "destructive",
+        title: "Reset Failed",
+        description: error.message,
+      });
     } finally {
-        setIsResetting(false);
+      setIsResetting(false);
     }
   };
 
@@ -75,10 +70,28 @@ function AdminPageContent() {
           <p className="text-destructive-foreground/80 mt-2">
             This action is irreversible and will reset the learning progress (XP, level, completed lessons) for all users.
           </p>
-          <Button variant="destructive" className="mt-4 w-full" onClick={handleDebugCheck} disabled={isResetting}>
-            {isResetting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Run Admin Status Check
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="mt-4 w-full" disabled={isResetting}>
+                {isResetting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Reset All User Progress
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will reset the learning progress (XP, level, etc.) for every single user. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleReset} className="bg-destructive hover:bg-destructive/90">
+                  Yes, reset all progress
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>
