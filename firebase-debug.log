@@ -5790,3 +5790,12 @@ INFO: Detected non-HTTP/2 connection.
 [debug] [2025-09-18T03:07:45.503Z] <<< [apiv2][status] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules 200
 [debug] [2025-09-18T03:07:45.511Z] <<< [apiv2][body] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules {}
 [info] ✔  firestore: Rules updated. 
+[info] i  firestore: Change detected, updating rules... 
+[debug] [2025-09-18T03:08:57.109Z] >>> [apiv2][query] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules [none]
+[debug] [2025-09-18T03:08:57.121Z] >>> [apiv2][body] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules {"ignore_errors":true,"rules":{"files":[{"name":"security.rules","content":"rules_version = '2';\n\nservice cloud.firestore {\n  match /databases/{database}/documents {\n  \n    // Helper function to check if a user is an admin\n    function isAdmin() {\n      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';\n    }\n\n    match /users/{userId} {\n      // Allow users to read and update their own document\n      allow read, update: if request.auth.uid == userId;\n      // Allow anyone to create a user document (on signup)\n      allow create: if request.auth.uid != null;\n      \n      // Allow admins to read and write any user document\n      allow read, write: if isAdmin();\n      \n      match /daily_quests/{questId} {\n        allow read, write: if request.auth.uid == userId || isAdmin();\n      }\n    }\n  }\n}\n"}]}}
+[debug] [2025-09-18T03:08:57.148Z] Sep 18, 2025 3:08:57 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 18, 2025 3:08:57 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2025-09-18T03:08:57.518Z] <<< [apiv2][status] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules 200
+[debug] [2025-09-18T03:08:57.525Z] <<< [apiv2][body] PUT http://127.0.0.1:8080/emulator/v1/projects/demo-app:securityRules {}
+[info] ✔  firestore: Rules updated. 
