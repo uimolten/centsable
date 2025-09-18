@@ -37,6 +37,7 @@ function AdminPageContent() {
 
     setIsResetting(true);
     try {
+      // Directly call the imported function
       const result = await resetAllUsersProgress({ adminUserId: user.uid });
       if (result.success) {
         toast({
