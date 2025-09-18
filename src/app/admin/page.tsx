@@ -1,4 +1,3 @@
-
 "use client";
 
 import { AdminRoute } from "@/components/AdminRoute";
