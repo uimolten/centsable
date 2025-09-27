@@ -13,7 +13,7 @@ const verifyAdmin = async (context) => {
     throw new functions.https.HttpsError("unauthenticated", "You must be logged in.");
   }
   const userDoc = await db.collection("users").doc(context.auth.uid).get();
-  if (!userDoc.exists || userDoc.data().role !== "admin") {
+  if (!userDoc.exists() || userDoc.data().role !== "admin") {
     throw new functions.https.HttpsError("permission-denied", "Admin privileges required.");
   }
 };
@@ -38,7 +38,7 @@ exports.adminSetUserRole = functions.https.onCall(async (data, context) => {
   return db.collection("users").doc(targetUid).update({role: newRole});
 });
 
-exports.adminResetAllUsers = functions.https.coraonCall(async (data, context) => {
+exports.adminResetAllUsers = functions.https.onCall(async (data, context) => {
   await verifyAdmin(context);
   const usersSnapshot = await db.collection("users").get();
   const batch = db.batch();
