@@ -1,3 +1,4 @@
+
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
@@ -72,7 +73,7 @@ exports.getOrGenerateDailyQuests = gameplayFunctionBuilder.https.onCall(async (d
   const userDoc = await userRef.get();
   const userData = userDoc.data();
   const now = new Date();
-  const lastReset = userData.questsLastGenerated?.toDate();
+  const lastReset = userData.questsLastGenerated ? userData.questsLastGenerated.toDate() : null;
   const today5amPT = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0, 0);
 
   if (!lastReset || lastReset.getTime() < today5amPT.getTime()) {
@@ -154,4 +155,3 @@ exports.completeLesson = gameplayFunctionBuilder.https.onCall(async (data, conte
   await userRef.update({ quests: updatedQuests });
   return { success: true, message: 'Lesson completion saved!' };
 });
-
