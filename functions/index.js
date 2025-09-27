@@ -73,7 +73,7 @@ exports.getOrGenerateDailyQuests = functions
     const userData = userDoc.data();
 
     const now = new Date();
-    const lastReset = userData.questsLastGenerated?.toDate();
+    const lastReset = userData.questsLastGenerated ? userData.questsLastGenerated.toDate() : null;
     const today5amPT = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0, 0);
 
     if (!lastReset || lastReset.getTime() < today5amPT.getTime()) {
