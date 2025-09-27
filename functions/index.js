@@ -1,7 +1,9 @@
+// functions/index.js
+
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
-// CRITICAL: Initialize the Firebase Admin SDK ONCE at the top.
+// Initialize the Firebase Admin SDK ONCE at the top.
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -21,7 +23,7 @@ const verifyAdmin = async (context) => {
 exports.adminGetAllUsers = functions.https.onCall(async (data, context) => {
   await verifyAdmin(context);
   const userRecords = await admin.auth().listUsers();
-  return userRecords.users.map(user => ({
+  return userRecords.users.map((user) => ({
     uid: user.uid,
     email: user.email,
   }));
@@ -40,7 +42,7 @@ exports.adminResetAllUsers = functions.https.onCall(async (data, context) => {
   await verifyAdmin(context);
   const usersSnapshot = await db.collection('users').get();
   const batch = db.batch();
-  usersSnapshot.forEach(doc => {
+  usersSnapshot.forEach((doc) => {
     batch.update(doc.ref, {
       xp: 0,
       cents: 0,
@@ -57,7 +59,6 @@ exports.adminResetAllUsers = functions.https.onCall(async (data, context) => {
 const ALL_POSSIBLE_QUESTS = [
     { id: 'q1', title: 'Complete 1 Lesson', progress: 0, goal: 1, reward: { xp: 20, cents: 5 } },
     { id: 'q2', title: 'Play 3 Minigames', progress: 0, goal: 3, reward: { xp: 30, cents: 10 } },
-    // Add more possible quests here
 ];
 
 exports.getOrGenerateDailyQuests = functions
@@ -87,83 +88,76 @@ exports.getOrGenerateDailyQuests = functions
     return userData.quests;
 });
 
-exports.claimMinigameReward = functions
-  .runWith({ secrets: ["GEMINI_API_KEY"] })
-  .https.onCall(async (data, context) => {
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'You must be logged in.');
+exports.claimMinigameReward = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'You must be logged in.');
+  }
+  const { gameId, score } = data;
+  const uid = context.auth.uid;
+  const userRef = db.collection('users').doc(uid);
+
+  const REWARD_THRESHOLDS = {
+    creditSwipe: 1250,
+    budgetBusters: 1000,
+    savingsSorter: 2000,
+  };
+  const REWARD_PAYLOAD = { xp: 50, cents: 10 };
+  const DAILY_LIMIT = 2;
+
+  if (score < REWARD_THRESHOLDS[gameId]) {
+    throw new functions.https.HttpsError('failed-precondition', 'Score not high enough.');
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  const rewardRef = db.collection('users').doc(uid).collection('daily_rewards').doc(today);
+
+  return db.runTransaction(async (transaction) => {
+    const rewardDoc = await transaction.get(rewardRef);
+    const claimsMade = rewardDoc.exists ? rewardDoc.data().claims : 0;
+
+    if (claimsMade >= DAILY_LIMIT) {
+      throw new functions.https.HttpsError('resource-exhausted', 'Daily reward limit reached.');
     }
-    const { gameId, score } = data;
-    const uid = context.auth.uid;
-    const userRef = db.collection('users').doc(uid);
 
-    const REWARD_THRESHOLDS = {
-      creditSwipe: 1250,
-      budgetBusters: 1000,
-      savingsSorter: 2000,
-    };
-    const REWARD_PAYLOAD = { xp: 50, cents: 10 };
-    const DAILY_LIMIT = 2;
-
-    if (score < REWARD_THRESHOLDS[gameId]) {
-      throw new functions.https.HttpsError('failed-precondition', 'Score not high enough for a reward.');
-    }
-
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    const rewardRef = db.collection('users').doc(uid).collection('daily_rewards').doc(today);
-
-    return db.runTransaction(async (transaction) => {
-      const rewardDoc = await transaction.get(rewardRef);
-      const claimsMade = rewardDoc.exists ? rewardDoc.data().claims : 0;
-
-      if (claimsMade >= DAILY_LIMIT) {
-        throw new functions.https.HttpsError('resource-exhausted', 'Daily reward limit reached.');
-      }
-
-      // Grant rewards and update claim count
-      transaction.update(userRef, {
-        xp: admin.firestore.FieldValue.increment(REWARD_PAYLOAD.xp),
-        cents: admin.firestore.FieldValue.increment(REWARD_PAYLOAD.cents),
-      });
-      transaction.set(rewardRef, { claims: claimsMade + 1 }, { merge: true });
-
-      return { success: true, message: 'Reward claimed!' };
+    transaction.update(userRef, {
+      xp: admin.firestore.FieldValue.increment(REWARD_PAYLOAD.xp),
+      cents: admin.firestore.FieldValue.increment(REWARD_PAYLOAD.cents),
     });
+    transaction.set(rewardRef, { claims: claimsMade + 1 }, { merge: true });
+
+    return { success: true, message: 'Reward claimed!' };
+  });
 });
 
-exports.completeLesson = functions
-  .runWith({ secrets: ["GEMINI_API_KEY"] })
-  .https.onCall(async (data, context) => {
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'You must be logged in.');
+exports.completeLesson = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'You must be logged in.');
+  }
+  const { lessonId } = data;
+  const uid = context.auth.uid;
+  const userRef = db.collection('users').doc(uid);
+
+  const userDoc = await userRef.get();
+  if (userDoc.data().completedLessons?.includes(lessonId)) {
+    return { success: false, message: 'Lesson already completed.' };
+  }
+
+  await userRef.update({
+    completedLessons: admin.firestore.FieldValue.arrayUnion(lessonId),
+    xp: admin.firestore.FieldValue.increment(50),
+    cents: admin.firestore.FieldValue.increment(10),
+  });
+
+  const updatedUserDoc = await userRef.get();
+  const currentQuests = updatedUserDoc.data().quests || [];
+  const updatedQuests = currentQuests.map((quest) => {
+    if (quest.id === 'q1' && quest.progress < quest.goal) {
+      quest.progress += 1;
     }
-    const { lessonId } = data;
-    const uid = context.auth.uid;
-    const userRef = db.collection('users').doc(uid);
+    return quest;
+  });
 
-    const userDoc = await userRef.get();
-    if (userDoc.data().completedLessons?.includes(lessonId)) {
-      return { success: false, message: 'Lesson already completed.' };
-    }
+  await userRef.update({ quests: updatedQuests });
 
-    // Grant completion reward
-    await userRef.update({
-      completedLessons: admin.firestore.FieldValue.arrayUnion(lessonId),
-      xp: admin.firestore.FieldValue.increment(50),
-      cents: admin.firestore.FieldValue.increment(10),
-    });
-
-    // Check if this completion satisfies any quests
-    const updatedUserDoc = await userRef.get();
-    const currentQuests = updatedUserDoc.data().quests || [];
-    const updatedQuests = currentQuests.map(quest => {
-      if (quest.id === 'q1' && quest.progress < quest.goal) { // 'Complete 1 Lesson' quest
-        quest.progress += 1;
-      }
-      return quest;
-    });
-
-    await userRef.update({ quests: updatedQuests });
-
-    return { success: true, message: 'Lesson completion saved!' };
+  return { success: true, message: 'Lesson completion saved!' };
 });
