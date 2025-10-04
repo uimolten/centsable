@@ -61,9 +61,7 @@ const ALL_POSSIBLE_QUESTS = [
     { id: 'q2', title: 'Play 3 Minigames', progress: 0, goal: 3, reward: { xp: 30, cents: 10 } },
 ];
 
-exports.getOrGenerateDailyQuests = functions
-  .runWith({ secrets: ["GEMINI_API_KEY"] })
-  .https.onCall(async (data, context) => {
+exports.getOrGenerateDailyQuests = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', 'You must be logged in.');
     }
@@ -104,7 +102,7 @@ exports.claimMinigameReward = functions.https.onCall(async (data, context) => {
   const REWARD_PAYLOAD = { xp: 50, cents: 10 };
   const DAILY_LIMIT = 2;
 
-  if (score < REWARD_THRESHOLDS[gameId]) {
+  if (!REWARD_THRESHOLDS[gameId] || score < REWARD_THRESHOLDS[gameId]) {
     throw new functions.https.HttpsError('failed-precondition', 'Score not high enough.');
   }
 
