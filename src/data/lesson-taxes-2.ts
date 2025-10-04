@@ -28,7 +28,7 @@ export const lessonTaxes2: Lesson = {
         {
           type: 'concept',
           text: "Here's what a typical pay stub looks like. Let's break down the key parts.",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/paystub/400/225",
           imageHint: 'paycheck stub example',
         },
       ],

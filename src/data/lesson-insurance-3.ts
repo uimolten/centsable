@@ -16,19 +16,19 @@ export const lessonInsurance3: Lesson = {
         {
           type: 'concept',
           text: "<b>Auto Insurance</b> is required by law if you drive a car. It covers accidents, damage to your car, and injuries. It's non-negotiable!",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/carshield/400/225",
           imageHint: "car shield",
         },
         {
           type: 'concept',
           text: "<b>Health Insurance</b> helps pay for doctor visits and medicine when you're sick or hurt. You're probably on your parents' plan now, but it's super important to have.",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/firstaid/400/225",
           imageHint: "first aid kit",
         },
         {
           type: 'concept',
           text: "<b>Renters Insurance</b> is a life-saver if you ever rent an apartment. It protects your stuff (like your computer and clothes) from things like theft or fire for just a few dollars a month.",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/houseshield/400/225",
           imageHint: "house shield contents",
         },
         {

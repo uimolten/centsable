@@ -35,7 +35,7 @@ export const lessonTaxes3: Lesson = {
         {
           type: 'concept',
           text: "Let's look at the key forms in the tax timeline.",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/taxcalendar/400/225",
           imageHint: 'tax timeline calendar',
         },
       ],

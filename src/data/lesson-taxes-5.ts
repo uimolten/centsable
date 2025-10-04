@@ -32,7 +32,7 @@ export const lessonTaxes5: Lesson = {
         {
           type: 'concept',
           text: "It's also super important to keep good records of your financial documents, like W-2s and receipts for deductions. This makes tax time much easier and can save you from big surprises.",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/filecabinet/400/225",
           imageHint: 'file cabinet organization'
         },
         {

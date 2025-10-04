@@ -42,7 +42,7 @@ export const lessonCredit4: Lesson = {
         {
           type: 'concept',
           text: "When you make a payment, it's split between paying down your actual debt (the <b>principal</b>) and paying the interest fee. When you only pay the minimum, most of your money goes to interest, not the principal.",
-          image: 'https://placehold.co/400x225',
+          image: 'https://picsum.photos/seed/piechart/400/225',
           imageHint: 'pie chart principal interest',
         },
         {

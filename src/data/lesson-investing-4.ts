@@ -16,7 +16,7 @@ export const lessonInvesting4: Lesson = {
         {
           type: 'concept',
           text: "<b>Diversification</b> is a fancy word for not putting all your eggs (or money) in one basket. It's about spreading your investments out to lower your overall risk.",
-          image: 'https://placehold.co/400x225',
+          image: 'https://picsum.photos/seed/eggsbasket/400/225',
           imageHint: 'eggs basket',
         },
         {
@@ -34,7 +34,7 @@ export const lessonInvesting4: Lesson = {
         {
           type: 'concept',
           text: "Now, what if you also invested in 'Sunscreen Corp' and 'Hot Chocolate Co.'? If the Ice Cream stock goes down, your other investments might go up, balancing things out!",
-          image: 'https://placehold.co/400x225',
+          image: 'https://picsum.photos/seed/scale/400/225',
           imageHint: 'balance scale',
         },
         {

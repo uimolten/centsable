@@ -24,7 +24,7 @@ export const lessonRetirement2: Lesson = {
         {
           type: 'scenario',
           text: "As time goes on, Ava's money grows exponentially and ends up dramatically higher than Ben's, even though he invested for only 10 fewer years.",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/chart2/400/225",
           imageHint: 'compounding chart comparison',
         },
         {

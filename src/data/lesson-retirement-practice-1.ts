@@ -27,7 +27,7 @@ export const lessonRetirementPractice1: Lesson = {
         {
           type: 'concept',
           text: "Now, let's fast forward! This graph shows your money growing in a Roth IRA. Watch the compounding magic!",
-          image: 'https://placehold.co/800x450',
+          image: 'https://picsum.photos/seed/chart/800/450',
           imageHint: 'compounding chart comparison',
         },
         {

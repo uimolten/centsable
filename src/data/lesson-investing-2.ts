@@ -16,7 +16,7 @@ export const lessonInvesting2: Lesson = {
         {
           type: 'concept',
           text: 'The rule is simple: to get a higher potential <b>Reward</b> (make more money), you usually have to take a higher <b>Risk</b>.',
-          image: 'https://placehold.co/400x225',
+          image: 'https://picsum.photos/seed/riskreward/400/225',
           imageHint: 'risk reward seesaw',
         },
         {

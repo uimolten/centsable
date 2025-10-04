@@ -22,7 +22,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 1,
         name: 'Sarah Chen',
-        avatarUrl: 'images/avatars/avatar-1.png',
+        avatarUrl: '/images/avatars/avatar-1.png',
         loanRequest: { title: 'Loan for a new laptop', amount: 1200 },
         creditScore: 780,
         income: 4000,
@@ -35,7 +35,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 2,
         name: 'Mike Rivera',
-        avatarUrl: 'images/avatars/avatar-2.png',
+        avatarUrl: '/images/avatars/avatar-2.png',
         loanRequest: { title: 'Used car financing', amount: 8000 },
         creditScore: 590,
         income: 3000,
@@ -48,7 +48,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 3,
         name: 'Jessica Patel',
-        avatarUrl: 'images/avatars/avatar-3.png',
+        avatarUrl: '/images/avatars/avatar-3.png',
         loanRequest: { title: 'Emergency vet bill', amount: 500 },
         creditScore: 680,
         income: 3200,
@@ -61,7 +61,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 4,
         name: 'David Kim',
-        avatarUrl: 'images/avatars/avatar-4.png',
+        avatarUrl: '/images/avatars/avatar-4.png',
         loanRequest: { title: 'Starting a small business', amount: 15000 },
         creditScore: 710,
         income: 6000,
@@ -74,7 +74,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 5,
         name: 'Emily Garcia',
-        avatarUrl: 'images/avatars/avatar-5.png',
+        avatarUrl: '/images/avatars/avatar-5.png',
         loanRequest: { title: 'Funding a coding bootcamp', amount: 10000 },
         creditScore: 750,
         income: 5500,
@@ -87,7 +87,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 6,
         name: 'Chris Nguyen',
-        avatarUrl: 'images/avatars/avatar-6.png',
+        avatarUrl: '/images/avatars/avatar-6.png',
         loanRequest: { title: 'Home renovation project', amount: 20000 },
         creditScore: 620,
         income: 4500,
@@ -100,7 +100,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 7,
         name: 'Olivia Martinez',
-        avatarUrl: 'images/avatars/avatar-7.png',
+        avatarUrl: '/images/avatars/avatar-7.png',
         loanRequest: { title: 'Consolidating credit card debt', amount: 5000 },
         creditScore: 660,
         income: 3800,
@@ -113,7 +113,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 8,
         name: 'Alex Johnson',
-        avatarUrl: 'images/avatars/avatar-8.png',
+        avatarUrl: '/images/avatars/avatar-8.png',
         loanRequest: { title: 'New furniture for apartment', amount: 2500 },
         creditScore: 810,
         income: 7000,
@@ -126,7 +126,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 9,
         name: 'Tyrone McCaffery',
-        avatarUrl: 'images/avatars/avatar-9.png',
+        avatarUrl: '/images/avatars/avatar-9.png',
         loanRequest: { title: 'Loan for a Hellcat', amount: 60000 },
         creditScore: 450,
         income: 2500,
@@ -139,7 +139,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 10,
         name: 'Fatima Al-Jamil',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/10/100/100',
         loanRequest: { title: 'Culinary school tuition', amount: 12000 },
         creditScore: 720,
         income: 4800,
@@ -152,7 +152,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 11,
         name: 'Leo Tolstoy',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/11/100/100',
         loanRequest: { title: 'Vintage motorcycle purchase', amount: 7000 },
         creditScore: 690,
         income: 4200,
@@ -165,7 +165,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 12,
         name: 'Isabella Rossi',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/12/100/100',
         loanRequest: { title: 'Art supplies for gallery show', amount: 3000 },
         creditScore: 640,
         income: 2800,
@@ -178,7 +178,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 13,
         name: 'Ken Watanabe',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/13/100/100',
         loanRequest: { title: 'Loan for custom-built PC', amount: 4000 },
         creditScore: 790,
         income: 8000,
@@ -191,7 +191,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 14,
         name: 'Chloe Dubois',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/14/100/100',
         loanRequest: { title: 'Funding for a photography project', amount: 2000 },
         creditScore: 700,
         income: 3500,
@@ -204,7 +204,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 15,
         name: 'Jamal Williams',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/15/100/100',
         loanRequest: { title: 'Loan for DJ equipment', amount: 3500 },
         creditScore: 610,
         income: 3300,
@@ -217,7 +217,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 16,
         name: 'Nadia Petrov',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/16/100/100',
         loanRequest: { title: 'Travel expenses for chess tournament', amount: 1500 },
         creditScore: 760,
         income: 5000,
@@ -230,7 +230,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 17,
         name: 'Sam O\'Connell',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/17/100/100',
         loanRequest: { title: 'Down payment for a tiny home', amount: 25000 },
         creditScore: 670,
         income: 5200,
@@ -243,7 +243,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 18,
         name: 'Priya Singh',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/18/100/100',
         loanRequest: { title: 'Loan for a new smartphone', amount: 1100 },
         creditScore: 730,
         income: 4500,
@@ -256,7 +256,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 19,
         name: 'Jordan Miller',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/19/100/100',
         loanRequest: { title: 'Loan for a new camera', amount: 1800 },
         creditScore: 650,
         income: 3000,
@@ -269,7 +269,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 20,
         name: 'Sofia Ivanova',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/20/100/100',
         loanRequest: { title: 'Funding for a fashion startup', amount: 15000 },
         creditScore: 710,
         income: 6000,
@@ -282,7 +282,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 21,
         name: 'Aiden McCarthy',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/21/100/100',
         loanRequest: { title: 'Loan for a musical instrument', amount: 2200 },
         creditScore: 740,
         income: 4800,
@@ -295,7 +295,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 22,
         name: 'Gabriela Silva',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/22/100/100',
         loanRequest: { title: 'Loan for a pottery kiln', amount: 4500 },
         creditScore: 680,
         income: 4000,
@@ -308,7 +308,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 23,
         name: 'Liam Murphy',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/23/100/100',
         loanRequest: { title: 'Loan for a new bicycle', amount: 1300 },
         creditScore: 770,
         income: 5500,
@@ -321,7 +321,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 24,
         name: 'Hana Tanaka',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/24/100/100',
         loanRequest: { title: 'Loan for a gaming setup', amount: 3000 },
         creditScore: 630,
         income: 3200,
@@ -334,7 +334,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 25,
         name: 'Darius Washington',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/25/100/100',
         loanRequest: { title: 'Loan for a new TV', amount: 900 },
         creditScore: 790,
         income: 6000,
@@ -347,7 +347,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 26,
         name: 'Ava Schmidt',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/26/100/100',
         loanRequest: { title: 'Loan for a new couch', amount: 1500 },
         creditScore: 690,
         income: 4100,
@@ -360,7 +360,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 27,
         name: 'Mateo Hernandez',
-        avatarUrl: 'https://placehold.co/100x100.png',
+        avatarUrl: 'https://picsum.photos/seed/27/100/100',
         loanRequest: { title: 'Loan for a new guitar', amount: 800 },
         creditScore: 720,
         income: 3800,

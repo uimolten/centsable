@@ -61,7 +61,7 @@ export function InteractiveTown({ step }: InteractiveTownProps) {
       <TooltipProvider>
         <div className="relative aspect-video w-full rounded-2xl overflow-hidden border-2 border-border/20 bg-card/50">
           <Image
-            src="https://placehold.co/800x450"
+            src="https://picsum.photos/seed/town/800/450"
             alt="A cartoon town showing various public services."
             fill
             style={{ objectFit: 'cover' }}

@@ -16,13 +16,13 @@ export const lessonInsurance4: Lesson = {
         {
           type: 'concept',
           text: "Here's the main trade-off:<br>A <b>LOWER</b> deductible (the part you pay) usually means a <b>HIGHER</b> premium (your monthly bill).",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/seesaw1/400/225",
           imageHint: "seesaw balance low deductible high premium",
         },
         {
           type: 'concept',
           text: "And a <b>HIGHER</b> deductible (you pay more upfront) usually means a <b>LOWER</b> premium (your monthly bill is cheaper).",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/seesaw2/400/225",
           imageHint: "seesaw balance high deductible low premium",
         },
         {

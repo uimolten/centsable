@@ -66,7 +66,7 @@ export const lessonTaxes4: Lesson = {
         {
           type: 'concept',
           text: "And critically, when you apply for college financial aid using the <b>FAFSA</b>, you'll need info from your tax return. Filing correctly is crucial for getting grants and scholarships!",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/fafsa/400/225",
           imageHint: 'FAFSA form logo',
         },
         {

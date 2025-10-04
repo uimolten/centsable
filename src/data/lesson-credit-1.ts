@@ -68,7 +68,7 @@ export const lessonCredit1: Lesson = {
         {
           type: 'concept',
           text: "So how do lenders decide if they can trust you? They check your financial gradebook: your <b>credit report</b> and <b>credit score</b>.",
-          image: 'https://placehold.co/400x225',
+          image: 'https://picsum.photos/seed/creditscore/400/225',
           imageHint: 'credit score meter',
         },
         {

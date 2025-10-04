@@ -72,7 +72,7 @@ export default function ApplicantCard({ applicant, onSwipe, x }: ApplicantCardPr
 
                 <div>
                     <div className="flex items-center gap-4 mb-4">
-                        <Image src={applicant.avatarUrl.replace(/^\//, '')} width={60} height={60} alt={applicant.name} className="rounded-full border-2 border-primary" data-ai-hint="person avatar" />
+                        <Image src={applicant.avatarUrl} width={60} height={60} alt={applicant.name} className="rounded-full border-2 border-primary" data-ai-hint="person avatar" />
                         <div>
                             <h2 className="text-xl font-bold text-foreground">{applicant.name}</h2>
                             <p className="text-sm text-muted-foreground">{applicant.loanRequest.title}</p>

@@ -42,7 +42,7 @@ export function ConceptCard({ step }: ConceptCardProps) {
       {step.image && (
         <div className="flex justify-center">
             <Image
-                src={step.image.replace(/^\//, '')}
+                src={step.image}
                 alt={step.text ?? 'Lesson illustration'}
                 width={400}
                 height={225}

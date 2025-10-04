@@ -28,7 +28,7 @@ export const lessonInsurancePractice1: Lesson = {
         {
           type: 'scenario',
           text: "Oh no, a pipe burst and ruined your laptop!",
-          image: "https://placehold.co/400x225",
+          image: "https://picsum.photos/seed/pipeburst/400/225",
           imageHint: "burst pipe water damage"
         },
         {
