@@ -609,6 +609,7 @@ export const MagicBento: React.FC<BentoProps> = ({
               </div>
               {card.image && (
                 <Image
+                  key={card.image}
                   src={card.image}
                   alt={card.title || 'Feature image'}
                   fill
