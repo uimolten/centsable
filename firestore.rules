@@ -1,25 +1,11 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Helper function to check if a user is an admin
-    function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    match /users/{userId} {
-      // Allow users to read and update their own document
-      allow read, update: if request.auth.uid == userId;
-      // Allow anyone to create a user document (on signup)
-      allow create: if request.auth.uid != null;
-      
-      // Allow admins to read and write any user document
-      allow read, write: if isAdmin();
-      
-      match /daily_quests/{questId} {
-        allow read, write: if request.auth.uid == userId || isAdmin();
-      }
+    // Users can read and write their own user document and subcollections
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
