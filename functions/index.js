@@ -3,7 +3,7 @@ const {onCall} = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 
 // The Final, Definitive Fix: Explicit Initialization
-admin.initializeApp({ projectId: 'centsable-2rix4' });
+admin.initializeApp({projectId: "centsable-2rix4"});
 const db = admin.firestore();
 
 // --- REUSABLE SECURITY HELPER ---
