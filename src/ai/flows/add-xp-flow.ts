@@ -6,7 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { doc, runTransaction, arrayUnion, increment } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { LEVEL_THRESHOLDS } from '@/lib/level-config';
 import type { UserData } from '@/types/user';
 import { AddXpInputSchema, AddXpOutputSchema, type AddXpInput, type AddXpOutput } from '@/types/actions';
@@ -23,9 +23,9 @@ const addXpFlow = ai.defineFlow(
   },
   async ({ userId, amount, cents, lessonId }) => {
     try {
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(adminDb, "users", userId);
       
-      const result = await runTransaction(db, async (transaction) => {
+      const result = await runTransaction(adminDb, async (transaction) => {
         const userDoc = await transaction.get(userDocRef);
         if (!userDoc.exists()) {
           throw new Error('User not found.');

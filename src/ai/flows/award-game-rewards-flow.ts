@@ -6,7 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { doc, runTransaction, Timestamp, arrayUnion } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { addXp } from './add-xp-flow';
 import { AwardGameRewardsInputSchema, AwardGameRewardsOutputSchema, AwardGameRewardsInput, AwardGameRewardsOutput } from '@/types/actions';
 import type { UserData } from '@/types/user';
@@ -42,9 +42,9 @@ const awardGameRewardsFlow = ai.defineFlow(
     }
     
     try {
-        const userDocRef = doc(db, "users", userId);
+        const userDocRef = doc(adminDb, "users", userId);
 
-        const result = await runTransaction(db, async (transaction) => {
+        const result = await runTransaction(adminDb, async (transaction) => {
             const userDoc = await transaction.get(userDocRef);
             if (!userDoc.exists()) {
               throw new Error("User not found.");

@@ -3,7 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { collection, query, where, getDocs, writeBatch, increment, doc } from "firebase/firestore";
 import type { QuestActionType, Quest } from '@/types/quests';
 import type { UserData } from '@/types/user';
@@ -52,7 +52,7 @@ const updateQuestProgressFlow = ai.defineFlow(
         return { success: true, questsUpdated: 0 };
       }
 
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(adminDb, "users", userId);
       const questsRef = collection(userDocRef, "daily_quests");
       
       const q = query(
@@ -66,7 +66,7 @@ const updateQuestProgressFlow = ai.defineFlow(
         return { success: true, questsUpdated: 0 };
       }
 
-      const batch = writeBatch(db);
+      const batch = writeBatch(adminDb);
       let updatedCount = 0;
       let justCompletedQuests: string[] = [];
 

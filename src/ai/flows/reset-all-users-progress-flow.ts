@@ -6,7 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { collection, getDocs, writeBatch, doc, getDoc } from "firebase/firestore";
 import type { UserData } from '@/types/user';
 
@@ -30,7 +30,7 @@ async function verifyAdmin(userId: string) {
     if (!userId) {
         throw new Error('Authentication required.');
     }
-    const userDocRef = doc(db, 'users', userId);
+    const userDocRef = doc(adminDb, 'users', userId);
     const userDoc = await getDoc(userDocRef);
 
     if (!userDoc.exists()) {
@@ -60,14 +60,14 @@ const resetAllUsersProgressFlow = ai.defineFlow(
       await verifyAdmin(adminUserId);
 
       // 2. If verification passes, proceed with the operation.
-      const usersRef = collection(db, "users");
+      const usersRef = collection(adminDb, "users");
       const userDocsSnapshot = await getDocs(usersRef);
 
       if (userDocsSnapshot.empty) {
         return { success: true, usersReset: 0, message: 'No users found to reset.' };
       }
 
-      const batch = writeBatch(db);
+      const batch = writeBatch(adminDb);
       
       userDocsSnapshot.forEach(userDoc => {
         batch.update(userDoc.ref, {

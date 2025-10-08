@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -10,8 +11,6 @@ import { StatCard } from "@/components/profile/stat-card";
 import { Achievements } from "@/components/profile/achievements";
 import { AccountSettings } from "@/components/profile/account-settings";
 import { Flame, GraduationCap, Coins } from "lucide-react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { UserData } from "@/types/user";
 import { updateQuestProgress } from "@/ai/flows/update-quest-progress-flow";
 import { LEVEL_THRESHOLDS } from "@/lib/level-config";

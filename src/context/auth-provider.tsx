@@ -87,7 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             gameSummaries: data.gameSummaries ?? {},
           } as UserData));
         } else {
-          setUserData(null);
+          // This case can happen briefly if a new user is created but the doc doesn't exist yet.
+          // We don't set user data to null, to avoid flickering.
+          // The auth-form will create the document.
         }
         // Don't set loading to false here; wait for quest listener
       }, (error) => {

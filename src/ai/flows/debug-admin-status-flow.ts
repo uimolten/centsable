@@ -7,7 +7,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import type { UserData } from '@/types/user';
 
 const DebugAdminStatusInputSchema = z.object({
@@ -44,7 +44,7 @@ const debugAdminStatusFlow = ai.defineFlow(
     }
 
     try {
-      const userDocRef = doc(db, 'users', userId);
+      const userDocRef = doc(adminDb, 'users', userId);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {

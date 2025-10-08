@@ -9,7 +9,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { UpdateUsernameInputSchema, UpdateUsernameOutputSchema, type UpdateUsernameInput, type UpdateUsernameOutput } from '@/types/actions';
 
 
@@ -59,7 +59,7 @@ const updateUsernameFlow = ai.defineFlow(
     }
 
     try {
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(adminDb, "users", userId);
       await updateDoc(userDocRef, {
         displayName: newUsername
       });

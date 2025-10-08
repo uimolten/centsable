@@ -7,7 +7,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import type { UserData, GameSummary } from '@/types/user';
 
 const SaveGameSummaryInputSchema = z.object({
@@ -35,7 +35,7 @@ const saveGameSummaryFlow = ai.defineFlow(
   },
   async ({ userId, gameId, summaryData }) => {
     try {
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(adminDb, "users", userId);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {

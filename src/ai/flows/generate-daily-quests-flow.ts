@@ -3,7 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { collection, writeBatch, serverTimestamp, doc, getDocs } from "firebase/firestore";
 
 // Helper function to get a random integer within a range
@@ -63,8 +63,8 @@ const generateDailyQuestsFlow = ai.defineFlow(
   },
   async ({ userId }) => {
     try {
-      const batch = writeBatch(db);
-      const userDocRef = doc(db, "users", userId);
+      const batch = writeBatch(adminDb);
+      const userDocRef = doc(adminDb, "users", userId);
       const questsRef = collection(userDocRef, "daily_quests");
 
       // 1. Delete all existing quests for the user

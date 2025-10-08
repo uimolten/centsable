@@ -8,7 +8,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { doc, updateDoc, getDoc, arrayUnion, increment } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { SaveProgressInputSchema, SaveProgressOutputSchema, type SaveProgressInput, type SaveProgressOutput } from '@/types/actions';
 
 export async function saveProgress(input: SaveProgressInput): Promise<SaveProgressOutput> {
@@ -24,7 +24,7 @@ const saveProgressFlow = ai.defineFlow(
   },
   async ({ userId, lessonId, xpGained, centsGained }) => {
     try {
-      const userDocRef = doc(db, "users", userId);
+      const userDocRef = doc(adminDb, "users", userId);
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc.exists()) {
@@ -53,5 +53,3 @@ const saveProgressFlow = ai.defineFlow(
     }
   }
 );
-
-    

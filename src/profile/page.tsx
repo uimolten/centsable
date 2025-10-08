@@ -12,7 +12,7 @@ import { Achievements } from "@/components/profile/achievements";
 import { AccountSettings } from "@/components/profile/account-settings";
 import { Flame, GraduationCap, Coins } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { UserData } from "@/types/user";
 import { updateQuestProgress } from "@/ai/flows/update-quest-progress-flow";
 import { LEVEL_THRESHOLDS } from "@/lib/level-config";
@@ -107,5 +107,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
