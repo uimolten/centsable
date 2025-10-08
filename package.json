@@ -12,6 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "jest"
   },
+  "engines": {
+    "node": "20"
+  },
   "dependencies": {
     "@genkit-ai/googleai": "^1.13.0",
     "@genkit-ai/next": "^1.13.0",
