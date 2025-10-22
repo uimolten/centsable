@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useRef, useEffect, useCallback, useState } from "react";
@@ -42,21 +43,21 @@ const cardData: BentoCardProps[] = [
     title: "Interactive Learning",
     description: "Go from basics to advanced topics with story-like modules.",
     label: "Learn",
-    image: "https://picsum.photos/seed/learn/600/400",
+    image: "https://placehold.co/600x400/000000/000000.png",
     imageHint: "lesson screen",
   },
   {
     title: "Fun Minigames",
     description: "Put your skills to the test with games that make learning stick.",
     label: "Play",
-    image: "/images/bento-play.png",
+    image: "https://placehold.co/600x400/000000/000000.png",
     imageHint: "block game",
   },
   {
     title: "Track Your Progress",
     description: "Watch your confidence grow with detailed progress tracking.",
     label: "Grow",
-    image: "/images/bento-grow.png",
+    image: "https://placehold.co/600x400/000000/000000.png",
     imageHint: "dashboard chart",
   },
   {
