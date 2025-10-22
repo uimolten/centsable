@@ -42,7 +42,7 @@ const cardData: BentoCardProps[] = [
     title: "Interactive Learning",
     description: "Go from basics to advanced topics with story-like modules.",
     label: "Learn",
-    image: "/images/bento-learn.png",
+    image: "https://picsum.photos/seed/learn/600/400",
     imageHint: "lesson screen",
   },
   {
