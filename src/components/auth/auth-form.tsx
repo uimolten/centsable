@@ -114,6 +114,13 @@ export function AuthForm() {
           displayName: user.displayName,
           photoURL: user.photoURL,
           role: 'user',
+          xp: 0,
+          level: 1,
+          cents: 0,
+          streak: 0,
+          lessonsCompleted: 0,
+          achievements: [],
+          completedLessons: [],
           createdAt: serverTimestamp(),
         });
       }
@@ -158,7 +165,15 @@ export function AuthForm() {
       
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
+        displayName: user.email.split('@')[0], // Default display name
         role: 'user',
+        xp: 0,
+        level: 1,
+        cents: 0,
+        streak: 0,
+        lessonsCompleted: 0,
+        achievements: [],
+        completedLessons: [],
         createdAt: serverTimestamp(),
       });
 
