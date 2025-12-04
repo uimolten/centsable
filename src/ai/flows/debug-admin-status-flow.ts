@@ -6,7 +6,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { doc, getDoc } from "firebase/firestore";
 import { adminDb } from "@/lib/firebase-admin";
 import type { UserData } from '@/types/user';
 
@@ -44,10 +43,10 @@ const debugAdminStatusFlow = ai.defineFlow(
     }
 
     try {
-      const userDocRef = doc(adminDb, 'users', userId);
-      const userDoc = await getDoc(userDocRef);
+      const userDocRef = adminDb.collection('users').doc(userId);
+      const userDoc = await userDocRef.get();
 
-      if (!userDoc.exists()) {
+      if (!userDoc.exists) {
         console.error(`DEBUG: Firestore document for UID ${userId} does not exist.`);
         return { 
           status: "Error", 

@@ -5,14 +5,12 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { Timestamp } from "firebase-admin/firestore";
+import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase-admin";
-import { addXp } from './add-xp-flow';
 import { AwardGameRewardsInputSchema, AwardGameRewardsOutputSchema, AwardGameRewardsInput, AwardGameRewardsOutput } from '@/types/actions';
 import type { UserData } from '@/types/user';
 import { toZonedTime } from 'date-fns-tz';
 import { startOfDay, isBefore, subDays } from 'date-fns';
-import { increment, arrayUnion } from 'firebase/firestore';
 
 const REWARD_THRESHOLDS: Record<string, number> = {
   'credit-swipe': 1250,
@@ -57,9 +55,9 @@ const awardGameRewardsFlow = ai.defineFlow(
             // --- Daily Reset Logic ---
             const nowInPacific = toZonedTime(new Date(), PACIFIC_TIMEZONE);
             
-            // Determine the last reset time (5 AM PT today or yesterday)
             let lastResetTime = startOfDay(nowInPacific);
             lastResetTime.setHours(5);
+
             if (isBefore(nowInPacific, lastResetTime)) {
                 // If it's before 5 AM today, the reset time was 5 AM yesterday.
                 lastResetTime = subDays(lastResetTime, 1);
@@ -73,9 +71,9 @@ const awardGameRewardsFlow = ai.defineFlow(
 
             // If we are here, we can award points.
             transaction.update(userDocRef, {
-                xp: (userData.xp ?? 0) + XP_AWARD,
-                cents: (userData.cents ?? 0) + CENTS_AWARD,
-                dailyRewardClaims: arrayUnion(Timestamp.now())
+                xp: FieldValue.increment(XP_AWARD),
+                cents: FieldValue.increment(CENTS_AWARD),
+                dailyRewardClaims: FieldValue.arrayUnion(Timestamp.now())
             });
 
             return { success: true, xpAwarded: XP_AWARD, centsAwarded: CENTS_AWARD, message: 'Reward claimed!' };

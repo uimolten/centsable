@@ -4,7 +4,8 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { adminDb } from "@/lib/firebase-admin";
-import { collection, query, where, getDocs, writeBatch, increment, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, writeBatch, doc } from "firebase/firestore";
+import { FieldValue } from 'firebase-admin/firestore';
 import type { QuestActionType, Quest } from '@/types/quests';
 import type { UserData } from '@/types/user';
 
@@ -74,13 +75,13 @@ const updateQuestProgressFlow = ai.defineFlow(
         const quest = { id: questDoc.id, ...questDoc.data() } as Quest;
         const newProgress = quest.currentProgress + 1;
 
-        batch.update(questDoc.ref, { currentProgress: increment(1) });
+        batch.update(questDoc.ref, { currentProgress: FieldValue.increment(1) });
         
         if (newProgress >= quest.targetAmount) {
           batch.update(questDoc.ref, { isCompleted: true });
           batch.update(userDocRef, {
-            xp: increment(quest.rewardXP),
-            cents: increment(quest.rewardCents)
+            xp: FieldValue.increment(quest.rewardXP),
+            cents: FieldValue.increment(quest.rewardCents)
           });
           justCompletedQuests.push(questDoc.id);
         }
@@ -104,8 +105,8 @@ const updateQuestProgressFlow = ai.defineFlow(
         // Give bonus only if all quests are done and bonus hasn't been given yet
         if (allDailyQuestsCompleted && allQuests.length === 3 && !userData.dailyQuestsCompleted) {
            batch.update(userDocRef, {
-             xp: increment(25),
-             cents: increment(15),
+             xp: FieldValue.increment(25),
+             cents: FieldValue.increment(15),
              dailyQuestsCompleted: true, // Set flag to prevent giving bonus again
            });
         }

@@ -5,8 +5,8 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { runTransaction, arrayUnion, increment } from "firebase/firestore";
 import { adminDb } from "@/lib/firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import { LEVEL_THRESHOLDS } from '@/lib/level-config';
 import type { UserData } from '@/types/user';
 import { AddXpInputSchema, AddXpOutputSchema, type AddXpInput, type AddXpOutput } from '@/types/actions';
@@ -59,16 +59,16 @@ const addXpFlow = ai.defineFlow(
         }
 
         const updates: any = {
-          xp: increment(amount),
+          xp: FieldValue.increment(amount),
         };
 
         if (totalCentsReward > 0) {
-            updates.cents = increment(totalCentsReward);
+            updates.cents = FieldValue.increment(totalCentsReward);
         }
 
         if (lessonId) {
-          updates.completedLessons = arrayUnion(lessonId);
-          updates.lessonsCompleted = increment(1);
+          updates.completedLessons = FieldValue.arrayUnion(lessonId);
+          updates.lessonsCompleted = FieldValue.increment(1);
         }
 
         if (leveledUp) {

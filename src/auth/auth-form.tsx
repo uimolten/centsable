@@ -164,6 +164,7 @@ export function AuthForm() {
       const user = userCredential.user;
       
       await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
         email: user.email,
         displayName: user.email.split('@')[0], // Default display name
         role: 'user',

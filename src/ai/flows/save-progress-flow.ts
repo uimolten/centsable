@@ -7,8 +7,8 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { doc, updateDoc, getDoc, arrayUnion, increment } from "firebase/firestore";
 import { adminDb } from "@/lib/firebase-admin";
+import { FieldValue } from 'firebase-admin/firestore';
 import { SaveProgressInputSchema, SaveProgressOutputSchema, type SaveProgressInput, type SaveProgressOutput } from '@/types/actions';
 
 export async function saveProgress(input: SaveProgressInput): Promise<SaveProgressOutput> {
@@ -24,26 +24,26 @@ const saveProgressFlow = ai.defineFlow(
   },
   async ({ userId, lessonId, xpGained, centsGained }) => {
     try {
-      const userDocRef = doc(adminDb, "users", userId);
-      const userDoc = await getDoc(userDocRef);
+      const userDocRef = adminDb.collection("users").doc(userId);
+      const userDoc = await userDocRef.get();
 
-      if (!userDoc.exists()) {
+      if (!userDoc.exists) {
         return { success: false, message: 'User not found.' };
       }
 
       const userData = userDoc.data();
       
       // Prevent re-awarding for the same lesson
-      if (userData.completedLessons?.includes(lessonId)) {
+      if (userData?.completedLessons?.includes(lessonId)) {
         return { success: true, message: 'Progress already saved for this lesson.' };
       }
       
-      await updateDoc(userDocRef, {
-        completedLessons: arrayUnion(lessonId),
-        lessonsCompleted: increment(1),
-        xp: increment(xpGained),
-        cents: increment(centsGained),
-        streak: increment(1)
+      await userDocRef.update({
+        completedLessons: FieldValue.arrayUnion(lessonId),
+        lessonsCompleted: FieldValue.increment(1),
+        xp: FieldValue.increment(xpGained),
+        cents: FieldValue.increment(centsGained),
+        streak: FieldValue.increment(1)
       });
       
       return { success: true };
