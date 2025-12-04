@@ -15,27 +15,19 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isAdmin() {
-      // Checks if the user has an 'admin' role in their user document.
-      // This requires a read call to the user's own document.
-      return isAuthenticated() &&
-             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
     // --- User Data (/users collection and subcollections) ---
-    // This rule applies to a user's document AND all documents in its subcollections (like daily_quests).
-    // An admin can read or write any user's data.
-    // A regular user can ONLY read or write to THEIR OWN document and subcollections.
+    // This rule allows a user to read and write to their own document and all subcollections.
+    // All other access is denied because server-side operations use the Admin SDK and bypass these rules.
     match /users/{userId}/{documents=**} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read, write: if isOwner(userId);
     }
     
     // --- Public Content (e.g., lessons) ---
-    // This allows any logged-in user to read lessons, but only admins can create or change them.
+    // This allows any logged-in user to read lessons.
+    // Writes are denied from the client-side. They must be done via a secure server flow.
     match /lessons/{lessonId} {
         allow read: if isAuthenticated();
-        allow write: if isAdmin();
+        allow write: if false;
     }
   }
 }
