@@ -1,11 +1,11 @@
 
-'use server';
 // src/lib/firebase-admin.ts
 import admin from 'firebase-admin';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getApps } from 'firebase-admin/app';
 
 // Ensure the app is only initialized once
-if (!admin.apps.length) {
+if (!getApps().length) {
   try {
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
@@ -17,4 +17,3 @@ if (!admin.apps.length) {
 
 export const adminDb = getFirestore();
 export const adminAuth = admin.auth();
-export const adminApp = admin.app();

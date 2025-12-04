@@ -6,7 +6,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import { adminDb } from "@/lib/firebase-admin";
 import type { UserData, GameSummary } from '@/types/user';
 
@@ -35,10 +34,10 @@ const saveGameSummaryFlow = ai.defineFlow(
   },
   async ({ userId, gameId, summaryData }) => {
     try {
-      const userDocRef = doc(adminDb, "users", userId);
-      const userDoc = await getDoc(userDocRef);
+      const userDocRef = adminDb.collection("users").doc(userId);
+      const userDoc = await userDocRef.get();
 
-      if (!userDoc.exists()) {
+      if (!userDoc.exists) {
         throw new Error('User not found.');
       }
       
@@ -59,7 +58,7 @@ const saveGameSummaryFlow = ai.defineFlow(
         updatedGameData.bestAttempt = newSummary;
       }
 
-      await setDoc(userDocRef, {
+      await userDocRef.set({
         gameSummaries: {
           ...gameSummaries,
           [gameId]: updatedGameData

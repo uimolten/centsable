@@ -8,7 +8,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { doc, updateDoc } from "firebase/firestore";
 import { adminDb } from "@/lib/firebase-admin";
 import { UpdateUsernameInputSchema, UpdateUsernameOutputSchema, type UpdateUsernameInput, type UpdateUsernameOutput } from '@/types/actions';
 
@@ -48,7 +47,7 @@ const updateUsernameFlow = ai.defineFlow(
     const llmResponse = await ai.generate({
         prompt: `Evaluate the following username for appropriateness for a financial education app for teens. Consider profanity, slurs, and generally inappropriate content. Username: "${newUsername}"`,
         tools: [profanityCheckTool],
-        model: 'googleai/gemini-2.0-flash'
+        model: 'googleai/gemini-pro'
     });
 
     const toolOutput = llmResponse.toolRequest?.output?.parts.find(part => part.toolResponse?.name === 'profanityCheck');
@@ -59,8 +58,8 @@ const updateUsernameFlow = ai.defineFlow(
     }
 
     try {
-      const userDocRef = doc(adminDb, "users", userId);
-      await updateDoc(userDocRef, {
+      const userDocRef = adminDb.collection("users").doc(userId);
+      await userDocRef.update({
         displayName: newUsername
       });
       return { success: true };

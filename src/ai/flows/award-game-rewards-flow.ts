@@ -5,13 +5,14 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { doc, runTransaction, Timestamp, arrayUnion } from "firebase/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase-admin";
 import { addXp } from './add-xp-flow';
 import { AwardGameRewardsInputSchema, AwardGameRewardsOutputSchema, AwardGameRewardsInput, AwardGameRewardsOutput } from '@/types/actions';
 import type { UserData } from '@/types/user';
 import { toZonedTime } from 'date-fns-tz';
 import { startOfDay, isBefore, subDays } from 'date-fns';
+import { increment, arrayUnion } from 'firebase/firestore';
 
 const REWARD_THRESHOLDS: Record<string, number> = {
   'credit-swipe': 1250,
@@ -42,11 +43,11 @@ const awardGameRewardsFlow = ai.defineFlow(
     }
     
     try {
-        const userDocRef = doc(adminDb, "users", userId);
+        const userDocRef = adminDb.collection("users").doc(userId);
 
-        const result = await runTransaction(adminDb, async (transaction) => {
+        const result = await adminDb.runTransaction(async (transaction) => {
             const userDoc = await transaction.get(userDocRef);
-            if (!userDoc.exists()) {
+            if (!userDoc.exists) {
               throw new Error("User not found.");
             }
             
@@ -71,8 +72,6 @@ const awardGameRewardsFlow = ai.defineFlow(
             }
 
             // If we are here, we can award points.
-            // Note: We are not using the addXp flow here to keep reward logic self-contained
-            // and avoid potential circular dependencies or complex transactions.
             transaction.update(userDocRef, {
                 xp: (userData.xp ?? 0) + XP_AWARD,
                 cents: (userData.cents ?? 0) + CENTS_AWARD,
