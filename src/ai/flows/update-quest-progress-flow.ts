@@ -4,7 +4,6 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { adminDb } from "@/lib/firebase-admin";
-import { collection, query, where, getDocs, writeBatch, doc } from "firebase/firestore";
 import { FieldValue } from 'firebase-admin/firestore';
 import type { QuestActionType, Quest } from '@/types/quests';
 import type { UserData } from '@/types/user';
@@ -53,21 +52,19 @@ const updateQuestProgressFlow = ai.defineFlow(
         return { success: true, questsUpdated: 0 };
       }
 
-      const userDocRef = doc(adminDb, "users", userId);
-      const questsRef = collection(userDocRef, "daily_quests");
+      const userDocRef = adminDb.collection("users").doc(userId);
+      const questsRef = userDocRef.collection("daily_quests");
       
-      const q = query(
-        questsRef, 
-        where('questId', 'in', relevantQuestIds),
-        where('isCompleted', '==', false)
-      );
+      const q = questsRef
+        .where('questId', 'in', relevantQuestIds)
+        .where('isCompleted', '==', false);
 
-      const questsToUpdateSnapshot = await getDocs(q);
+      const questsToUpdateSnapshot = await q.get();
       if (questsToUpdateSnapshot.empty) {
         return { success: true, questsUpdated: 0 };
       }
 
-      const batch = writeBatch(adminDb);
+      const batch = adminDb.batch();
       let updatedCount = 0;
       let justCompletedQuests: string[] = [];
 
@@ -90,7 +87,7 @@ const updateQuestProgressFlow = ai.defineFlow(
       
       // We only want to check for the grand bonus if at least one quest was just completed.
       if (justCompletedQuests.length > 0) {
-        const allQuestsSnapshot = await getDocs(questsRef);
+        const allQuestsSnapshot = await questsRef.get();
         const allQuests = allQuestsSnapshot.docs.map(doc => doc.data() as Quest);
 
         // This checks if ALL quests are now complete.

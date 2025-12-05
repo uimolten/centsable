@@ -4,7 +4,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { adminDb } from "@/lib/firebase-admin";
-import { collection, writeBatch, serverTimestamp, doc, getDocs } from "firebase/firestore";
+import { serverTimestamp } from "firebase-admin/firestore";
 
 // Helper function to get a random integer within a range
 const getRandomInt = (min: number, max: number) => {
@@ -63,12 +63,12 @@ const generateDailyQuestsFlow = ai.defineFlow(
   },
   async ({ userId }) => {
     try {
-      const batch = writeBatch(adminDb);
-      const userDocRef = doc(adminDb, "users", userId);
-      const questsRef = collection(userDocRef, "daily_quests");
+      const batch = adminDb.batch();
+      const userDocRef = adminDb.collection("users").doc(userId);
+      const questsRef = userDocRef.collection("daily_quests");
 
       // 1. Delete all existing quests for the user
-      const existingQuestsSnapshot = await getDocs(questsRef);
+      const existingQuestsSnapshot = await questsRef.get();
       existingQuestsSnapshot.forEach(doc => {
         batch.delete(doc.ref);
       });
@@ -80,7 +80,7 @@ const generateDailyQuestsFlow = ai.defineFlow(
       
       // 3. Add new quests to the batch
       for (const quest of selectedQuests) {
-        const newQuestRef = doc(questsRef);
+        const newQuestRef = questsRef.doc();
         batch.set(newQuestRef, {
           questId: quest.id,
           description: quest.description,

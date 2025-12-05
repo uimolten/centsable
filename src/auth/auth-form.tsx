@@ -6,8 +6,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { adminDb } from "@/lib/firebase-admin";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -105,11 +106,11 @@ export function AuthForm() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
+      const userDocRef = adminDb.collection("users").doc(user.uid);
+      const userDoc = await userDocRef.get();
 
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
+      if (!userDoc.exists) {
+        await userDocRef.set({
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
@@ -163,7 +164,7 @@ export function AuthForm() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
       
-      await setDoc(doc(db, "users", user.uid), {
+      await adminDb.collection("users").doc(user.uid).set({
         uid: user.uid,
         email: user.email,
         displayName: user.email.split('@')[0], // Default display name

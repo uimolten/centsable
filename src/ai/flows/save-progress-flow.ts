@@ -6,7 +6,6 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
 import { adminDb } from "@/lib/firebase-admin";
 import { FieldValue } from 'firebase-admin/firestore';
 import { SaveProgressInputSchema, SaveProgressOutputSchema, type SaveProgressInput, type SaveProgressOutput } from '@/types/actions';
