@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss';
 
 export default {
   darkMode: ['class'],
@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Sora', 'sans-serif'],
-        headline: ['Sora', 'sans-serif'],
+        body: ['var(--font-sora)', 'sans-serif'],
+        headline: ['var(--font-sora)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -99,15 +99,15 @@ export default {
           },
         },
         'shake': {
-            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
+          '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+          '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+          '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+          '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
         },
         'wave': {
-            '0%': { transform: 'translateX(0) translateZ(0) scaleY(1)' },
-            '50%': { transform: 'translateX(-25%) translateZ(0) scaleY(0.55)' },
-            '100%': { transform: 'translateX(-50%) translateZ(0) scaleY(1)' },
+          '0%': { transform: 'translateX(0) translateZ(0) scaleY(1)' },
+          '50%': { transform: 'translateX(-25%) translateZ(0) scaleY(0.55)' },
+          '100%': { transform: 'translateX(-50%) translateZ(0) scaleY(1)' },
         },
       },
       animation: {
