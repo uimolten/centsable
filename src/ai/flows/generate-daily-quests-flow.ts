@@ -4,7 +4,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { adminDb } from "@/lib/firebase-admin";
-import { serverTimestamp } from "firebase-admin/firestore";
+import { FieldValue } from "firebase-admin/firestore";
 
 // Helper function to get a random integer within a range
 const getRandomInt = (min: number, max: number) => {
@@ -77,7 +77,7 @@ const generateDailyQuestsFlow = ai.defineFlow(
       const enabledQuests = MASTER_QUEST_POOL.filter(q => q.enabled);
       const shuffledQuests = shuffleArray(enabledQuests);
       const selectedQuests = shuffledQuests.slice(0, 3);
-      
+
       // 3. Add new quests to the batch
       for (const quest of selectedQuests) {
         const newQuestRef = questsRef.doc();
@@ -89,13 +89,13 @@ const generateDailyQuestsFlow = ai.defineFlow(
           isCompleted: false,
           rewardXP: quest.rewards.xp,
           rewardCents: quest.rewards.cents,
-          assignedDate: serverTimestamp()
+          assignedDate: FieldValue.serverTimestamp()
         });
       }
 
       // 4. Update the user's last generated timestamp and reset the completion flag
-      batch.update(userDocRef, { 
-        lastQuestGenerated: serverTimestamp(),
+      batch.update(userDocRef, {
+        lastQuestGenerated: FieldValue.serverTimestamp(),
         dailyQuestsCompleted: false,
       });
 
