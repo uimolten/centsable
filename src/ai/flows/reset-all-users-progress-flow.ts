@@ -26,20 +26,20 @@ type ResetAllUsersProgressOutput = z.infer<typeof ResetAllUsersProgressOutputSch
  * Throws an error if the user is not authenticated or not an admin.
  */
 async function verifyAdmin(userId: string) {
-    if (!userId) {
-        throw new Error('Authentication required.');
-    }
-    const userDocRef = adminDb.collection('users').doc(userId);
-    const userDoc = await userDocRef.get();
+  if (!userId) {
+    throw new Error('Authentication required.');
+  }
+  const userDocRef = adminDb.collection('users').doc(userId);
+  const userDoc = await userDocRef.get();
 
-    if (!userDoc.exists) {
-        throw new Error('User not found.');
-    }
-    
-    const userData = userDoc.data() as UserData;
-    if (userData.role !== 'admin') {
-        throw new Error('Missing or insufficient permissions.');
-    }
+  if (!userDoc.exists) {
+    throw new Error('User not found.');
+  }
+
+  const userData = userDoc.data() as UserData;
+  if (userData.role !== 'admin') {
+    throw new Error('Missing or insufficient permissions.');
+  }
 }
 
 export async function resetAllUsersProgress(input: ResetAllUsersProgressInput): Promise<ResetAllUsersProgressOutput> {
@@ -67,7 +67,7 @@ const resetAllUsersProgressFlow = ai.defineFlow(
       }
 
       const batch = adminDb.batch();
-      
+
       userDocsSnapshot.forEach(userDoc => {
         batch.update(userDoc.ref, {
           completedLessons: [],
