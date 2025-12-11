@@ -51,7 +51,7 @@ const resetAllUsersProgressFlow = ai.defineFlow(
     name: 'resetAllUsersProgressFlow',
     inputSchema: ResetAllUsersProgressInputSchema,
     outputSchema: ResetAllUsersProgressOutputSchema,
-    description: "WARNING: This flow will reset the learning progress (XP, level, completed lessons) for ALL users in the database.",
+
   },
   async ({ adminUserId }) => {
     try {
