@@ -20,6 +20,7 @@ interface BaseStep {
 
 export interface IntroStep extends BaseStep {
   type: 'intro';
+  image?: string;
   imageHint?: string;
 }
 
@@ -75,9 +76,9 @@ export interface InteractiveSortStep extends BaseStep {
 }
 
 export interface ScenarioStep extends BaseStep {
-    type: 'scenario';
-    image?: string;
-    imageHint?: string;
+  type: 'scenario';
+  image?: string;
+  imageHint?: string;
 }
 
 export type GoalBuilderInputType = 'text' | 'number' | 'date';

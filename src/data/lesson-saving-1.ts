@@ -16,6 +16,8 @@ export const lessonSaving1: Lesson = {
         {
           type: 'concept',
           text: 'Saving is simply putting money aside for later, instead of spending it right now.',
+          image: '/images/piggy-bank.png',
+          imageHint: 'a cute piggy bank with a coin',
         },
         {
           type: 'fill-in-the-blank',
@@ -44,6 +46,8 @@ export const lessonSaving1: Lesson = {
         {
           type: 'concept',
           text: 'Cool, but why save? You save to get things you really want later! These are called <b>financial goals</b>. 🎯',
+          image: '/images/financial-goal.png',
+          imageHint: 'a bulls-eye target with cash',
         },
         {
           type: 'multiple-choice',
@@ -88,6 +92,8 @@ export const lessonSaving1: Lesson = {
         {
           type: 'concept',
           text: "So, where does saving money come from? The secret is knowing the difference between <b>Needs</b> and <b><i>Wants</i></b>.",
+          image: '/images/wants-vs-needs.png',
+          imageHint: 'a scale balancing a heart and a house',
         },
         {
           type: 'concept',

@@ -16,8 +16,8 @@ export const lessonBudgeting2: Lesson = {
         {
           type: 'concept',
           text: "The rule splits your after-tax income into three buckets:<br><b>50% for Needs</b><br><b>30% for Wants</b><br><b>20% for Savings</b>",
-          image: "https://picsum.photos/seed/buckets/400/225",
-          imageHint: 'three buckets color coded'
+          image: "/images/buckets-50-30-20.png",
+          imageHint: 'three buckets color coded for 50 30 20'
         },
         {
           type: 'tap-the-pairs',
