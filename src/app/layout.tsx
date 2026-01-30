@@ -6,6 +6,7 @@ import './globals.css';
 import ClientLayout from './client-layout';
 import { LevelUpManager } from '@/components/level-up-manager';
 import { RewardNotifier } from '@/components/reward-notifier';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import { Sora } from 'next/font/google';
 
@@ -37,6 +38,7 @@ export default function RootLayout({
           <RewardNotifier />
           <Toaster />
         </AuthProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
