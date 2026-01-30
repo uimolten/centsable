@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Logo } from "../logo";
+import { Logo } from "@/components/logo";
 import { useAuth } from "@/hooks/use-auth";
 import { updateQuestProgress } from "@/ai/flows/update-quest-progress-flow";
 
@@ -169,7 +169,7 @@ export function AuthForm() {
       await setDoc(userDocRef, {
         uid: user.uid,
         email: user.email,
-        displayName: user.email.split('@')[0], // Default display name
+        displayName: user.email?.split('@')[0] || "User", // Default display name with fallback
         role: 'user',
         xp: 0,
         level: 1,
