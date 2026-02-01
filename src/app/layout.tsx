@@ -15,9 +15,53 @@ const sora = Sora({
   display: 'swap',
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://centsable.vercel.app';
+
 export const metadata: Metadata = {
-  title: 'Centsable | Your Adventure in Financial Mastery',
-  description: 'Learn budgeting, investing, and more through fun games and interactive challenges. Stop guessing, start growing.',
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: 'Centsable | Your Adventure in Financial Mastery',
+    template: '%s | Centsable',
+  },
+  description: 'Master your money with Centsable. Learn budgeting, investing, and credit through interactive games and quests. The fun way to financial freedom.',
+  keywords: ['financial literacy', 'budgeting game', 'finance for students', 'money management', 'investing simulator', 'credit score', 'gamified finance'],
+  authors: [{ name: 'Centsable Team' }],
+  creator: 'Centsable',
+  publisher: 'Centsable',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: baseUrl,
+    title: 'Centsable | Gamified Financial Literacy',
+    description: 'Stop guessing, start growing. Learn to budget and invest by playing.',
+    siteName: 'Centsable',
+    images: [
+      {
+        url: '/images/HeroSection.png', // We'll use your existing hero image as the social preview
+        width: 1200,
+        height: 630,
+        alt: 'Centsable Hero Preview',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Centsable | Gamified Financial Literacy',
+    description: 'Master your money with interactive quests and games.',
+    images: ['/images/HeroSection.png'],
+    creator: '@centsable', // Update if you have a handle
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
