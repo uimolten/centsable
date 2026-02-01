@@ -22,7 +22,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 1,
         name: 'Sarah Chen',
-        avatarUrl: '/images/avatars/avatar-1.png',
+        avatarUrl: '/images/avatars/avatar-1.webp',
         loanRequest: { title: 'Loan for a new laptop', amount: 1200 },
         creditScore: 780,
         income: 4000,
@@ -35,7 +35,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 2,
         name: 'Mike Rivera',
-        avatarUrl: '/images/avatars/avatar-2.png',
+        avatarUrl: '/images/avatars/avatar-2.webp',
         loanRequest: { title: 'Used car financing', amount: 8000 },
         creditScore: 590,
         income: 3000,
@@ -48,7 +48,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 3,
         name: 'Jessica Patel',
-        avatarUrl: '/images/avatars/avatar-3.png',
+        avatarUrl: '/images/avatars/avatar-3.webp',
         loanRequest: { title: 'Emergency vet bill', amount: 500 },
         creditScore: 680,
         income: 3200,
@@ -61,7 +61,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 4,
         name: 'David Kim',
-        avatarUrl: '/images/avatars/avatar-4.png',
+        avatarUrl: '/images/avatars/avatar-4.webp',
         loanRequest: { title: 'Starting a small business', amount: 15000 },
         creditScore: 710,
         income: 6000,
@@ -74,7 +74,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 5,
         name: 'Emily Garcia',
-        avatarUrl: '/images/avatars/avatar-5.png',
+        avatarUrl: '/images/avatars/avatar-5.webp',
         loanRequest: { title: 'Funding a coding bootcamp', amount: 10000 },
         creditScore: 750,
         income: 5500,
@@ -87,7 +87,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 6,
         name: 'Chris Nguyen',
-        avatarUrl: '/images/avatars/avatar-6.png',
+        avatarUrl: '/images/avatars/avatar-6.webp',
         loanRequest: { title: 'Home renovation project', amount: 20000 },
         creditScore: 620,
         income: 4500,
@@ -100,7 +100,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 7,
         name: 'Olivia Martinez',
-        avatarUrl: '/images/avatars/avatar-7.png',
+        avatarUrl: '/images/avatars/avatar-7.webp',
         loanRequest: { title: 'Consolidating credit card debt', amount: 5000 },
         creditScore: 660,
         income: 3800,
@@ -113,7 +113,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 8,
         name: 'Alex Johnson',
-        avatarUrl: '/images/avatars/avatar-8.png',
+        avatarUrl: '/images/avatars/avatar-8.webp',
         loanRequest: { title: 'New furniture for apartment', amount: 2500 },
         creditScore: 810,
         income: 7000,
@@ -126,7 +126,7 @@ export const applicantDeck: ApplicantProfile[] = [
     {
         id: 9,
         name: 'Tyrone McCaffery',
-        avatarUrl: '/images/avatars/avatar-9.png',
+        avatarUrl: '/images/avatars/avatar-9.webp',
         loanRequest: { title: 'Loan for a Hellcat', amount: 60000 },
         creditScore: 450,
         income: 2500,

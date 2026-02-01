@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     siteName: 'Centsable',
     images: [
       {
-        url: '/images/HeroSection.png', // We'll use your existing hero image as the social preview
+        url: '/images/HeroSection.webp', // We'll use your existing hero image as the social preview
         width: 1200,
         height: 630,
         alt: 'Centsable Hero Preview',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Centsable | Gamified Financial Literacy',
     description: 'Master your money with interactive quests and games.',
-    images: ['/images/HeroSection.png'],
+    images: ['/images/HeroSection.webp'],
     creator: '@centsable', // Update if you have a handle
   },
   robots: {

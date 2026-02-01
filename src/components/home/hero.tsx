@@ -73,8 +73,8 @@ export function Hero() {
           >
             <div className="relative aspect-[16/10] max-w-5xl mx-auto rounded-xl border-2 border-border/10 bg-card/50 shadow-2xl shadow-primary/10">
                 <Image
-                  key="/images/HeroSection.png"
-                  src="/images/HeroSection.png"
+                  key="/images/HeroSection.webp"
+                  src="/images/HeroSection.webp"
                   alt="Centsable App Hero Section"
                   data-ai-hint="app hero"
                   fill

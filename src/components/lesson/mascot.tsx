@@ -22,7 +22,7 @@ export function Mascot({ isHappy, isSad }: MascotProps) {
     };
   }
 
-  const mascotImage = isHappy ? '/images/mascot-happy.png' : isSad ? '/images/mascot-sad.png' : '/images/mascot-idle.png';
+  const mascotImage = isHappy ? '/images/mascot-happy.webp' : isSad ? '/images/mascot-sad.webp' : '/images/mascot-idle.webp';
 
   return (
     <motion.div
