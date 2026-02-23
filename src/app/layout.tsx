@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     default: 'Centsable | Your Adventure in Financial Mastery',
     template: '%s | Centsable',
   },
+  applicationName: 'Centsable',
   description: 'Master your money with Centsable. Learn budgeting, investing, and credit through interactive games and quests. The fun way to financial freedom.',
   keywords: ['financial literacy', 'budgeting game', 'finance for students', 'money management', 'investing simulator', 'credit score', 'gamified finance'],
   authors: [{ name: 'Centsable Team' }],
@@ -77,6 +78,17 @@ export default function RootLayout({
     <html lang="en" className={`dark ${sora.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Centsable",
+              "url": baseUrl,
+            }),
+          }}
+        />
       </head>
       <body className="font-body">
         <AuthProvider>
